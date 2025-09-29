@@ -1,3 +1,38 @@
+<?php
+$id_tipo_parcela = '';
+if (isset($datos['values']['id_tipo_parcela'])) {
+    $id_tipo_parcela = $datos['values']['id_tipo_parcela'];
+}
+$id_deudo = '';
+if (isset($datos['values']['id_deudo'])) {
+    $id_deudo = $datos['values']['id_deudo'];
+}
+$numero_ubicacion = '';
+if (isset($datos['values']['numero_ubicacion'])) {
+    $numero_ubicacion = htmlspecialchars($datos['values']['numero_ubicacion']);
+}
+$hilera = '';
+if (isset($datos['values']['hilera'])) {
+    $hilera = htmlspecialchars($datos['values']['hilera']);
+}
+$seccion = '';
+if (isset($datos['values']['seccion'])) {
+    $seccion = htmlspecialchars($datos['values']['seccion']);
+}
+$fraccion = '';
+if (isset($datos['values']['fraccion'])) {
+    $fraccion = htmlspecialchars($datos['values']['fraccion']);
+}
+$nivel = '';
+if (isset($datos['values']['nivel'])) {
+    $nivel = htmlspecialchars($datos['values']['nivel']);
+}
+$id_orientacion = '';
+if (isset($datos['values']['id_orientacion'])) {
+    $id_orientacion = $datos['values']['id_orientacion'];
+}
+?>
+
 <div class="container mt-5">
     <div class="card shadow">
         <div class="card-header bg-primary text-white">
@@ -18,6 +53,7 @@
             
             <form action="<?= $datos['action'] ?>" method="POST" class="needs-validation" novalidate>
                 <div class="row g-3">
+                    
                     <!-- Primera columna -->
                     <div class="col-md-6">
                         <div class="mb-3">
@@ -25,8 +61,13 @@
                             <select class="form-select" id="tipo_parcela" name="tipo_parcela" required>
                                 <option value="">Seleccione...</option>
                                 <?php foreach ($datos['tipos_parcelas'] as $n): ?>
-                                    <option value="<?= $n['id_tipo_parcela'] ?>"
-                                        <?= ($datos['values']['id_tipo_parcela'] ?? '') == $n['id_tipo_parcela'] ? 'selected' : '' ?>>
+                                    <?php
+                                    $selected = '';
+                                    if ($id_tipo_parcela == $n['id_tipo_parcela']) {
+                                        $selected = 'selected';
+                                    }
+                                    ?>
+                                    <option value="<?= $n['id_tipo_parcela'] ?>" <?= $selected ?>>
                                         <?= htmlspecialchars($n['nombre_parcela']) ?>
                                     </option>
                                 <?php endforeach ?>
@@ -41,8 +82,13 @@
                             <select class="form-select" id="deudo" name="deudo" required>
                                 <option value="">Seleccione...</option>
                                 <?php foreach ($datos['deudos'] as $n): ?>
-                                    <option value="<?= $n['id_deudo'] ?>"
-                                        <?= ($datos['values']['id_deudo'] ?? '') == $n['id_deudo'] ? 'selected' : '' ?>>
+                                    <?php
+                                    $selected = '';
+                                    if ($id_deudo == $n['id_deudo']) {
+                                        $selected = 'selected';
+                                    }
+                                    ?>
+                                    <option value="<?= $n['id_deudo'] ?>" <?= $selected ?>>
                                         <?= htmlspecialchars($n['nombre']) ?>
                                     </option>
                                 <?php endforeach ?>
@@ -55,7 +101,7 @@
                         <div class="mb-3">
                             <label for="numero_ubicacion" class="form-label fw-bold">Número ubicación</label>
                             <input type="text" class="form-control" id="numero_ubicacion" name="numero_ubicacion" 
-                                   value="<?= htmlspecialchars($datos['values']['numero_ubicacion'] ?? '') ?>" required>
+                                   value="<?= $numero_ubicacion ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese el número de ubicación
                             </div>
@@ -64,7 +110,7 @@
                         <div class="mb-3">
                             <label for="hilera" class="form-label fw-bold">Hilera</label>
                             <input type="text" class="form-control" id="hilera" name="hilera" 
-                                   value="<?= htmlspecialchars($datos['values']['hilera'] ?? '') ?>" required>
+                                   value="<?= $hilera ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese la hilera
                             </div>
@@ -76,7 +122,7 @@
                         <div class="mb-3">
                             <label for="seccion" class="form-label fw-bold">Sección</label>
                             <input type="text" class="form-control" id="seccion" name="seccion" 
-                                   value="<?= htmlspecialchars($datos['values']['seccion'] ?? '') ?>" required>
+                                   value="<?= $seccion ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese la sección
                             </div>
@@ -85,7 +131,7 @@
                         <div class="mb-3">
                             <label for="fraccion" class="form-label fw-bold">Fracción</label>
                             <input type="text" class="form-control" id="fraccion" name="fraccion" 
-                                   value="<?= htmlspecialchars($datos['values']['fraccion'] ?? '') ?>" required>
+                                   value="<?= $fraccion ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese la fracción
                             </div>
@@ -94,7 +140,7 @@
                         <div class="mb-3">
                             <label for="nivel" class="form-label fw-bold">Nivel</label>
                             <input type="text" class="form-control" id="nivel" name="nivel" 
-                                   value="<?= htmlspecialchars($datos['values']['nivel'] ?? '') ?>">
+                                   value="<?= $nivel ?>">
                         </div>
                         
                         <div class="mb-3">
@@ -102,8 +148,13 @@
                             <select class="form-select" id="orientacion" name="orientacion" required>
                                 <option value="">Seleccione...</option>
                                 <?php foreach ($datos['orientaciones'] as $n): ?>
-                                    <option value="<?= $n['id_orientacion'] ?>"
-                                        <?= ($datos['values']['id_orientacion'] ?? '') == $n['id_orientacion'] ? 'selected' : '' ?>>
+                                    <?php
+                                    $selected = '';
+                                    if ($id_orientacion == $n['id_orientacion']) {
+                                        $selected = 'selected';
+                                    }
+                                    ?>
+                                    <option value="<?= $n['id_orientacion'] ?>" <?= $selected ?>>
                                         <?= htmlspecialchars($n['descripcion']) ?>
                                     </option>
                                 <?php endforeach ?>
@@ -127,6 +178,8 @@
         </div>
     </div>
 </div>
+
+
 
 <!-- Agrega este script para la validación del formulario -->
 <script>

@@ -1,3 +1,10 @@
+<?php
+$nacionalidad = '';
+if (isset($datos['values']['nacionalidad'])) {
+    $nacionalidad = htmlspecialchars($datos['values']['nacionalidad']);
+}
+?>
+
 <div class="container mt-5">
     <h2><?= $datos['title']  ?></h2>
     <?php if (!empty($datos['errores'])): ?>
@@ -13,12 +20,11 @@
         <div class="mb-3">
             <label for="nacionalidad">Nacionalidad</label>
             <input type="text" class="form-control" name="nacionalidad" id="nacionalidad"
-            value="<?= htmlspecialchars($datos['values']['nacionalidad'] ?? '')?>" required>
+            value="<?= $nacionalidad ?>" required>
         </div>
         <div>
             <button type="submit" class="btn btn-success">Guardar</button>
             <a href="<?= URL ?>nacionalidades" class="btn btn-secondary">Cancelar</a>
         </div>
     </form>
-
 </div>

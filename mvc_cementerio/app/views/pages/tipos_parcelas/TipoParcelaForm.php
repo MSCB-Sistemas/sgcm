@@ -1,3 +1,14 @@
+<?php
+$id_tipo_parcela = '';
+if (isset($values['id_tipo_parcela'])) {
+    $id_tipo_parcela = $values['id_tipo_parcela'];
+}
+$nombre_parcela= '';
+if (isset($datos['values']['nombre_parcela'])) {
+    $nombre_parcela = htmlspecialchars($datos['values']['nombre_parcela']);
+}
+?>
+
 <div class="container mt-5">
     <div class="card shadow">
         <div class="card-header bg-primary text-white">
@@ -17,12 +28,12 @@
             <?php endif; ?>
             
             <form action="<?= $datos['action'] ?>" method="POST" class="needs-validation" novalidate>
-                <input type="hidden" name="id_tipo_parcela" value="<?= $values['id_tipo_parcela'] ?? '' ?>">
+                <input type="hidden" name="id_tipo_parcela" value="<?= $id_tipo_parcela ?>">
                 
                 <div class="mb-3">
                     <label for="nombre_parcela" class="form-label fw-bold">Nombre de Tipo de Parcela</label>
                     <input type="text" class="form-control" id="nombre_parcela" name="nombre_parcela" 
-                           value="<?= htmlspecialchars($datos['values']['nombre_parcela'] ?? '') ?>" required>
+                           value="<?= $nombre_parcela ?>" required>
                     <div class="invalid-feedback">
                         Por favor ingrese un nombre válido para el tipo de parcela
                     </div>

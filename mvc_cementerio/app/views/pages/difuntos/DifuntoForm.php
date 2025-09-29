@@ -1,3 +1,54 @@
+<?php
+$id_deudo = '';
+if (isset($datos['values']['id_deudo'])) {
+    $id_deudo = $datos['values']['id_deudo'];
+}
+$nombre = '';
+if (isset($datos['values']['nombre'])) {
+    $nombre = htmlspecialchars($datos['values']['nombre']);
+}
+$apellido = '';
+if (isset($datos['values']['apellido'])) {
+    $apellido = htmlspecialchars($datos['values']['apellido']);
+}
+$dni = '';
+if (isset($datos['values']['dni'])) {
+    $dni = htmlspecialchars($datos['values']['dni']);
+}
+$edad = '';
+if (isset($datos['values']['edad'])) {
+    $edad = htmlspecialchars($datos['values']['edad']);
+}
+$fecha_fallecimiento = '';
+if (isset($datos['values']['fecha_fallecimiento'])) {
+    $fecha_fallecimiento = htmlspecialchars($datos['values']['fecha_fallecimiento']);
+}
+$id_sexo = '';
+if (isset($datos['values']['id_sexo'])) {
+    $id_sexo = $datos['values']['id_sexo'];
+}
+$id_nacionalidad = '';
+if (isset($datos['values']['id_nacionalidad'])) {
+    $id_nacionalidad = $datos['values']['id_nacionalidad'];
+}
+$id_estado_civil = '';
+if (isset($datos['values']['id_estado_civil'])) {
+    $id_estado_civil = $datos['values']['id_estado_civil'];
+}
+$domicilio = '';
+if (isset($datos['values']['domicilio'])) {
+    $domicilio = htmlspecialchars($datos['values']['domicilio']);
+}
+$localidad = '';
+if (isset($datos['values']['localidad'])) {
+    $localidad = htmlspecialchars($datos['values']['localidad']);
+}
+$codigo_postal = '';
+if (isset($datos['values']['codigo_postal'])) {
+    $codigo_postal = htmlspecialchars($datos['values']['codigo_postal']);
+}
+?>
+
 <div class="container mt-5">
     <div class="card shadow">
         <div class="card-header bg-primary text-white">
@@ -25,8 +76,13 @@
                             <select class="form-select" id="deudo" name="deudo" required>
                                 <option value="">Seleccione...</option>
                                 <?php foreach ($datos['deudos'] as $n): ?>
-                                    <option value="<?= $n['id_deudo'] ?>"
-                                        <?= ($datos['values']['id_deudo'] ?? '') == $n['id_deudo'] ? 'selected' : '' ?>>
+                                    <?php
+                                    $selected = '';
+                                    if ($id_deudo == $n['id_deudo']) {
+                                        $selected = 'selected';
+                                    }
+                                    ?>
+                                    <option value="<?= $n['id_deudo'] ?>" <?= $selected ?>>
                                         <?= htmlspecialchars($n['nombre']) ?>
                                     </option>
                                 <?php endforeach ?>
@@ -39,7 +95,7 @@
                         <div class="mb-3">
                             <label for="nombre" class="form-label fw-bold">Nombre</label>
                             <input type="text" class="form-control" id="nombre" name="nombre" 
-                                   value="<?= htmlspecialchars($datos['values']['nombre'] ?? '') ?>" required>
+                                   value="<?= $nombre ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese el nombre
                             </div>
@@ -48,7 +104,7 @@
                         <div class="mb-3">
                             <label for="apellido" class="form-label fw-bold">Apellido</label>
                             <input type="text" class="form-control" id="apellido" name="apellido" 
-                                   value="<?= htmlspecialchars($datos['values']['apellido'] ?? '') ?>" required>
+                                   value="<?= $apellido ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese el apellido
                             </div>
@@ -57,7 +113,7 @@
                         <div class="mb-3">
                             <label for="dni" class="form-label fw-bold">DNI</label>
                             <input type="text" class="form-control" id="dni" name="dni" 
-                                   value="<?= htmlspecialchars($datos['values']['dni'] ?? '') ?>" required>
+                                   value="<?= $dni ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese el DNI
                             </div>
@@ -66,13 +122,13 @@
                         <div class="mb-3">
                             <label for="edad" class="form-label fw-bold">Edad</label>
                             <input type="text" class="form-control" id="edad" name="edad" 
-                                   value="<?= htmlspecialchars($datos['values']['edad'] ?? '') ?>">
+                                   value="<?= $edad ?>">
                         </div>
                         
                         <div class="mb-3">
                             <label for="fecha_fallecimiento" class="form-label fw-bold">Fecha fallecimiento</label>
                             <input type="date" class="form-control" id="fecha_fallecimiento" name="fecha_fallecimiento" 
-                                   value="<?= htmlspecialchars($datos['values']['fecha_fallecimiento'] ?? '') ?>">
+                                   value="<?= $fecha_fallecimiento ?>">
                         </div>
                     </div>
                     
@@ -83,8 +139,13 @@
                             <select class="form-select" id="sexo" name="sexo" required>
                                 <option value="">Seleccione...</option>
                                 <?php foreach ($datos['sexos'] as $n): ?>
-                                    <option value="<?= $n['id_sexo'] ?>"
-                                        <?= ($datos['values']['id_sexo'] ?? '') == $n['id_sexo'] ? 'selected' : '' ?>>
+                                    <?php
+                                    $selected = '';
+                                    if ($id_sexo == $n['id_sexo']) {
+                                        $selected = 'selected';
+                                    }
+                                    ?>
+                                    <option value="<?= $n['id_sexo'] ?>" <?= $selected ?>>
                                         <?= htmlspecialchars($n['descripcion']) ?>
                                     </option>
                                 <?php endforeach ?>
@@ -99,8 +160,13 @@
                             <select class="form-select" id="nacionalidad" name="nacionalidad" required>
                                 <option value="">Seleccione...</option>
                                 <?php foreach ($datos['nacionalidades'] as $n): ?>
-                                    <option value="<?= $n['id_nacionalidad'] ?>"
-                                        <?= ($datos['values']['id_nacionalidad'] ?? '') == $n['id_nacionalidad'] ? 'selected' : '' ?>>
+                                    <?php
+                                    $selected = '';
+                                    if ($id_nacionalidad == $n['id_nacionalidad']) {
+                                        $selected = 'selected';
+                                    }
+                                    ?>
+                                    <option value="<?= $n['id_nacionalidad'] ?>" <?= $selected ?>>
                                         <?= htmlspecialchars($n['nacionalidad']) ?>
                                     </option>
                                 <?php endforeach ?>
@@ -115,8 +181,13 @@
                             <select class="form-select" id="estado_civil" name="estado_civil" required>
                                 <option value="">Seleccione...</option>
                                 <?php foreach ($datos['estados_civiles'] as $n): ?>
-                                    <option value="<?= $n['id_estado_civil'] ?>"
-                                        <?= ($datos['values']['id_estado_civil'] ?? '') == $n['id_estado_civil'] ? 'selected' : '' ?>>
+                                    <?php
+                                    $selected = '';
+                                    if ($id_estado_civil == $n['id_estado_civil']) {
+                                        $selected = 'selected';
+                                    }
+                                    ?>
+                                    <option value="<?= $n['id_estado_civil'] ?>" <?= $selected ?>>
                                         <?= htmlspecialchars($n['descripcion']) ?>
                                     </option>
                                 <?php endforeach ?>
@@ -129,19 +200,19 @@
                         <div class="mb-3">
                             <label for="domicilio" class="form-label fw-bold">Domicilio</label>
                             <input type="text" class="form-control" id="domicilio" name="domicilio" 
-                                   value="<?= htmlspecialchars($datos['values']['domicilio'] ?? '') ?>">
+                                   value="<?= $domicilio ?>">
                         </div>
                         
                         <div class="mb-3">
                             <label for="localidad" class="form-label fw-bold">Localidad</label>
                             <input type="text" class="form-control" id="localidad" name="localidad" 
-                                   value="<?= htmlspecialchars($datos['values']['localidad'] ?? '') ?>">
+                                   value="<?= $localidad ?>">
                         </div>
                         
                         <div class="mb-3">
                             <label for="codigo_postal" class="form-label fw-bold">Código postal</label>
                             <input type="text" class="form-control" id="codigo_postal" name="codigo_postal" 
-                                   value="<?= htmlspecialchars($datos['values']['codigo_postal'] ?? '') ?>">
+                                   value="<?= $codigo_postal ?>">
                         </div>
                     </div>
                 </div>

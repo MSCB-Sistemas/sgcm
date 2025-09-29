@@ -1,3 +1,40 @@
+<?php
+$usuario = '';
+if (isset($values['usuario'])) {
+    $usuario = $values['usuario'];
+}
+$nombre= '';
+if (isset($datos['values']['nombre'])) {
+    $nombre = htmlspecialchars($datos['values']['nombre']);
+}
+$apellido= '';
+if (isset($datos['values']['apellido'])) {
+    $apellido = htmlspecialchars($datos['values']['apellido']);
+}
+$telefono= '';
+if (isset($datos['values']['telefono'])) {
+    $telefono = htmlspecialchars($datos['values']['telefono']);
+}
+$email= '';
+if (isset($datos['values']['email'])) {
+    $email = htmlspecialchars($datos['values']['email']);
+}
+$fecha_retiro= '';
+if (isset($datos['values']['fecha_retiro'])) {
+    $fecha_retiro = htmlspecialchars($datos['values']['fecha_retiro']);
+}
+$fecha_retiro= '';
+if (isset($datos['values']['fecha_retiro'])) {
+    $fecha_retiro = htmlspecialchars($datos['values']['fecha_retiro']);
+}
+$fecha_retiro= '';
+if (isset($datos['values']['fecha_retiro'])) {
+    $fecha_retiro = htmlspecialchars($datos['values']['fecha_retiro']);
+}
+?>
+
+
+
 <div class="container mt-5">
     <div class="card shadow">
         <div class="card-header bg-primary text-white">

@@ -1,3 +1,50 @@
+<?php
+$id_deudo = '';
+if (isset($values['id_deudo'])) {
+    $id_deudo = $values['id_deudo'];
+}
+
+$dni = '';
+if (isset($datos['values']['dni'])) {
+    $dni = htmlspecialchars($datos['values']['dni']);
+}
+
+$nombre = '';
+if (isset($datos['values']['nombre'])) {
+    $nombre = htmlspecialchars($datos['values']['nombre']);
+}
+
+$apellido = '';
+if (isset($datos['values']['apellido'])) {
+    $apellido = htmlspecialchars($datos['values']['apellido']);
+}
+
+$telefono = '';
+if (isset($datos['values']['telefono'])) {
+    $telefono = htmlspecialchars($datos['values']['telefono']);
+}
+
+$email = '';
+if (isset($datos['values']['email'])) {
+    $email = htmlspecialchars($datos['values']['email']);
+}
+
+$domicilio = '';
+if (isset($datos['values']['domicilio'])) {
+    $domicilio = htmlspecialchars($datos['values']['domicilio']);
+}
+
+$localidad = '';
+if (isset($datos['values']['localidad'])) {
+    $localidad = htmlspecialchars($datos['values']['localidad']);
+}
+
+$codigo_postal = '';
+if (isset($datos['values']['codigo_postal'])) {
+    $codigo_postal = htmlspecialchars($datos['values']['codigo_postal']);
+}
+?>
+
 <div class="container mt-5">
     <div class="card shadow">
         <div class="card-header bg-primary text-white">
@@ -17,7 +64,7 @@
             <?php endif; ?>
             
             <form action="<?= $datos['action'] ?>" method="POST" class="needs-validation" novalidate>
-                <input type="hidden" name="id" value="<?= $values['id_deudo'] ?? '' ?>">
+                <input type="hidden" name="id" value="<?= $id_deudo ?>">
                 
                 <div class="row g-3">
                     <!-- Primera columna -->
@@ -25,7 +72,7 @@
                         <div class="mb-3">
                             <label for="dni" class="form-label fw-bold">DNI</label>
                             <input type="text" class="form-control" id="dni" name="dni" 
-                                   value="<?= htmlspecialchars($datos['values']['dni'] ?? '') ?>" required>
+                                   value="<?= $dni ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese el DNI
                             </div>
@@ -34,7 +81,7 @@
                         <div class="mb-3">
                             <label for="nombre" class="form-label fw-bold">Nombre</label>
                             <input type="text" class="form-control" id="nombre" name="nombre" 
-                                   value="<?= htmlspecialchars($datos['values']['nombre'] ?? '') ?>" required>
+                                   value="<?= $nombre ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese el nombre
                             </div>
@@ -43,7 +90,7 @@
                         <div class="mb-3">
                             <label for="apellido" class="form-label fw-bold">Apellido</label>
                             <input type="text" class="form-control" id="apellido" name="apellido" 
-                                   value="<?= htmlspecialchars($datos['values']['apellido'] ?? '') ?>" required>
+                                   value="<?= $apellido ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese el apellido
                             </div>
@@ -52,7 +99,7 @@
                         <div class="mb-3">
                             <label for="telefono" class="form-label fw-bold">Teléfono</label>
                             <input type="text" class="form-control" id="telefono" name="telefono" 
-                                   value="<?= htmlspecialchars($datos['values']['telefono'] ?? '') ?>" required>
+                                   value="<?= $telefono ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese el teléfono
                             </div>
@@ -64,7 +111,7 @@
                         <div class="mb-3">
                             <label for="email" class="form-label fw-bold">Email</label>
                             <input type="email" class="form-control" id="email" name="email" 
-                                   value="<?= htmlspecialchars($datos['values']['email'] ?? '') ?>" required>
+                                   value="<?= $email ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese un email válido
                             </div>
@@ -73,7 +120,7 @@
                         <div class="mb-3">
                             <label for="domicilio" class="form-label fw-bold">Domicilio</label>
                             <input type="text" class="form-control" id="domicilio" name="domicilio" 
-                                   value="<?= htmlspecialchars($datos['values']['domicilio'] ?? '') ?>" required>
+                                   value="<?= $domicilio ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese el domicilio
                             </div>
@@ -82,7 +129,7 @@
                         <div class="mb-3">
                             <label for="localidad" class="form-label fw-bold">Localidad</label>
                             <input type="text" class="form-control" id="localidad" name="localidad" 
-                                   value="<?= htmlspecialchars($datos['values']['localidad'] ?? '') ?>" required>
+                                   value="<?= $localidad ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese la localidad
                             </div>
@@ -91,7 +138,7 @@
                         <div class="mb-3">
                             <label for="codigo_postal" class="form-label fw-bold">Código Postal</label>
                             <input type="text" class="form-control" id="codigo_postal" name="codigo_postal" 
-                                   value="<?= htmlspecialchars($datos['values']['codigo_postal'] ?? '') ?>" required>
+                                   value="<?= $codigo_postal ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese el código postal
                             </div>

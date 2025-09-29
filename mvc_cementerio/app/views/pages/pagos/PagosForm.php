@@ -1,3 +1,35 @@
+<?php
+
+$id_deudo = '';
+if (isset($datos['values']['id_deudo'])) {
+    $id_deudo = $datos['values']['id_deudo'];
+}
+$id_parcela = '';
+if (isset($datos['values']['id_parcela'])) {
+    $id_parcela = $datos['values']['id_parcela'];
+}
+$fecha_pago = '';
+if (isset($datos['values']['fecha_pago'])) {
+    $fecha_pago = htmlspecialchars($datos['values']['fecha_pago']);
+}
+$fecha_vencimiento = '';
+if (isset($datos['values']['fecha_vencimiento'])) {
+    $fecha_vencimiento = htmlspecialchars($datos['values']['fecha_vencimiento']);
+}
+$importe = '';
+if (isset($datos['values']['importe'])) {
+    $importe = htmlspecialchars($datos['values']['importe']);
+}
+$recargo = '';
+if (isset($datos['values']['recargo'])) {
+    $recargo = htmlspecialchars($datos['values']['recargo']);
+}
+$total = '';
+if (isset($datos['values']['total'])) {
+    $total = htmlspecialchars($datos['values']['total']);
+}
+?>
+
 <div class="container mt-5">
     <div class="card shadow">
         <div class="card-header bg-primary text-white">
@@ -26,8 +58,13 @@
                             <select class="form-select" id="deudo" name="deudo" required>
                                 <option value="">Seleccione...</option>
                                 <?php foreach ($datos['deudos'] as $n): ?>
-                                    <option value="<?= $n['id_deudo'] ?>"
-                                        <?= ($datos['values']['id_deudo'] ?? '') == $n['id_deudo'] ? 'selected' : '' ?>>
+                                    <?php
+                                    $selected = '';
+                                    if ($id_deudo == $n['id_deudo']) {
+                                        $selected = 'selected';
+                                    }
+                                    ?>
+                                    <option value="<?= $n['id_deudo'] ?>" <?= $selected ?>>
                                         <?= htmlspecialchars($n['nombre']) ?>
                                     </option>
                                 <?php endforeach ?>
@@ -42,8 +79,13 @@
                             <select class="form-select" id="parcela" name="parcela" required>
                                 <option value="">Seleccione...</option>
                                 <?php foreach ($datos['parcelas'] as $n): ?>
-                                    <option value="<?= $n['id_parcela'] ?>"
-                                        <?= ($datos['values']['id_parcela'] ?? '') == $n['id_parcela'] ? 'selected' : '' ?>>
+                                    <?php
+                                    $selected = '';
+                                    if ($id_parcela == $n['id_parcela']) {
+                                        $selected = 'selected';
+                                    }
+                                    ?>
+                                    <option value="<?= $n['id_parcela'] ?>" <?= $selected ?>>
                                         <?= htmlspecialchars($n['id_parcela']) ?>
                                     </option>
                                 <?php endforeach ?>
@@ -56,7 +98,7 @@
                         <div class="mb-3">
                             <label for="fecha_pago" class="form-label fw-bold">Fecha de pago</label>
                             <input type="date" class="form-control" id="fecha_pago" name="fecha_pago" 
-                                   value="<?= htmlspecialchars($datos['values']['fecha_pago'] ?? '') ?>" required>
+                                   value="<?= $fecha_pago ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese la fecha de pago
                             </div>
@@ -65,7 +107,7 @@
                         <div class="mb-3">
                             <label for="fecha_vencimiento" class="form-label fw-bold">Fecha de vencimiento</label>
                             <input type="date" class="form-control" id="fecha_pago" name="fecha_vencimiento" 
-                                   value="<?= htmlspecialchars($datos['values']['fecha_vencimiento'] ?? '') ?>" required>
+                                   value="<?= $fecha_vencimiento ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese la fecha de vencimiento
                             </div>
@@ -74,7 +116,7 @@
                         <div class="mb-3">
                             <label for="importe" class="form-label fw-bold">Importe</label>
                             <input type="number" class="form-control" id="hilera" name="importe" 
-                                   value="<?= htmlspecialchars($datos['values']['importe'] ?? '') ?>" required>
+                                   value="<?= $importe ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese el importe
                             </div>
@@ -86,7 +128,7 @@
                         <div class="mb-3">
                             <label for="recargo" class="form-label fw-bold">Recargo</label>
                             <input type="number" class="form-control" id="recargo" name="recargo" 
-                                   value="<?= htmlspecialchars($datos['values']['recargo'] ?? '') ?>" required>
+                                   value="<?= $recargo ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese el recargo
                             </div>
@@ -95,7 +137,7 @@
                         <div class="mb-3">
                             <label for="total" class="form-label fw-bold">Total</label>
                             <input type="number" class="form-control" id="total" name="total" 
-                                   value="<?= htmlspecialchars($datos['values']['total'] ?? '') ?>" required>
+                                   value="<?= $total ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese la fracción
                             </div>
