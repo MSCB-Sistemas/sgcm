@@ -82,28 +82,34 @@ class OrientacionController extends Control {
         ]);
     }
 
-
     public function update($id){
         if ($_SERVER['REQUEST_METHOD'] == 'POST'){
-            $descripcion = trim($_POST["descripcion"] ?? '');
+            // Reemplazo de operador ternario por if-else
+            if (isset($_POST["descripcion"])) {
+                $descripcion = trim($_POST["descripcion"]);
+            } else {
+                $descripcion = '';
+            }
+
             $errores = [];
             if(empty($descripcion)){
                 $errores[] = "La descripción es obligatoria";
             }
             if(!empty($errores)){
-              $orientacion = [
-                'id_orientacion' => $id,
-                'descripcion' => $descripcion,
-              ];
-              
-              $this->loadView('orientaciones/OrientacionesForm', [
-                'title' => 'Editar Orientacion',
-                'action' => URL . 'orientaciones/update/' . $id,
-                'values' => [
-                    'descripcion' => $orientacion["descripcion"],],
-                'errores' => [],    
+                $orientacion = [
+                    'id_orientacion' => $id,
+                    'descripcion' => $descripcion,
+                ];
+                
+                $this->loadView('orientaciones/OrientacionesForm', [
+                    'title' => 'Editar Orientacion',
+                    'action' => URL . 'orientaciones/update/' . $id,
+                    'values' => [
+                        'descripcion' => $orientacion["descripcion"],
+                    ],
+                    'errores' => [],
                 ]);
-            return;
+                return;
             }
             if($this->model->updateOrientacion($id, $descripcion)){
                 header("Location: " . URL . "orientaciones");
@@ -111,9 +117,8 @@ class OrientacionController extends Control {
             } else {
                 die("Error al modificar la orientación");
             }
+        }
     }
-}
-
     
     public function delete($id){
         if($this->model->deleteOrientacion($id)){
