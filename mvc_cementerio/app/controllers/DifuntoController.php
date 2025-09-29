@@ -81,20 +81,70 @@ class DifuntoController extends Control
 
     public function save()
     {
+        
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $deudo = $_POST["deudo"] ?? '';
-            $nombre = trim($_POST["nombre"] ?? '');
-            $apellido = trim($_POST["apellido"] ?? '');
-            $dni = trim($_POST["dni"] ?? '');
-            $edad = trim($_POST["edad"] ?? '');
-            $fechaFallecimiento = trim($_POST["fecha_fallecimiento"] ?? '');
-            $sexo = $_POST["sexo"] ?? '';
-            $nacionalidad = $_POST["nacionalidad"] ?? '';
-            $estadoCivil = $_POST["estado_civil"] ?? '';
-            $domicilio = trim($_POST["domicilio"] ?? '');
-            $localidad = trim($_POST["localidad"] ?? '');
-            $codigoPostal = trim($_POST["codigo_postal"] ?? '');
+            if (isset($_POST["deudo"])) {
+                $deudo = $_POST["deudo"];
+            } else {
+                $deudo = '';
+            }
+            if (isset($_POST["nombre"])) {
+                $nombre = trim($_POST["nombre"]);
+            } else {
+                $nombre = '';
+            }
+            if (isset($_POST["apellido"])) {
+                $apellido = trim($_POST["apellido"]);
+            } else {
+                $apellido = '';
+            }
+            if (isset($_POST["dni"])) {
+                $dni = trim($_POST["dni"]);
+            } else {
+                $dni = '';
+            }
+            if (isset($_POST["edad"])) {
+                $edad = trim($_POST["edad"]);
+            } else {
+                $edad = '';
+            }
+            if (isset($_POST["fecha_fallecimiento"])) {
+                $fechaFallecimiento = trim($_POST["fecha_fallecimiento"]);
+            } else {
+                $fechaFallecimiento = '';
+            }
+            if (isset($_POST["sexo"])) {
+                $sexo = $_POST["sexo"];
+            } else {
+                $sexo = '';
+            }
+            if (isset($_POST["nacionalidad"])) {
+                $nacionalidad = $_POST["nacionalidad"];
+            } else {
+                $nacionalidad = '';
+            }
+            if (isset($_POST["estado_civil"])) {
+                $estadoCivil = $_POST["estado_civil"];
+            } else {
+                $estadoCivil = '';
+            }
+            if (isset($_POST["domicilio"])) {
+                $domicilio = trim($_POST["domicilio"]);
+            } else {
+                $domicilio = '';
+            }
+            if (isset($_POST["localidad"])) {
+                $localidad = trim($_POST["localidad"]);
+            } else {
+                $localidad = '';
+            }
+            if (isset($_POST["codigo_postal"])) {
+                $codigoPostal = trim($_POST["codigo_postal"]);
+            } else {
+                $codigoPostal = '';
+            }
             $errores = [];
+
 
             if (empty($deudo))
                 $errores[] = "El deudo es obligatorio";
@@ -172,21 +222,69 @@ class DifuntoController extends Control
         ]);
     }
 
-    public function update($id)
-    {
+    public function update($id) {    
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $deudo = $_POST["deudo"] ?? '';
-            $nombre = trim($_POST["nombre"] ?? '');
-            $apellido = trim($_POST["apellido"] ?? '');
-            $dni = trim($_POST["dni"] ?? '');
-            $edad = trim($_POST["edad"] ?? '');
-            $fechaFallecimiento = trim($_POST["fecha_fallecimiento"] ?? '');
-            $sexo = $_POST["sexo"] ?? '';
-            $nacionalidad = $_POST["nacionalidad"] ?? '';
-            $estadoCivil = $_POST["estado_civil"] ?? '';
-            $domicilio = trim($_POST["domicilio"] ?? '');
-            $localidad = trim($_POST["localidad"] ?? '');
-            $codigoPostal = trim($_POST["codigo_postal"] ?? '');
+            if (isset($_POST["deudo"])) {
+                $deudo = $_POST["deudo"];
+            } else {
+                $deudo = '';
+            }
+            if (isset($_POST["nombre"])) {
+                $nombre = trim($_POST["nombre"]);
+            } else {
+                $nombre = '';
+            }
+            if (isset($_POST["apellido"])) {
+                $apellido = trim($_POST["apellido"]);
+            } else {
+                $apellido = '';
+            }
+            if (isset($_POST["dni"])) {
+                $dni = trim($_POST["dni"]);
+            } else {
+                $dni = '';
+            }
+            if (isset($_POST["edad"])) {
+                $edad = trim($_POST["edad"]);
+            } else {
+                $edad = '';
+            }
+            if (isset($_POST["fecha_fallecimiento"])) {
+                $fechaFallecimiento = trim($_POST["fecha_fallecimiento"]);
+            } else {
+                $fechaFallecimiento = '';
+            }
+            if (isset($_POST["sexo"])) {
+                $sexo = $_POST["sexo"];
+            } else {
+                $sexo = '';
+            }
+            if (isset($_POST["nacionalidad"])) {
+                $nacionalidad = $_POST["nacionalidad"];
+            } else {
+                $nacionalidad = '';
+            }
+            if (isset($_POST["estado_civil"])) {
+                $estadoCivil = $_POST["estado_civil"];
+            } else {
+                $estadoCivil = '';
+            }
+            if (isset($_POST["domicilio"])) {
+                $domicilio = trim($_POST["domicilio"]);
+            } else {
+                $domicilio = '';
+            }
+            if (isset($_POST["localidad"])) {
+                $localidad = trim($_POST["localidad"]);
+            } else {
+                $localidad = '';
+            }
+            if (isset($_POST["codigo_postal"])) {
+                $codigoPostal = trim($_POST["codigo_postal"]);
+            } else {
+                $codigoPostal = '';
+            }
+
 
             if (empty($deudo))
                 $errores[] = "El deudo es obligatorio";

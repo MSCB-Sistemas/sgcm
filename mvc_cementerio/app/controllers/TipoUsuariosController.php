@@ -48,7 +48,11 @@ class TipoUsuariosController extends Control
     public function save()
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $descripcion = trim($_POST['descripcion'] ?? '');
+            if (isset($_POST['descripcion'])) {
+                $descripcion = trim($_POST['descripcion']);
+            } else {
+                $descripcion = '';
+            }
             $errores = [];
 
             if (empty($descripcion))
@@ -91,11 +95,14 @@ class TipoUsuariosController extends Control
             'errores' => []
         ]);
     }
-
     public function update($id)
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $descripcion = trim($_POST['descripcion'] ?? '');
+            if (isset($_POST['descripcion'])) {
+                $descripcion = trim($_POST['descripcion']);
+            } else {
+                $descripcion = '';
+            }
             $errores = [];
 
             if (empty($descripcion))

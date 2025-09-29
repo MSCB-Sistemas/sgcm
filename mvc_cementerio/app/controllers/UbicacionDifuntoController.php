@@ -69,12 +69,29 @@ class UbicacionDifuntoController extends Control{
         $this->loadView('ubicaciones/UbicacionDifuntoForm', $datos);
     }
 
-    public function save(){
+    public function save()
+    {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $difunto = $_POST["difunto"] ?? "";
-            $parcela = $_POST["parcela"] ?? "";
-            $fecha_ingreso = $_POST["fecha_ingreso"] ?? "";
-            $fecha_retiro = $_POST["fecha_retiro"] ?? "";
+            if (isset($_POST["difunto"])) {
+                $difunto = $_POST["difunto"];
+            } else {
+                $difunto = "";
+            }
+            if (isset($_POST["parcela"])) {
+                $parcela = $_POST["parcela"];
+            } else {
+                $parcela = "";
+            }
+            if (isset($_POST["fecha_ingreso"])) {
+                $fecha_ingreso = $_POST["fecha_ingreso"];
+            } else {
+                $fecha_ingreso = "";
+            }
+            if (isset($_POST["fecha_retiro"])) {
+                $fecha_retiro = $_POST["fecha_retiro"];
+            } else {
+                $fecha_retiro = "";
+            }
             $errores = [];
 
             if(empty($difunto)){
@@ -135,33 +152,48 @@ class UbicacionDifuntoController extends Control{
         ]);
     }
 
-    public function update($id){
-     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $parcela = $_POST["parcela"] ?? '';
-        $difunto = $_POST["difunto"] ?? '';
-        $fecha_ingreso = $_POST["fecha_ingreso"] ?? "";
-        $fecha_retiro = $_POST["fecha_retiro"] ?? "";
-        $errores = [];
-
-        if(empty($difunto)){
-            $errores[] = "El difunto es obligatorio";
+    public function update($id)
+    {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            if (isset($_POST["parcela"])) {
+                $parcela = $_POST["parcela"];
+            } else {
+                $parcela = '';
             }
-        if(empty($parcela)){
-            $errores[] = "La parcela es obligatoria";
+            if (isset($_POST["difunto"])) {
+                $difunto = $_POST["difunto"];
+            } else {
+                $difunto = '';
             }
-        if(empty($fecha_ingreso)){
-            $errores[] = "La fecha de ingreso es obligatoria";
+            if (isset($_POST["fecha_ingreso"])) {
+                $fecha_ingreso = $_POST["fecha_ingreso"];
+            } else {
+                $fecha_ingreso = "";
             }
-         if(!empty($errores)){
+            if (isset($_POST["fecha_retiro"])) {
+                $fecha_retiro = $_POST["fecha_retiro"];
+            } else {
+                $fecha_retiro = "";
+            }
+            $errores = [];
 
-            $ubicacion = [
-                'id_ubicacion' => $id,
-                'id_parcela' => $parcela,
-                'id_difunto' => $difunto,
-                'fecha_ingreso' => $fecha_ingreso,
-                'fecha_retiro' => $fecha_retiro,
-
-            ];
+            if(empty($difunto)){
+                $errores[] = "El difunto es obligatorio";
+            }
+            if(empty($parcela)){
+                $errores[] = "La parcela es obligatoria";
+            }
+            if(empty($fecha_ingreso)){
+                $errores[] = "La fecha de ingreso es obligatoria";
+            }
+            if(!empty($errores)){
+                $ubicacion = [
+                    'id_ubicacion' => $id,
+                    'id_parcela' => $parcela,
+                    'id_difunto' => $difunto,
+                    'fecha_ingreso' => $fecha_ingreso,
+                    'fecha_retiro' => $fecha_retiro,
+                ];
                 $difuntos = $this->difuntoModel->getAllDifuntos();
                 $parcelas = $this->parcelaModel->getAllParcelas();
 
@@ -181,8 +213,7 @@ class UbicacionDifuntoController extends Control{
             }else{
                 die("Error al actualizar la ubicación");
             }    
-
-     }   
+        }   
     }
 
     public function delete($id){

@@ -38,7 +38,11 @@ class OrientacionController extends Control {
 
     public function save(){
         if ($_SERVER['REQUEST_METHOD'] == 'POST'){
-            $descripcion = trim($_POST["descripcion" ?? '']);
+            if (isset($_POST["descripcion"])) {
+                $descripcion = trim($_POST["descripcion"]);
+            } else {
+                $descripcion = '';
+            }
 
             if(empty($descripcion))
                 $errores[] = "La orientacion es obligatoria";

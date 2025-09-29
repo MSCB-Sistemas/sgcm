@@ -47,7 +47,11 @@ class EstadoCivilController extends Control
     public function save()
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $descripcion = trim($_POST['descripcion'] ?? '');
+            if (isset($_POST['descripcion'])) {
+            $descripcion = trim($_POST['descripcion']);
+            } else {
+                $descripcion = '';
+            }
             $errores = [];
 
             if (empty($descripcion)) $errores[] = "La descripcion es obligatoria.";
@@ -93,9 +97,13 @@ class EstadoCivilController extends Control
     public function update($id)
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $descripcion = trim($_POST['descripcion'] ?? '');
-
+            if (isset($_POST['descripcion'])) {
+                $descripcion = trim($_POST['descripcion']);
+            } else {
+                $descripcion = '';
+            }
             $errores = [];
+            
             if (empty($descripcion)) $errores[] = "La descripcion es obligatoria.";
 
             if (!empty($errores)) {
