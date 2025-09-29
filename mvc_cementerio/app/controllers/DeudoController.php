@@ -13,15 +13,11 @@ class DeudoController extends Control {
         $puedeCrear    = $this->can('crear_deudo');
         $puedeEditar   = $this->can('editar_deudo');
         $puedeEliminar = $this->can('eliminar_deudo');
-
-        $deudos = $this->model->getAllDeudos();
         
         $datos = [
             "title"             => "Lista de Deudos",
             'urlCrear'          => URL . 'deudo/create',
             'columnas'          => ['ID', 'Nombre', 'Apellido', 'DNI', 'Teléfono', 'Email', 'Domicilio', 'Codigo Postal'],
-            'columnas_claves'   => ['id_deudo', 'nombre', 'apellido', 'dni', 'telefono', 'email', 'domicilio', 'codigo_postal'],
-            'data'              => $deudos,
             "acciones"  => function (array $fila) use ($puedeEditar, $puedeEliminar)
             {
                 $id = $fila['id_deudo'];

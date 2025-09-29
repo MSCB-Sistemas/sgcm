@@ -119,11 +119,11 @@ class DeudoModel {
 
         // aquí registramos la auditoría
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Deudo Model",               // Modelo
-            "Update"                    // Accion
+            $_SESSION['usuario_id'],  
+            $sql,                      
+            $parametros,      
+            "Deudo Model",        
+            "Update"                
         );
         return $stmt->rowCount() > 0;
     }
@@ -142,13 +142,50 @@ class DeudoModel {
 
         // aquí registramos la auditoría
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Deudo Model",             // Modelo
-            "Delete"                    // Accion
+            $_SESSION['usuario_id'],
+            $sql,                      
+            $parametros,       
+            "Deudo Model",    
+            "Delete"
         );
         return $stmt->rowCount() > 0;
+    }
+
+    public function countAll(): int
+    {
+        return (int)$this->db->query("SELECT COUNT(*) FROM deudo")->fetchColumn();
+    }
+
+    public function countFiltered(string $search): int
+    {
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM deudo 
+            WHERE nombre LIKE :search OR apellido LIKE :search OR dni LIKE :search");
+        $stmt->execute(['search' => "%$search%"]);
+        return (int)$stmt->fetchColumn();
+    }
+
+    public function getPage(string $orderCol, string $orderDir, int $start, int $length): array
+    {
+        $sql = "SELECT * FROM deudo ORDER BY $orderCol $orderDir LIMIT :start, :length";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':start', $start, PDO::PARAM_INT);
+        $stmt->bindValue(':length', $length, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getFiltered(string $search, string $orderCol, string $orderDir, int $start, int $length): array
+    {
+        $sql = "SELECT * FROM deudo 
+                WHERE nombre LIKE :search OR apellido LIKE :search OR dni LIKE :search
+                ORDER BY $orderCol $orderDir
+                LIMIT :start, :length";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':search', "%$search%");
+        $stmt->bindValue(':start', $start, PDO::PARAM_INT);
+        $stmt->bindValue(':length', $length, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
 ?>
