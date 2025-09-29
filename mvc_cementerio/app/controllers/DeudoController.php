@@ -157,17 +157,45 @@ class DeudoController extends Control {
         ]);
     }
 
-    public function update($id)
-    {
+    public function update($id){  
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $dni = trim($_POST['dni']);
-            $nombre = trim($_POST['nombre'] ?? '');
-            $apellido = trim($_POST['apellido'] ?? '');
-            $telefono = trim($_POST['telefono'] ?? '');
-            $email = trim($_POST['email'] ?? '');
-            $domicilio = trim($_POST['domicilio'] ?? '');
-            $localidad = trim($_POST['localidad'] ?? '');
-            $codigo_postal = trim($_POST['codigo_postal'] ?? '');
+            
+            if (isset($_POST['nombre'])) {
+                $nombre = trim($_POST['nombre']);
+            } else {
+                $nombre = '';
+            }
+            if (isset($_POST['apellido'])) {
+                $apellido = trim($_POST['apellido']);
+            } else {
+                $apellido = '';
+            }
+            if (isset($_POST['telefono'])) {
+                $telefono = trim($_POST['telefono']);
+            } else {
+                $telefono = '';
+            }
+            if (isset($_POST['email'])) {
+                $email = trim($_POST['email']);
+            } else {
+                $email = '';
+            }
+            if (isset($_POST['domicilio'])) {
+                $domicilio = trim($_POST['domicilio']);
+            } else {
+                $domicilio = '';
+            }
+            if (isset($_POST['localidad'])) {
+                $localidad = trim($_POST['localidad']);
+            } else {
+                $localidad = '';
+            }
+            if (isset($_POST['codigo_postal'])) {
+                $codigo_postal = trim($_POST['codigo_postal']);
+            } else {
+                $codigo_postal = '';
+            }
 
             $errores = [];
             if (empty($dni)) {

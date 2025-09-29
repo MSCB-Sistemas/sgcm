@@ -55,15 +55,44 @@ class PagoController extends Control {
         $this->loadView('pagos/PagosForm', $datos);
     }
 
+
     public function save() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $deudo = $_POST['deudo'] ?? '';
-            $parcela = $_POST['parcela'] ?? '';
-            $fecha_pago = trim($_POST['fecha_pago'] ?? '');
-            $fecha_vencimiento = trim($_POST['fecha_vencimiento'] ?? '');
-            $importe = trim($_POST['importe'] ?? '');
-            $recargo = trim($_POST['recargo'] ?? '');
-            $total = trim($_POST['total'] ?? '');
+            if (isset($_POST['deudo'])) {
+                $deudo = $_POST['deudo'];
+            } else {
+                $deudo = '';
+            }
+            if (isset($_POST['parcela'])) {
+                $parcela = $_POST['parcela'];
+            } else {
+                $parcela = '';
+            }
+            if (isset($_POST['fecha_pago'])) {
+                $fecha_pago = trim($_POST['fecha_pago']);
+            } else {
+                $fecha_pago = '';
+            }
+            if (isset($_POST['fecha_vencimiento'])) {
+                $fecha_vencimiento = trim($_POST['fecha_vencimiento']);
+            } else {
+                $fecha_vencimiento = '';
+            }
+            if (isset($_POST['importe'])) {
+                $importe = trim($_POST['importe']);
+            } else {
+                $importe = '';
+            }
+            if (isset($_POST['recargo'])) {
+                $recargo = trim($_POST['recargo']);
+            } else {
+                $recargo = '';
+            }
+            if (isset($_POST['total'])) {
+                $total = trim($_POST['total']);
+            } else {
+                $total = '';
+            }
             $usuario = $_SESSION['usuario_id'];
             $errores = [];
 
@@ -131,13 +160,41 @@ class PagoController extends Control {
 
     public function update($id) {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $deudo = $_POST['deudo'] ?? '';
-            $parcela = $_POST['parcela'] ?? '';
-            $fecha_pago = trim($_POST['fecha_pago'] ?? '');
-            $fecha_vencimiento = trim($_POST['fecha_vencimiento'] ?? '');
-            $importe = trim($_POST['importe'] ?? '');
-            $recargo = trim($_POST['recargo'] ?? '');
-            $total = trim($_POST['total'] ?? '');
+            if (isset($_POST['deudo'])) {
+                $deudo = $_POST['deudo'];
+            } else {
+                $deudo = '';
+            }
+            if (isset($_POST['parcela'])) {
+                $parcela = $_POST['parcela'];
+            } else {
+                $parcela = '';
+            }
+            if (isset($_POST['fecha_pago'])) {
+                $fecha_pago = trim($_POST['fecha_pago']);
+            } else {
+                $fecha_pago = '';
+            }
+            if (isset($_POST['fecha_vencimiento'])) {
+                $fecha_vencimiento = trim($_POST['fecha_vencimiento']);
+            } else {
+                $fecha_vencimiento = '';
+            }
+            if (isset($_POST['importe'])) {
+                $importe = trim($_POST['importe']);
+            } else {
+                $importe = '';
+            }
+            if (isset($_POST['recargo'])) {
+                $recargo = trim($_POST['recargo']);
+            } else {
+                $recargo = '';
+            }
+            if (isset($_POST['total'])) {
+                $total = trim($_POST['total']);
+            } else {
+                $total = '';
+            }
             $usuario = $_SESSION['usuario_id'];
             $errores = [];
 

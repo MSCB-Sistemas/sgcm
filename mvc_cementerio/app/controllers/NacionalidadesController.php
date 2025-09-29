@@ -38,7 +38,11 @@ class NacionalidadesController extends Control {
 
     public function save(){
         if ($_SERVER['REQUEST_METHOD'] == 'POST'){
-            $nacionalidad = trim($_POST["nacionalidad"] ?? '');
+             if (isset($_POST["nacionalidad"])) {
+                $nacionalidad = trim($_POST["nacionalidad"]);
+            } else {
+                $nacionalidad = '';
+            }
 
             if(empty($nacionalidad))
                 $errores[] = "La nacionalidad es obligatoria";
@@ -83,7 +87,11 @@ class NacionalidadesController extends Control {
     public function update($id){
         if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 
-            $nombreNacionalidad = trim($_POST["nacionalidad"] ?? '');
+           if (isset($_POST["nacionalidad"])) {
+                $nombreNacionalidad = trim($_POST["nacionalidad"]);
+            } else {
+                $nombreNacionalidad = '';
+            }
 
             if(empty($nombreNacionalidad))
                 $errores[] = "La nacionalidad es obligatoria";
