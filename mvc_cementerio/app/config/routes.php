@@ -29,6 +29,7 @@ return [
     'difunto/edit'    => ['DifuntoController',    'edit',         'editar_difunto'],
     'difunto/update'  => ['DifuntoController',    'update',       'editar_difunto'],
     'difunto/delete'  => ['DifuntoController',    'delete',       'eliminar_difunto'],
+    'difunto/ajax'      => [DifuntoController::class, 'ajax',          '__login__'],
 
     // Estado civil
     'estadoCivil'         => ['EstadoCivilController', 'index',   'ver_estado_civil'],
@@ -61,6 +62,7 @@ return [
     'pago/edit'       => ['PagoController', 'edit',               'editar_pago'],
     'pago/update'     => ['PagoController', 'update',             'editar_pago'],
     'pago/delete'     => ['PagoController', 'delete',             'eliminar_pago'],
+    'pago/ajax'      => [PagoController::class, 'ajax',          '__login__'],
 
     // TipoParcela
     'tipoParcela'         => ['TipoParcelaController', 'index',   'ver_tipo_parcela'],
@@ -85,7 +87,7 @@ return [
     'deudo/edit'      => ['DeudoController', 'edit',              'editar_deudo'],
     'deudo/update'    => ['DeudoController', 'update',            'editar_deudo'],
     'deudo/delete'    => ['DeudoController', 'delete',            'eliminar_deudo'],
-
+    'deudo/ajax'      => [DeudoController::class, 'ajax', '__login__'],
 
     // Nacionalidades
     'nacionalidades'         => ['NacionalidadesController','index', 'ver_nacionalidad'],

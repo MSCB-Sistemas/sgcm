@@ -84,11 +84,11 @@ class PagoModel {
         $stmt->execute($parametros);
 
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Pago Model",             // Modelo
-            "Insert"                    // Accion
+            $_SESSION['usuario_id'],  
+            $sql,                  
+            $parametros,          
+            "Pago Model",      
+            "Insert"     
         );
         return $this->db->lastInsertId();
     }
@@ -126,11 +126,11 @@ class PagoModel {
         $stmt->execute($parametros);
 
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Pago Model",             // Modelo
-            "Update"                    // Accion
+            $_SESSION['usuario_id'],   
+            $sql,                     
+            $parametros,            
+            "Pago Model",         
+            "Update"  
         );
         return $stmt->rowCount() > 0;
     }
@@ -149,13 +149,110 @@ class PagoModel {
         $stmt->execute($parametros);
         
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Pago Model",             // Modelo
-            "Delete"                    // Accion
+            $_SESSION['usuario_id'],   
+            $sql,                   
+            $parametros,         
+            "Pago Model",         
+            "Delete"              
         );
         return $stmt->rowCount() > 0;
+    }
+
+    public function countAll(): int
+    {
+        $stmt = $this->db->prepare("SELECT COUNT(*) as total FROM pago");
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return (int)$result['total'];
+    }
+
+    public function countFiltered($search): int
+    {
+        $sql = "SELECT COUNT(*) as total 
+                FROM pago p
+                LEFT JOIN deudo de ON p.id_deudo = de.id_deudo
+                LEFT JOIN parcela pa ON p.id_parcela = pa.id_parcela
+                LEFT JOIN usuarios u ON p.id_usuario = u.id_usuario
+                WHERE de.nombre LIKE :search 
+                   OR de.apellido LIKE :search 
+                   OR pa.id_parcela LIKE :search 
+                   OR u.usuario LIKE :search 
+                   OR p.fecha_pago LIKE :search 
+                   OR p.importe LIKE :search 
+                   OR p.total LIKE :search";
+
+        $stmt = $this->db->prepare($sql);
+        $searchTerm = "%$search%";
+        $stmt->bindParam(':search', $searchTerm);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return (int)$result['total'];
+    }
+
+    public function getPage($orderCol, $orderDir, $start, $length): array
+    {
+        $allowedColumns = ['id_pago', 'nombre_deudo', 'parcela', 'fecha_pago', 'fecha_vencimiento', 'importe', 'recargo', 'total', 'usuario'];
+        if (!in_array($orderCol, $allowedColumns)) {
+            $orderCol = 'id_pago';
+        }
+        
+        $orderDir = strtoupper($orderDir) === 'DESC' ? 'DESC' : 'ASC';
+
+        $sql = "SELECT p.*,
+                       CONCAT(de.nombre, ' ', de.apellido) as nombre_deudo,
+                       pa.id_parcela as parcela,
+                       u.usuario as usuario
+                FROM pago p
+                LEFT JOIN deudo de ON p.id_deudo = de.id_deudo
+                LEFT JOIN parcela pa ON p.id_parcela = pa.id_parcela
+                LEFT JOIN usuarios u ON p.id_usuario = u.id_usuario
+                ORDER BY $orderCol $orderDir 
+                LIMIT :start, :length";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':start', $start, PDO::PARAM_INT);
+        $stmt->bindParam(':length', $length, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getFiltered($search, $orderCol, $orderDir, $start, $length): array
+    {
+        // Validar columnas para prevenir SQL injection
+        $allowedColumns = ['id_pago', 'nombre_deudo', 'parcela', 'fecha_pago', 'fecha_vencimiento', 'importe', 'recargo', 'total', 'usuario'];
+        if (!in_array($orderCol, $allowedColumns)) {
+            $orderCol = 'id_pago';
+        }
+        
+        $orderDir = strtoupper($orderDir) === 'DESC' ? 'DESC' : 'ASC';
+
+        $sql = "SELECT p.*,
+                       CONCAT(de.nombre, ' ', de.apellido) as nombre_deudo,
+                       pa.id_parcela as parcela,
+                       u.usuario as usuario
+                FROM pago p
+                LEFT JOIN deudo de ON p.id_deudo = de.id_deudo
+                LEFT JOIN parcela pa ON p.id_parcela = pa.id_parcela
+                LEFT JOIN usuarios u ON p.id_usuario = u.id_usuario
+                WHERE de.nombre LIKE :search 
+                   OR de.apellido LIKE :search 
+                   OR pa.id_parcela LIKE :search 
+                   OR u.usuario LIKE :search 
+                   OR p.fecha_pago LIKE :search 
+                   OR p.fecha_vencimiento LIKE :search
+                   OR p.importe LIKE :search 
+                   OR p.recargo LIKE :search
+                   OR p.total LIKE :search
+                ORDER BY $orderCol $orderDir 
+                LIMIT :start, :length";
+        
+        $stmt = $this->db->prepare($sql);
+        $searchTerm = "%$search%";
+        $stmt->bindParam(':search', $searchTerm);
+        $stmt->bindParam(':start', $start, PDO::PARAM_INT);
+        $stmt->bindParam(':length', $length, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
 ?>

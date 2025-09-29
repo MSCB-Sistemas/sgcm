@@ -23,14 +23,27 @@ class DifuntoController extends Control
         $puedeEditar   = $this->can('editar_difunto');
         $puedeEliminar = $this->can('eliminar_difunto');
 
-        $difuntos = $this->model->getAllDifuntos();
-
         $datos = [
             'title'             => 'Lista de difuntos',
             'urlCrear'          => URL . 'difunto/create',
+            'ajaxUrl'           => URL . 'difunto/ajax',
+            'baseUrl'           => URL . '/difunto',
             'columnas'          => ['ID', 'Deudo', 'Nombre', 'Apellido', 'DNI', 'Edad', 'Fecha fallecimiento', 'Genero', 'Nacionalidad', 'Estado civil', 'Domicilio', 'Localidad', 'Codigo postal'],
-            'columnas_claves'   => ['id_difunto', 'nombre_deudo', 'nombre', 'apellido', 'dni', 'edad', 'fecha_fallecimiento', 'sexo', 'nacionalidad', 'estado_civil', 'domicilio', 'localidad', 'codigo_postal'],
-            'data'              => $difuntos,
+            'columnsConfig'     => [
+                ['data' => 'id_difunto'],
+                ['data' => 'nombre_deudo'],
+                ['data' => 'nombre'],
+                ['data' => 'apellido'],
+                ['data' => 'dni'],
+                ['data' => 'edad'],
+                ['data' => 'fecha_fallecimiento'],
+                ['data' => 'sexo'],
+                ['data' => 'nacionalidad'],
+                ['data' => 'estado_civil'],
+                ['data' => 'domicilio'],
+                ['data' => 'localidad'],
+                ['data' => 'codigo_postal']
+            ],
             'acciones' => function (array $fila) use ($puedeEditar, $puedeEliminar)
             {
                 $id = $fila['id_difunto'];
@@ -51,8 +64,10 @@ class DifuntoController extends Control
                 }
                 return $html;
             },
-            'puedeCrear'      => $puedeCrear,   // por si tu partial muestra el botón “Nuevo”
+            'accionesSampleData' => ['id_difunto' => 1],
+            'puedeCrear'      => $puedeCrear,
             'errores'         => [],
+            'csrfToken'       => $this->generateCsrfToken()
         ];
 
         $this->loadView('partials/tablaAbm', $datos);
@@ -350,5 +365,50 @@ class DifuntoController extends Control
             die("No se pudo eliminar al difunto");
         }
     }
+
+    public function ajax()
+    {
+        header('Content-Type: application/json; charset=utf-8');
+        
+        $draw = $_POST['draw'] ?? 1;
+        $start = intval($_POST['start'] ?? 0);
+        $length = intval($_POST['length'] ?? 10);
+        $search = $_POST['search']['value'] ?? '';
+        $orderColumnIndex = $_POST['order'][0]['column'] ?? 0;
+        $orderDir = $_POST['order'][0]['dir'] ?? 'asc';
+
+        $columns = [
+            'id_difunto', 'nombre_deudo', 'nombre', 'apellido', 'dni', 'edad', 
+            'fecha_fallecimiento', 'sexo', 'nacionalidad', 'estado_civil', 
+            'domicilio', 'localidad', 'codigo_postal'
+        ];
+        $orderCol = $columns[$orderColumnIndex] ?? 'id_difunto';
+
+        $totalRecords = $this->model->countAll();
+
+        if ($search) {
+            $data = $this->model->getFiltered($search, $orderCol, $orderDir, $start, $length);
+            $filteredRecords = $this->model->countFiltered($search);
+        } else {
+            $data = $this->model->getPage($orderCol, $orderDir, $start, $length);
+            $filteredRecords = $totalRecords;
+        }
+
+        echo json_encode([
+            "draw" => intval($draw),
+            "recordsTotal" => $totalRecords,
+            "recordsFiltered" => $filteredRecords,
+            "data" => $data
+        ]);
+        exit;
+    }
+
+    private function generateCsrfToken() {
+        if (!isset($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+        return $_SESSION['csrf_token'];
+    }
+
 }
 ?>
