@@ -13,15 +13,24 @@ class DeudoController extends Control {
         $puedeCrear    = $this->can('crear_deudo');
         $puedeEditar   = $this->can('editar_deudo');
         $puedeEliminar = $this->can('eliminar_deudo');
-
-        $deudos = $this->model->getAllDeudos();
         
         $datos = [
             "title"             => "Lista de Deudos",
             'urlCrear'          => URL . 'deudo/create',
-            'columnas'          => ['ID', 'Nombre', 'Apellido', 'DNI', 'Teléfono', 'Email', 'Domicilio', 'Codigo Postal'],
-            'columnas_claves'   => ['id_deudo', 'nombre', 'apellido', 'dni', 'telefono', 'email', 'domicilio', 'codigo_postal'],
-            'data'              => $deudos,
+            'ajaxUrl'           => URL . 'deudo/ajax',
+            'baseUrl'           => URL . 'deudo/',
+            'columnas' => ['ID', 'DNI', 'Nombre', 'Apellido', 'Teléfono', 'Email', 'Domicilio', 'Localidad', 'Código Postal'],
+            'columnsConfig'     => [
+                ['data' => 'id_deudo'],
+                ['data' => 'dni'],
+                ['data' => 'nombre'],
+                ['data' => 'apellido'],
+                ['data' => 'telefono'],
+                ['data' => 'email'],
+                ['data' => 'domicilio'],
+                ['data' => 'localidad'],
+                ['data' => 'codigo_postal']
+            ],
             "acciones"  => function (array $fila) use ($puedeEditar, $puedeEliminar)
             {
                 $id = $fila['id_deudo'];
@@ -42,11 +51,13 @@ class DeudoController extends Control {
                 }
                 return $html;
             },
+            'accionesSampleData' => ['id_deudo' => 1],
             'puedeCrear'      => $puedeCrear,   // por si tu partial muestra el botón “Nuevo”
             'errores'         => [],
+            'csrfToken'         => $this->generateCsrfToken()
         ];
 
-        $this->loadView("partials/tablaAbm", $datos);
+        $this->loadView("partials/tablaAbmAjax", $datos);
     }
 
     public function create()
@@ -262,6 +273,44 @@ class DeudoController extends Control {
         }
         header("Location: " . URL . "deudo");
         exit;
+    }
+
+    public function ajax()
+    {
+        header('Content-Type: application/json; charset=utf-8');
+        
+        $draw   = $_POST['draw'] ?? 1;
+        $start  = intval($_POST['start'] ?? 0);
+        $length = intval($_POST['length'] ?? 10);
+        $search = $_POST['search']['value'] ?? '';
+        $orderColumnIndex = $_POST['order'][0]['column'] ?? 0;
+        $orderDir = $_POST['order'][0]['dir'] ?? 'asc';
+
+        $columns = ['id_deudo','dni','nombre','apellido','telefono','email','domicilio','localidad','codigo_postal'];
+        $orderCol = $columns[$orderColumnIndex] ?? 'id_deudo';
+
+        $totalRecords = $this->model->countAll();
+
+        if ($search) {
+            $data = $this->model->getFiltered($search, $orderCol, $orderDir, $start, $length);
+            $filteredRecords = $this->model->countFiltered($search);
+        } else {
+            $data = $this->model->getPage($orderCol, $orderDir, $start, $length);
+            $filteredRecords = $totalRecords;
+        }
+
+        echo json_encode([
+            "draw" => intval($draw),
+            "recordsTotal" => $totalRecords,
+            "recordsFiltered" => $filteredRecords,
+            "data" => $data
+        ]);
+        exit;
+    }
+
+    private function generateCsrfToken()
+    {
+        return $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
 }
 ?>
