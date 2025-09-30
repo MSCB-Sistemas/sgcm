@@ -17,7 +17,7 @@
     </div>
 
     <div class="table-responsive-lg shadow-rounded">
-        <table class="table table-hover align-middle mb-0" id="tablaABM" style="min-width: 1500px;">
+        <table class="table table-hover align-middle mb-0" id="tablaABM" style="min-width: 400px;">
             <thead class="table-light">
                 <tr>
                     <?php foreach ($datos['columnas'] as $col): ?>
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
         language: {
             url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
         },
-        pageLength: 8,  
+        pageLength: 15,  
         lengthMenu: [5, 10, 25, 50, 100],
         order: [],
         serverSide: true,

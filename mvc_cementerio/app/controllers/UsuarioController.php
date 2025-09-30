@@ -24,7 +24,6 @@ class UsuarioController extends Control{
             'columnas'        => ['ID', 'Usuario', 'Nombre', 'Apellido', 'Cargo', 'Sector', 'Telefono', 'Email', 'Rol', 'Activo'],
             'columnas_claves' => ['id_usuario', 'usuario', 'nombre', 'apellido', 'cargo', 'sector', 'telefono', 'email', 'id_tipo_usuario', 'activo'],
             'data'            => $usuarios,
-             // ★ Se respeta el uso del callback para acciones, pero se chequean los permisos
             'acciones' => function (array $fila) use ($puedeEditar, $puedeEliminar) 
             {
                 $id = $fila['id_usuario'];
@@ -45,7 +44,7 @@ class UsuarioController extends Control{
                 }
                 return $html;
             },
-            'puedeCrear'      => $puedeCrear,   // por si tu partial muestra el botón “Nuevo”
+            'puedeCrear'      => $puedeCrear,
             'errores'         => [],
         ];
 
@@ -306,8 +305,6 @@ class UsuarioController extends Control{
 
     public function changePass($id)
     {
-        // ★ regla: un usuario puede cambiar su propia clave;
-        // para cambiar la de otro, exige permiso de edición.
         $id = (int)$id;
         if ($this->userId() !== $id && !$this->can('editar_usuario')) {
             $_SESSION['flash_error'] = 'No podés cambiar la contraseña de otro usuario.';

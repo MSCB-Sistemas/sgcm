@@ -52,11 +52,11 @@ class TiposUsuariosModel {
      * @param string $descripcion Descripción del nuevo tipo de usuario.
      * @return int ID del nuevo tipo de usuario insertado o false si ocurre un error.
      */
-    public function insertTipoUsuario($descripcion): bool|string
+    public function insertTipoUsuario($rol): bool|string
     {
-        $sql = "INSERT INTO tipos_usuarios (descripcion) VALUES (:descripcion)";
+        $sql = "INSERT INTO tipos_usuarios (rol) VALUES (:rol)";
         $stmt = $this->db->prepare($sql);
-        $parametros = ['descripcion' => $descripcion];
+        $parametros = ['rol' => $rol];
         $stmt->execute($parametros);
         
         AuditoriaHelper::log(
@@ -73,17 +73,17 @@ class TiposUsuariosModel {
      * Actualiza la descripción de un tipo de usuario existente.
      * 
      * @param int $id_tipo_usuario ID del tipo de usuario a actualizar.
-     * @param string $descripcion Nueva descripción del tipo de usuario.
+     * @param string $rol Nueva descripción del tipo de usuario.
      * @return bool True si se actualizó correctamente, false si no se modificó nada.
      */
-    public function updateTipoUsuario($id_tipo_usuario, $descripcion): bool
+    public function updateTipoUsuario($id_tipo_usuario, $rol): bool
     {
-        $sql = "UPDATE tipos_usuarios SET descripcion = :descripcion 
+        $sql = "UPDATE tipos_usuarios SET rol = :rol 
                 WHERE id_tipo_usuario = :id_tipo_usuario";
         $stmt = $this->db->prepare($sql);
         $parametros = [
             'id_tipo_usuario' => $id_tipo_usuario,
-            'descripcion' => $descripcion
+            'rol' => $rol
         ];
         $stmt->execute($parametros);
 

@@ -3,10 +3,6 @@ require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/AuditoriaHelper.php';
 require_once 'Database.php';
 
-/**
- * Modelo DeudoModel
- * Maneja las operaciones CRUD para la tabla 'deudo'
- */
 class DeudoModel {
     /**
      * @var PDO $db
@@ -74,13 +70,12 @@ class DeudoModel {
         ];
         $stmt->execute($parametros);
 
-        // aquí registramos la auditoría
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Deudo Model",               // Modelo
-            "Insert"                    // Accion
+            $_SESSION['usuario_id'],  
+            $sql,                      
+            $parametros,               
+            "Deudo Model",             
+            "Insert"                  
         );
         return (int) $this->db->lastInsertId();
     }
@@ -117,7 +112,6 @@ class DeudoModel {
         ];
         $stmt->execute($parametros);
 
-        // aquí registramos la auditoría
         AuditoriaHelper::log(
             $_SESSION['usuario_id'],  
             $sql,                      
@@ -128,11 +122,6 @@ class DeudoModel {
         return $stmt->rowCount() > 0;
     }
 
-    /**
-     * Summary of deleteDeudo
-     * @param int $id_deudo
-     * @return bool
-     */
     public function deleteDeudo(int $id_deudo): bool
     {
         $sql = "DELETE FROM deudo WHERE id_deudo = :id_deudo";
@@ -140,7 +129,6 @@ class DeudoModel {
         $parametros = ['id_deudo' => $id_deudo];
         $stmt->execute($parametros);
 
-        // aquí registramos la auditoría
         AuditoriaHelper::log(
             $_SESSION['usuario_id'],
             $sql,                      
