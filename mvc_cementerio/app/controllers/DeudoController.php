@@ -29,30 +29,10 @@ class DeudoController extends Control {
                 ['data' => 'email'],
                 ['data' => 'domicilio'],
                 ['data' => 'localidad'],
-                ['data' => 'codigo_postal']
+                ['data' => 'codigo_postal'],
+                ['data' => 'acciones', 'orderable' => false, 'searchable' => false]
             ],
-            "acciones"  => function (array $fila) use ($puedeEditar, $puedeEliminar)
-            {
-                $id = $fila['id_deudo'];
-                $url = rtrim(URL,'/') . '/deudo';
-
-                $html = '';
-                if ($puedeEditar) 
-                {
-                    $html .= '<a href="'.$url.'/edit/'.$id.'" class="btn btn-sm btn-primary">Editar</a> ';
-                    $html .= '<form action="'.$url.'/activate/'.$id.'" method="post" style="display:inline">'
-                          .  '<button class="btn btn-sm btn-success" onclick="return confirm(\'¿Activar este deudo?\');">Activar</button>'
-                          .  '</form> ';
-                }
-                if ($puedeEliminar) {
-                    $html .= '<form action="'.$url.'/delete/'.$id.'" method="post" style="display:inline" onsubmit="return confirm(\'¿Eliminar este deudo?\');">'
-                          .  '<button class="btn btn-sm btn-danger">Eliminar</button>'
-                          .  '</form>';
-                }
-                return $html;
-            },
-            'accionesSampleData' => ['id_deudo' => 1],
-            'puedeCrear'      => $puedeCrear,   // por si tu partial muestra el botón “Nuevo”
+            'puedeCrear'      => $puedeCrear,
             'errores'         => [],
             'csrfToken'         => $this->generateCsrfToken()
         ];
@@ -298,6 +278,27 @@ class DeudoController extends Control {
             $data = $this->model->getPage($orderCol, $orderDir, $start, $length);
             $filteredRecords = $totalRecords;
         }
+
+        foreach ($data as &$fila) {
+            $id  = $fila['id_deudo'];
+            $url = rtrim(URL,'/') . '/deudo';
+    
+            $acciones = '';
+    
+            if ($this->can('editar_deudo')) {
+                $acciones .= '<a href="'.$url.'/edit/'.$id.'" class="btn btn-sm btn-primary">Editar</a> ';
+                $acciones .= '<form action="'.$url.'/activate/'.$id.'" method="post" style="display:inline">'
+                           . '</form> ';
+            }
+    
+            if ($this->can('eliminar_deudo')) {
+                $acciones .= '<form action="'.$url.'/delete/'.$id.'" method="post" style="display:inline" onsubmit="return confirm(\'¿Eliminar este deudo?\');">'
+                           . '<button class="btn btn-sm btn-danger">Eliminar</button>'
+                           . '</form>';
+            }
+    
+            $fila['acciones'] = $acciones; // Esta es la clave que espera DataTables
+        }  
 
         echo json_encode([
             "draw" => intval($draw),

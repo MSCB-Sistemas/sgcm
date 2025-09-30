@@ -17,15 +17,13 @@
     </div>
 
     <div class="table-responsive-lg shadow-rounded">
-        <table class="table table-hover align-middle mb-0" id="tablaABM" style="min-width: 1550px;">
+        <table class="table table-hover align-middle mb-0" id="tablaABM" style="min-width: 1500px;">
             <thead class="table-light">
                 <tr>
                     <?php foreach ($datos['columnas'] as $col): ?>
                         <th><?= $col ?></th>
                     <?php endforeach ?>
-                    <?php if (!empty($datos['acciones'])): ?>
-                        <th>Acciones</th>
-                    <?php endif; ?>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -77,14 +75,14 @@ document.addEventListener('DOMContentLoaded', function () {
         language: {
             url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
         },
-        pageLength: 10,  
+        pageLength: 8,  
         lengthMenu: [5, 10, 25, 50, 100],
         order: [],
         serverSide: true,
         processing: true,
         ajax: {
             url: '<?= $datos['ajaxUrl'] ?>',
-            type: 'POST'
+            type: 'POST',
         },
         columns: <?= json_encode($datos['columnsConfig'] ?? []) ?>,
         columnDefs: [
@@ -93,20 +91,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 orderable: false,
                 searchable: false,
                 render: function(data, type, row, meta) {
-                    let html = '';
-                    
-                    <?php if (!empty($datos['acciones']) && is_callable($datos['acciones'])): ?>
-                        // En un caso real, habria que generar las acciones del lado del servidor
-                        const acciones = <?= json_encode($datos['acciones']($datos['accionesSampleData'] ?? [])) ?>;
-                        html = acciones;
-                    <?php else: ?>
-                        html = `
-                            <button class="btn btn-sm btn-primary me-1" onclick="editarItem(${row.id})">Editar</button>
-                            <button class="btn btn-sm btn-danger" onclick="eliminarItem(${row.id})">Eliminar</button>
-                        `;
-                    <?php endif; ?>
-                    
-                    return html;
+                    return data;
                 }
             }
         ]

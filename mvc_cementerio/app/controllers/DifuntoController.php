@@ -27,8 +27,8 @@ class DifuntoController extends Control
             'title'             => 'Lista de difuntos',
             'urlCrear'          => URL . 'difunto/create',
             'ajaxUrl'           => URL . 'difunto/ajax',
-            'baseUrl'           => URL . '/difunto',
-            'columnas'          => ['ID', 'Deudo', 'Nombre', 'Apellido', 'DNI', 'Edad', 'Fecha fallecimiento', 'Genero', 'Nacionalidad', 'Estado civil', 'Domicilio', 'Localidad', 'Codigo postal'],
+            'baseUrl'           => URL . 'difunto',
+            'columnas'          => ['ID', 'Deudo', 'Nombre', 'Apellido', 'DNI', 'Edad', 'Fecha defuncion', 'Genero', 'Nacionalidad', 'Estado civil', 'Domicilio', 'Localidad', 'Codigo postal'],
             'columnsConfig'     => [
                 ['data' => 'id_difunto'],
                 ['data' => 'nombre_deudo'],
@@ -42,29 +42,9 @@ class DifuntoController extends Control
                 ['data' => 'estado_civil'],
                 ['data' => 'domicilio'],
                 ['data' => 'localidad'],
-                ['data' => 'codigo_postal']
+                ['data' => 'codigo_postal'],
+                ['data' => 'acciones', 'orderable' => false, 'searchable' => false]
             ],
-            'acciones' => function (array $fila) use ($puedeEditar, $puedeEliminar)
-            {
-                $id = $fila['id_difunto'];
-                $url = rtrim(URL,'/') . '/difunto';
-                
-                $html = '';
-                if ($puedeEditar) 
-                {
-                    $html .= '<a href="'.$url.'/edit/'.$id.'" class="btn btn-sm btn-primary">Editar</a> ';
-                    $html .= '<form action="'.$url.'/activate/'.$id.'" method="post" style="display:inline">'
-                          .  '<button class="btn btn-sm btn-success" onclick="return confirm(\'¿Activar este usuario?\');">Activar</button>'
-                          .  '</form> ';
-                }
-                if ($puedeEliminar) {
-                    $html .= '<form action="'.$url.'/delete/'.$id.'" method="post" style="display:inline" onsubmit="return confirm(\'¿Eliminar este usuario?\');">'
-                          .  '<button class="btn btn-sm btn-danger">Eliminar</button>'
-                          .  '</form>';
-                }
-                return $html;
-            },
-            'accionesSampleData' => ['id_difunto' => 1],
             'puedeCrear'      => $puedeCrear,
             'errores'         => [],
             'csrfToken'       => $this->generateCsrfToken()
@@ -393,6 +373,40 @@ class DifuntoController extends Control
             $data = $this->model->getPage($orderCol, $orderDir, $start, $length);
             $filteredRecords = $totalRecords;
         }
+
+        foreach ($data as &$row) {
+            if (!empty($row['fecha_fallecimiento'])) {
+                $fecha = DateTime::createFromFormat('Y-m-d H:i:s', $row['fecha_fallecimiento']);
+                if ($fecha) {
+                    $row['fecha_fallecimiento'] = $fecha->format('Y-m-d');
+                } else {
+                    $fecha = DateTime::createFromFormat('Y-m-d', $row['fecha_fallecimiento']);
+                    if ($fecha) {
+                        $row['fecha_fallecimiento'] = $fecha->format('Y-m-d');
+                    }
+                }
+            }
+        }
+
+        foreach ($data as &$fila) {
+            $id  = $fila['id_difunto'];
+            $url = rtrim(URL,'/') . '/difunto';
+    
+            $acciones = '';
+    
+            if ($this->can('editar_difunto')) {
+                $acciones .= '<a href="'.$url.'/edit/'.$id.'" class="btn btn-sm btn-primary">Editar</a> '
+                           . '</form> ';
+            }
+    
+            if ($this->can('eliminar_difunto')) {
+                $acciones .= '<form action="'.$url.'/delete/'.$id.'" method="post" style="display:inline" onsubmit="return confirm(\'¿Eliminar este difunto?\');">'
+                           . '<button class="btn btn-sm btn-danger">Eliminar</button>'
+                           . '</form>';
+            }
+    
+            $fila['acciones'] = $acciones;
+        }  
 
         echo json_encode([
             "draw" => intval($draw),

@@ -43,24 +43,9 @@ class PagoController extends Control {
                 ['data' => 'total', 'render' => function($data) {
                     return '$ ' . number_format($data, 2);
                 }],
-                ['data' => 'usuario']
+                ['data' => 'usuario'],
+                ['data' => 'acciones', 'orderable' => false, 'searchable' => false]
             ],
-            'acciones' => function (array $fila) use ($puedeEditar, $puedeEliminar) {
-                $id = $fila['id_pago'];
-                $url = URL . 'pago';
-
-                $html = '';
-                if ($puedeEditar) {
-                    $html .= '<a href="'.$url.'/edit/'.$id.'" class="btn btn-sm btn-primary me-1">Editar</a>';
-                }
-                if ($puedeEliminar) {
-                    $html .= '<form action="'.$url.'/delete/'.$id.'" method="post" style="display:inline">'
-                          .  '<button class="btn btn-sm btn-danger" onclick="return confirm(\'¿Eliminar este pago?\');">Eliminar</button>'
-                          .  '</form>';
-                }
-                return $html;
-            },
-            'accionesSampleData' => ['id_pago' => 1],
             'puedeCrear' => $puedeCrear,
             'errores' => [],
             'csrfToken' => $this->generateCsrfToken()
@@ -309,6 +294,26 @@ class PagoController extends Control {
             $data = $this->model->getPage($orderCol, $orderDir, $start, $length);
             $filteredRecords = $totalRecords;
         }
+
+        foreach ($data as &$fila) {
+            $id  = $fila['id_pago'];
+            $url = rtrim(URL,'/') . '/pago';
+    
+            $acciones = '';
+    
+            if ($this->can('editar_pago')) {
+                $acciones .= '<a href="'.$url.'/edit/'.$id.'" class="btn btn-sm btn-primary">Editar</a> '
+                           . '</form> ';
+            }
+    
+            if ($this->can('eliminar_pago')) {
+                $acciones .= '<form action="'.$url.'/delete/'.$id.'" method="post" style="display:inline" onsubmit="return confirm(\'¿Eliminar este pago?\');">'
+                           . '<button class="btn btn-sm btn-danger">Eliminar</button>'
+                           . '</form>';
+            }
+    
+            $fila['acciones'] = $acciones;
+        }  
 
         echo json_encode([
             "draw" => intval($draw),

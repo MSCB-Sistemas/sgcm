@@ -20,17 +20,24 @@ class DifuntoModel {
      */
     public function getAllDifuntos(): array {
         $stmt = $this->db->prepare("SELECT 
-                                                d.*,
-                                                de.nombre AS nombre_deudo,
-                                                s.descripcion AS sexo,
-                                                ec.descripcion AS estado_civil,
-                                                n.nacionalidad AS nacionalidad
-                                        FROM difunto d
-                                        LEFT JOIN deudo de ON d.id_deudo = de.id_deudo
-                                        LEFT JOIN sexo s ON d.id_sexo = s.id_sexo
-                                        LEFT JOIN estado_civil ec ON d.id_estado_civil = ec.id_estado_civil
-                                        LEFT JOIN nacionalidades n ON d.id_nacionalidad = n.id_nacionalidad
-    ");
+                    d.id_difunto,
+                    de.nombre AS nombre_deudo,
+                    d.nombre,
+                    d.apellido,
+                    d.dni,
+                    d.edad,
+                    d.fecha_fallecimiento,
+                    COALESCE(s.descripcion, 'No especificado') AS sexo,
+                    COALESCE(n.nacionalidad, 'No especificado') AS nacionalidad,
+                    COALESCE(ec.descripcion, 'No especificado') AS estado_civil,
+                    d.domicilio,
+                    d.localidad,
+                    d.codigo_postal
+                FROM difunto d
+                LEFT JOIN deudo de ON d.id_deudo = de.id_deudo
+                LEFT JOIN sexo s ON d.id_sexo = s.id_sexo
+                LEFT JOIN estado_civil ec ON d.id_estado_civil = ec.id_estado_civil
+                LEFT JOIN nacionalidades n ON d.id_nacionalidad = n.id_nacionalidad");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -211,19 +218,29 @@ class DifuntoModel {
     public function getPage($orderCol, $orderDir, $start, $length): array
     {
         $allowedColumns = ['id_difunto', 'nombre_deudo', 'nombre', 'apellido', 'dni', 'edad', 
-                          'fecha_fallecimiento', 'sexo', 'nacionalidad', 'estado_civil', 
-                          'domicilio', 'localidad', 'codigo_postal'];
+                        'fecha_fallecimiento', 'sexo', 'nacionalidad', 'estado_civil', 
+                        'domicilio', 'localidad', 'codigo_postal'];
         if (!in_array($orderCol, $allowedColumns)) {
             $orderCol = 'id_difunto';
         }
         
         $orderDir = strtoupper($orderDir) === 'DESC' ? 'DESC' : 'ASC';
 
-        $sql = "SELECT d.*,
-                       de.nombre AS nombre_deudo,
-                       s.descripcion AS sexo,
-                       ec.descripcion AS estado_civil,
-                       n.nacionalidad AS nacionalidad
+        $sql = "SELECT 
+                    d.id_difunto,
+                    de.nombre AS nombre_deudo,  -- Primero los campos que usas
+                    d.nombre,
+                    d.apellido,
+                    d.dni,
+                    d.edad,
+                    d.fecha_fallecimiento,
+                    COALESCE(s.descripcion, 'No especificado') AS sexo,
+                    COALESCE(n.nacionalidad, 'No especificado') AS nacionalidad,
+                    COALESCE(ec.descripcion, 'No especificado') AS estado_civil,
+                    d.domicilio,
+                    d.localidad,
+                    d.codigo_postal
+                    -- No selecciones d.* para evitar campos duplicados
                 FROM difunto d
                 LEFT JOIN deudo de ON d.id_deudo = de.id_deudo
                 LEFT JOIN sexo s ON d.id_sexo = s.id_sexo
@@ -242,33 +259,42 @@ class DifuntoModel {
     public function getFiltered($search, $orderCol, $orderDir, $start, $length): array
     {
         $allowedColumns = ['id_difunto', 'nombre_deudo', 'nombre', 'apellido', 'dni', 'edad', 
-                          'fecha_fallecimiento', 'sexo', 'nacionalidad', 'estado_civil', 
-                          'domicilio', 'localidad', 'codigo_postal'];
+                        'fecha_fallecimiento', 'sexo', 'nacionalidad', 'estado_civil', 
+                        'domicilio', 'localidad', 'codigo_postal'];
         if (!in_array($orderCol, $allowedColumns)) {
             $orderCol = 'id_difunto';
         }
         
         $orderDir = strtoupper($orderDir) === 'DESC' ? 'DESC' : 'ASC';
 
-        $sql = "SELECT d.*,
-                       de.nombre AS nombre_deudo,
-                       s.descripcion AS sexo,
-                       ec.descripcion AS estado_civil,
-                       n.nacionalidad AS nacionalidad
+        $sql = "SELECT 
+                    d.id_difunto,
+                    de.nombre AS nombre_deudo,
+                    d.nombre,
+                    d.apellido,
+                    d.dni,
+                    d.edad,
+                    d.fecha_fallecimiento,
+                    COALESCE(s.descripcion, 'No especificado') AS sexo,
+                    COALESCE(n.nacionalidad, 'No especificado') AS nacionalidad,
+                    COALESCE(ec.descripcion, 'No especificado') AS estado_civil,
+                    d.domicilio,
+                    d.localidad,
+                    d.codigo_postal
                 FROM difunto d
                 LEFT JOIN deudo de ON d.id_deudo = de.id_deudo
                 LEFT JOIN sexo s ON d.id_sexo = s.id_sexo
                 LEFT JOIN estado_civil ec ON d.id_estado_civil = ec.id_estado_civil
                 LEFT JOIN nacionalidades n ON d.id_nacionalidad = n.id_nacionalidad
                 WHERE d.nombre LIKE :search 
-                   OR d.apellido LIKE :search 
-                   OR d.dni LIKE :search 
-                   OR de.nombre LIKE :search 
-                   OR s.descripcion LIKE :search 
-                   OR n.nacionalidad LIKE :search 
-                   OR ec.descripcion LIKE :search 
-                   OR d.domicilio LIKE :search 
-                   OR d.localidad LIKE :search
+                OR d.apellido LIKE :search 
+                OR d.dni LIKE :search 
+                OR de.nombre LIKE :search 
+                OR s.descripcion LIKE :search 
+                OR n.nacionalidad LIKE :search 
+                OR ec.descripcion LIKE :search 
+                OR d.domicilio LIKE :search 
+                OR d.localidad LIKE :search
                 ORDER BY $orderCol $orderDir 
                 LIMIT :start, :length";
         
