@@ -66,7 +66,7 @@ class PagoController extends Control {
             'csrfToken' => $this->generateCsrfToken()
         ];
 
-        $this->loadView('partials/tablaAbm', $datos);
+        $this->loadView('partials/tablaAbmAjax', $datos);
     }
 
     public function create() {
