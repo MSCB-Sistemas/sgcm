@@ -1,14 +1,3 @@
-<?php
-$id_tipo_parcela = '';
-if (isset($values['id_tipo_parcela'])) {
-    $id_tipo_parcela = $values['id_tipo_parcela'];
-}
-$nombre_parcela= '';
-if (isset($datos['values']['nombre_parcela'])) {
-    $nombre_parcela = htmlspecialchars($datos['values']['nombre_parcela']);
-}
-?>
-
 <div class="container mt-5">
     <div class="card shadow">
         <div class="card-header bg-primary text-white">
@@ -26,6 +15,20 @@ if (isset($datos['values']['nombre_parcela'])) {
                     </ul>
                 </div>
             <?php endif; ?>
+
+            <?php                
+                if (isset($values['id_tipo_parcela'])) {
+                    $id_tipo_parcela = $values['id_tipo_parcela'];
+                } else {
+                    $id_tipo_parcela = '';
+                }
+
+                if (isset($datos['values']['nombre_parcela'])) {
+                    $nombre_parcela = htmlspecialchars($datos['values']['nombre_parcela']);
+                } else {
+                    $nombre_parcela = '';
+                }
+            ?>
             
             <form action="<?= $datos['action'] ?>" method="POST" class="needs-validation" novalidate>
                 <input type="hidden" name="id_tipo_parcela" value="<?= $id_tipo_parcela ?>">

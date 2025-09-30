@@ -1,14 +1,3 @@
-<?php
-$id_sexo = '';
-if (isset($values['id_sexo'])) {
-    $id_sexo = $values['id_sexo'];
-}
-$descripcion = '';
-if (isset($datos['values']['descripcion'])) {
-    $descripcion = htmlspecialchars($datos['values']['descripcion']);
-}
-?>
-
 <div class="container mt-5">
     <div class="card shadow">
         <div class="card-header bg-primary text-white">
@@ -26,6 +15,20 @@ if (isset($datos['values']['descripcion'])) {
                     </ul>
                 </div>
             <?php endif; ?>
+            
+            <?php                
+                if (isset($values['id_sexo'])) {
+                    $id_sexo = $values['id_sexo'];
+                } else {
+                    $id_sexo = '';
+                }
+
+                if (isset($datos['values']['descripcion'])) {
+                    $descripcion = htmlspecialchars($datos['values']['descripcion']);
+                } else {
+                    $descripcion = '';
+                }
+            ?>
             
             <form action="<?= $datos['action'] ?>" method="POST" class="needs-validation" novalidate>
                 <input type="hidden" name="id_sexo" value="<?= $id_sexo ?>">

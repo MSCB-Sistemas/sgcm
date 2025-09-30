@@ -1,38 +1,3 @@
-<?php
-$id_tipo_parcela = '';
-if (isset($datos['values']['id_tipo_parcela'])) {
-    $id_tipo_parcela = $datos['values']['id_tipo_parcela'];
-}
-$id_deudo = '';
-if (isset($datos['values']['id_deudo'])) {
-    $id_deudo = $datos['values']['id_deudo'];
-}
-$numero_ubicacion = '';
-if (isset($datos['values']['numero_ubicacion'])) {
-    $numero_ubicacion = htmlspecialchars($datos['values']['numero_ubicacion']);
-}
-$hilera = '';
-if (isset($datos['values']['hilera'])) {
-    $hilera = htmlspecialchars($datos['values']['hilera']);
-}
-$seccion = '';
-if (isset($datos['values']['seccion'])) {
-    $seccion = htmlspecialchars($datos['values']['seccion']);
-}
-$fraccion = '';
-if (isset($datos['values']['fraccion'])) {
-    $fraccion = htmlspecialchars($datos['values']['fraccion']);
-}
-$nivel = '';
-if (isset($datos['values']['nivel'])) {
-    $nivel = htmlspecialchars($datos['values']['nivel']);
-}
-$id_orientacion = '';
-if (isset($datos['values']['id_orientacion'])) {
-    $id_orientacion = $datos['values']['id_orientacion'];
-}
-?>
-
 <div class="container mt-5">
     <div class="card shadow">
         <div class="card-header bg-primary text-white">
@@ -50,10 +15,59 @@ if (isset($datos['values']['id_orientacion'])) {
                     </ul>
                 </div>
             <?php endif; ?>
+
+            <?php                
+                if (isset($datos['values']['id_tipo_parcela'])) {
+                    $id_tipo_parcela_selected = $datos['values']['id_tipo_parcela'];
+                } else {
+                    $id_tipo_parcela_selected = '';
+                }
+
+                if (isset($datos['values']['id_deudo'])) {
+                    $id_deudo_selected = $datos['values']['id_deudo'];
+                } else {
+                    $id_deudo_selected = '';
+                }
+
+                if (isset($datos['values']['numero_ubicacion'])) {
+                    $numero_ubicacion = htmlspecialchars($datos['values']['numero_ubicacion']);
+                } else {
+                    $numero_ubicacion = '';
+                }
+
+                if (isset($datos['values']['hilera'])) {
+                    $hilera = htmlspecialchars($datos['values']['hilera']);
+                } else {
+                    $hilera = '';
+                }
+
+                if (isset($datos['values']['seccion'])) {
+                    $seccion = htmlspecialchars($datos['values']['seccion']);
+                } else {
+                    $seccion = '';
+                }
+
+                if (isset($datos['values']['fraccion'])) {
+                    $fraccion = htmlspecialchars($datos['values']['fraccion']);
+                } else {
+                    $fraccion = '';
+                }
+
+                if (isset($datos['values']['nivel'])) {
+                    $nivel = htmlspecialchars($datos['values']['nivel']);
+                } else {
+                    $nivel = '';
+                }
+
+                if (isset($datos['values']['id_orientacion'])) {
+                    $id_orientacion_selected = $datos['values']['id_orientacion'];
+                } else {
+                    $id_orientacion_selected = '';
+                }
+            ?>
             
             <form action="<?= $datos['action'] ?>" method="POST" class="needs-validation" novalidate>
                 <div class="row g-3">
-                    
                     <!-- Primera columna -->
                     <div class="col-md-6">
                         <div class="mb-3">
@@ -62,12 +76,13 @@ if (isset($datos['values']['id_orientacion'])) {
                                 <option value="">Seleccione...</option>
                                 <?php foreach ($datos['tipos_parcelas'] as $n): ?>
                                     <?php
-                                    $selected = '';
-                                    if ($id_tipo_parcela == $n['id_tipo_parcela']) {
-                                        $selected = 'selected';
+                                    if ($id_tipo_parcela_selected == $n['id_tipo_parcela']) {
+                                        $selected_tipo_parcela = 'selected';
+                                    } else {
+                                        $selected_tipo_parcela = '';
                                     }
                                     ?>
-                                    <option value="<?= $n['id_tipo_parcela'] ?>" <?= $selected ?>>
+                                    <option value="<?= $n['id_tipo_parcela'] ?>" <?= $selected_tipo_parcela ?>>
                                         <?= htmlspecialchars($n['nombre_parcela']) ?>
                                     </option>
                                 <?php endforeach ?>
@@ -83,12 +98,13 @@ if (isset($datos['values']['id_orientacion'])) {
                                 <option value="">Seleccione...</option>
                                 <?php foreach ($datos['deudos'] as $n): ?>
                                     <?php
-                                    $selected = '';
-                                    if ($id_deudo == $n['id_deudo']) {
-                                        $selected = 'selected';
+                                    if ($id_deudo_selected == $n['id_deudo']) {
+                                        $selected_deudo = 'selected';
+                                    } else {
+                                        $selected_deudo = '';
                                     }
                                     ?>
-                                    <option value="<?= $n['id_deudo'] ?>" <?= $selected ?>>
+                                    <option value="<?= $n['id_deudo'] ?>" <?= $selected_deudo ?>>
                                         <?= htmlspecialchars($n['nombre']) ?>
                                     </option>
                                 <?php endforeach ?>
@@ -149,12 +165,13 @@ if (isset($datos['values']['id_orientacion'])) {
                                 <option value="">Seleccione...</option>
                                 <?php foreach ($datos['orientaciones'] as $n): ?>
                                     <?php
-                                    $selected = '';
-                                    if ($id_orientacion == $n['id_orientacion']) {
-                                        $selected = 'selected';
+                                    if ($id_orientacion_selected == $n['id_orientacion']) {
+                                        $selected_orientacion = 'selected';
+                                    } else {
+                                        $selected_orientacion = '';
                                     }
                                     ?>
-                                    <option value="<?= $n['id_orientacion'] ?>" <?= $selected ?>>
+                                    <option value="<?= $n['id_orientacion'] ?>" <?= $selected_orientacion ?>>
                                         <?= htmlspecialchars($n['descripcion']) ?>
                                     </option>
                                 <?php endforeach ?>
@@ -178,8 +195,6 @@ if (isset($datos['values']['id_orientacion'])) {
         </div>
     </div>
 </div>
-
-
 
 <!-- Agrega este script para la validación del formulario -->
 <script>

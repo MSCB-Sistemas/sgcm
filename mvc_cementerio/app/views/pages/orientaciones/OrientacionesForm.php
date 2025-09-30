@@ -1,12 +1,6 @@
-<?php
-$descripcion = '';
-if (isset($datos['values']['descripcion'])) {
-    $descripcion = htmlspecialchars($datos['values']['descripcion']);
-}
-?>
-
 <div class="container mt-5">
-    <h2><?= $datos['title']  ?></h2>
+    <h2><?= $datos['title'] ?></h2>
+
     <?php if (!empty($datos['errores'])): ?>
         <div class="alert alert-danger">
             <ul>
@@ -16,11 +10,20 @@ if (isset($datos['values']['descripcion'])) {
             </ul>
         </div>
     <?php endif; ?>
+
+    <?php
+        if (isset($datos['values']['descripcion'])) {
+            $descripcion = htmlspecialchars($datos['values']['descripcion']);
+        } else {
+            $descripcion = '';
+        }
+    ?>
+
     <form action="<?= $datos['action'] ?>" method="POST">
         <div class="mb-3">
             <label for="descripcion">Descripcion</label>
             <input type="text" class="form-control" name="descripcion" id="descripcion"
-            value="<?= $descripcion ?>" required>
+                   value="<?= $descripcion ?>" required>
         </div>
         <div>
             <button type="submit" class="btn btn-success">Guardar</button>

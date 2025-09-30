@@ -1,54 +1,3 @@
-<?php
-$id_deudo = '';
-if (isset($datos['values']['id_deudo'])) {
-    $id_deudo = $datos['values']['id_deudo'];
-}
-$nombre = '';
-if (isset($datos['values']['nombre'])) {
-    $nombre = htmlspecialchars($datos['values']['nombre']);
-}
-$apellido = '';
-if (isset($datos['values']['apellido'])) {
-    $apellido = htmlspecialchars($datos['values']['apellido']);
-}
-$dni = '';
-if (isset($datos['values']['dni'])) {
-    $dni = htmlspecialchars($datos['values']['dni']);
-}
-$edad = '';
-if (isset($datos['values']['edad'])) {
-    $edad = htmlspecialchars($datos['values']['edad']);
-}
-$fecha_fallecimiento = '';
-if (isset($datos['values']['fecha_fallecimiento'])) {
-    $fecha_fallecimiento = htmlspecialchars($datos['values']['fecha_fallecimiento']);
-}
-$id_sexo = '';
-if (isset($datos['values']['id_sexo'])) {
-    $id_sexo = $datos['values']['id_sexo'];
-}
-$id_nacionalidad = '';
-if (isset($datos['values']['id_nacionalidad'])) {
-    $id_nacionalidad = $datos['values']['id_nacionalidad'];
-}
-$id_estado_civil = '';
-if (isset($datos['values']['id_estado_civil'])) {
-    $id_estado_civil = $datos['values']['id_estado_civil'];
-}
-$domicilio = '';
-if (isset($datos['values']['domicilio'])) {
-    $domicilio = htmlspecialchars($datos['values']['domicilio']);
-}
-$localidad = '';
-if (isset($datos['values']['localidad'])) {
-    $localidad = htmlspecialchars($datos['values']['localidad']);
-}
-$codigo_postal = '';
-if (isset($datos['values']['codigo_postal'])) {
-    $codigo_postal = htmlspecialchars($datos['values']['codigo_postal']);
-}
-?>
-
 <div class="container mt-5">
     <div class="card shadow">
         <div class="card-header bg-primary text-white">
@@ -66,6 +15,81 @@ if (isset($datos['values']['codigo_postal'])) {
                     </ul>
                 </div>
             <?php endif; ?>
+
+            <?php
+                if (isset($datos['values']['id_deudo'])) {
+                    $id_deudo = $datos['values']['id_deudo'];
+                } else {
+                    $id_deudo = '';
+                }
+
+                if (isset($datos['values']['nombre'])) {
+                    $nombre = htmlspecialchars($datos['values']['nombre']);
+                } else {
+                    $nombre = '';
+                }
+
+                if (isset($datos['values']['apellido'])) {
+                    $apellido = htmlspecialchars($datos['values']['apellido']);
+                } else {
+                    $apellido = '';
+                }
+
+                if (isset($datos['values']['dni'])) {
+                    $dni = htmlspecialchars($datos['values']['dni']);
+                } else {
+                    $dni = '';
+                }
+
+                if (isset($datos['values']['edad'])) {
+                    $edad = htmlspecialchars($datos['values']['edad']);
+                } else {
+                    $edad = '';
+                }
+
+                if (isset($datos['values']['fecha_fallecimiento'])) {
+                    $fecha_fallecimiento = htmlspecialchars($datos['values']['fecha_fallecimiento']);
+                } else {
+                    $fecha_fallecimiento = '';
+                }
+
+                if (isset($datos['values']['id_sexo'])) {
+                    $id_sexo = $datos['values']['id_sexo'];
+                } else {
+                    $id_sexo = '';
+                }
+
+                if (isset($datos['values']['id_nacionalidad'])) {
+                    $id_nacionalidad = $datos['values']['id_nacionalidad'];
+                } else {
+                    $id_nacionalidad = '';
+                }
+
+                if (isset($datos['values']['id_estado_civil'])) {
+                    $id_estado_civil = $datos['values']['id_estado_civil'];
+                } else {
+                    $id_estado_civil = '';
+                }
+
+                if (isset($datos['values']['domicilio'])) {
+                    $domicilio = htmlspecialchars($datos['values']['domicilio']);
+                } else {
+                    $domicilio = '';
+                }
+
+                if (isset($datos['values']['localidad'])) {
+                    $localidad = htmlspecialchars($datos['values']['localidad']);
+                } else {
+                    $localidad = '';
+                }
+
+                if (isset($datos['values']['codigo_postal'])) {
+                    $codigo_postal = htmlspecialchars($datos['values']['codigo_postal']);
+                } else {
+                    $codigo_postal = '';
+                }
+                ?>
+
             
             <form action="<?= $datos['action'] ?>" method="POST" class="needs-validation" novalidate>
                 <div class="row g-3">

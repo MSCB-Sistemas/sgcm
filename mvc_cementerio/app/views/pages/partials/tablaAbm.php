@@ -38,7 +38,13 @@
                         <?php foreach ($datos['data'] as $fila): ?>
                             <tr class="border-top">
                                 <?php foreach ($datos['columnas_claves'] as $key): ?>
-                                    <td><?= ucfirst(htmlspecialchars($fila[$key])) ?></td>
+                                    <?php
+                                        if (isset($fila[$key])) {
+                                            echo '<td>' . ucfirst(htmlspecialchars($fila[$key])) . '</td>';
+                                        } else {
+                                            echo '<td></td>'; 
+                                        }
+                                    ?>
                                 <?php endforeach ?>
                                 <?php if (!empty($datos['acciones'])): ?>
                                     <td class="text-end">

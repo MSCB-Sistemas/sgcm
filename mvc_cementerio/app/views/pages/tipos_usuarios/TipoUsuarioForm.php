@@ -1,15 +1,3 @@
-<?php
-$id_tipo_usuario = '';
-if (isset($values['id_tipo_usuario'])) {
-    $id_tipo_parcela = $values['id_tipo_usuario'];
-}
-$descripcion= '';
-if (isset($datos['values']['descripcion'])) {
-    $descripcion = htmlspecialchars($datos['values']['descripcion']);
-}
-?>
-
-
 <div class="container mt-5">
     <div class="card shadow">
         <div class="card-header bg-primary text-white">
@@ -27,14 +15,29 @@ if (isset($datos['values']['descripcion'])) {
                     </ul>
                 </div>
             <?php endif; ?>
+
+            <?php
+                if (isset($datos['values']['id_tipo_usuario'])) {
+                    $id_tipo_usuario = $datos['values']['id_tipo_usuario'];
+                } else {
+                    $id_tipo_usuario = '';
+                }
+
+                if (isset($datos['values']['descripcion'])) {
+                    $descripcion = htmlspecialchars($datos['values']['descripcion']);
+                } else {
+                    $descripcion = '';
+                }
+            ?>
+
             
             <form action="<?= $datos['action'] ?>" method="POST" class="needs-validation" novalidate>
-                <input type="hidden" name="id_tipo_usuario" value="<?= $id_tipo_parcela ?>">
+                <input type="hidden" name="id_tipo_usuario" value="<?= $id_tipo_usuario ?>">
                 
                 <div class="mb-3">
                     <label for="descripcion" class="form-label fw-bold">Nombre de Tipo de Usuario</label>
                     <input type="text" class="form-control" id="descripcion" name="descripcion" 
-                           value="<?= $descripcion ?>" required>
+                        value="<?= $descripcion ?>" required>
                     <div class="invalid-feedback">
                         Por favor ingrese un nombre válido para el tipo de usuario
                     </div>
