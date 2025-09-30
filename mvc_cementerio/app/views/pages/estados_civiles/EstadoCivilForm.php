@@ -17,12 +17,26 @@
             <?php endif; ?>
             
             <form action="<?= $datos['action'] ?>" method="POST" class="needs-validation" novalidate>
-                <input type="hidden" name="id" value="<?= $values['id_estado_civil'] ?? '' ?>">
+                <?php
+                if (isset($values['id_estado_civil'])) {
+                    $id_estado_civil = $values['id_estado_civil'];
+                } else {
+                    $id_estado_civil = '';
+                }
+                ?>
+                <input type="hidden" name="id" value="<?= $id_estado_civil ?>">
                 
                 <div class="mb-3">
                     <label for="descripcion" class="form-label fw-bold">Descripción</label>
+                    <?php
+                    if (isset($datos['values']['descripcion'])) {
+                        $descripcion = htmlspecialchars($datos['values']['descripcion']);
+                    } else {
+                        $descripcion = '';
+                    }
+                    ?>
                     <input type="text" class="form-control" id="descripcion" name="descripcion" 
-                           value="<?= htmlspecialchars($datos['values']['descripcion'] ?? '') ?>" required>
+                           value="<?= $descripcion ?>" required>
                     <div class="invalid-feedback">
                         Por favor ingrese una descripción
                     </div>

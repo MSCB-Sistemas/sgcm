@@ -12,13 +12,19 @@
     <form action="<?= $datos['action'] ?>" method="POST">
         <div class="mb-3">
             <label for="nacionalidad">Nacionalidad</label>
+            <?php
+                if (isset($datos['values']['nacionalidad'])) {
+                    $nacionalidad_value = htmlspecialchars($datos['values']['nacionalidad']);
+                } else {
+                    $nacionalidad_value = '';
+                }
+            ?>
             <input type="text" class="form-control" name="nacionalidad" id="nacionalidad"
-            value="<?= htmlspecialchars($datos['values']['nacionalidad'] ?? '')?>" required>
+            value="<?= $nacionalidad_value ?>" required>
         </div>
         <div>
             <button type="submit" class="btn btn-success">Guardar</button>
             <a href="<?= URL ?>nacionalidades" class="btn btn-secondary">Cancelar</a>
         </div>
     </form>
-
 </div>

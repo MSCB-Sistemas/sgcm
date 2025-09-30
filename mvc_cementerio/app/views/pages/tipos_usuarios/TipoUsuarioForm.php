@@ -15,14 +15,29 @@
                     </ul>
                 </div>
             <?php endif; ?>
+
+            <?php
+                if (isset($datos['values']['id_tipo_usuario'])) {
+                    $id_tipo_usuario = $datos['values']['id_tipo_usuario'];
+                } else {
+                    $id_tipo_usuario = '';
+                }
+
+                if (isset($datos['values']['descripcion'])) {
+                    $descripcion = htmlspecialchars($datos['values']['descripcion']);
+                } else {
+                    $descripcion = '';
+                }
+            ?>
+
             
             <form action="<?= $datos['action'] ?>" method="POST" class="needs-validation" novalidate>
-                <input type="hidden" name="id_tipo_usuario" value="<?= $values['id_tipo_usuario'] ?? '' ?>">
+                <input type="hidden" name="id_tipo_usuario" value="<?= $id_tipo_usuario ?>">
                 
                 <div class="mb-3">
                     <label for="descripcion" class="form-label fw-bold">Nombre de Tipo de Usuario</label>
                     <input type="text" class="form-control" id="descripcion" name="descripcion" 
-                           value="<?= htmlspecialchars($datos['values']['descripcion'] ?? '') ?>" required>
+                        value="<?= $descripcion ?>" required>
                     <div class="invalid-feedback">
                         Por favor ingrese un nombre válido para el tipo de usuario
                     </div>

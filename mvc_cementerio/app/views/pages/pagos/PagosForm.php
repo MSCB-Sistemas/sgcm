@@ -15,6 +15,50 @@
                     </ul>
                 </div>
             <?php endif; ?>
+
+            <?php                
+                if (isset($datos['values']['id_deudo'])) {
+                    $id_deudo_selected = $datos['values']['id_deudo'];
+                } else {
+                    $id_deudo_selected = '';
+                }
+
+                if (isset($datos['values']['id_parcela'])) {
+                    $id_parcela_selected = $datos['values']['id_parcela'];
+                } else {
+                    $id_parcela_selected = '';
+                }
+
+                if (isset($datos['values']['fecha_pago'])) {
+                    $fecha_pago = htmlspecialchars($datos['values']['fecha_pago']);
+                } else {
+                    $fecha_pago = '';
+                }
+
+                if (isset($datos['values']['fecha_vencimiento'])) {
+                    $fecha_vencimiento = htmlspecialchars($datos['values']['fecha_vencimiento']);
+                } else {
+                    $fecha_vencimiento = '';
+                }
+
+                if (isset($datos['values']['importe'])) {
+                    $importe = htmlspecialchars($datos['values']['importe']);
+                } else {
+                    $importe = '';
+                }
+
+                if (isset($datos['values']['recargo'])) {
+                    $recargo = htmlspecialchars($datos['values']['recargo']);
+                } else {
+                    $recargo = '';
+                }
+
+                if (isset($datos['values']['total'])) {
+                    $total = htmlspecialchars($datos['values']['total']);
+                } else {
+                    $total = '';
+                }
+            ?>
             
             <form action="<?= $datos['action'] ?>" method="POST" class="needs-validation" novalidate>
                 <div class="row g-3">
@@ -26,8 +70,14 @@
                             <select class="form-select" id="deudo" name="deudo" required>
                                 <option value="">Seleccione...</option>
                                 <?php foreach ($datos['deudos'] as $n): ?>
-                                    <option value="<?= $n['id_deudo'] ?>"
-                                        <?= ($datos['values']['id_deudo'] ?? '') == $n['id_deudo'] ? 'selected' : '' ?>>
+                                    <?php
+                                    if ($id_deudo_selected == $n['id_deudo']) {
+                                        $selected_deudo = 'selected';
+                                    } else {
+                                        $selected_deudo = '';
+                                    }
+                                    ?>
+                                    <option value="<?= $n['id_deudo'] ?>" <?= $selected_deudo ?>>
                                         <?= htmlspecialchars($n['nombre']) ?>
                                     </option>
                                 <?php endforeach ?>
@@ -42,8 +92,14 @@
                             <select class="form-select" id="parcela" name="parcela" required>
                                 <option value="">Seleccione...</option>
                                 <?php foreach ($datos['parcelas'] as $n): ?>
-                                    <option value="<?= $n['id_parcela'] ?>"
-                                        <?= ($datos['values']['id_parcela'] ?? '') == $n['id_parcela'] ? 'selected' : '' ?>>
+                                    <?php
+                                    if ($id_parcela_selected == $n['id_parcela']) {
+                                        $selected_parcela = 'selected';
+                                    } else {
+                                        $selected_parcela = '';
+                                    }
+                                    ?>
+                                    <option value="<?= $n['id_parcela'] ?>" <?= $selected_parcela ?>>
                                         <?= htmlspecialchars($n['id_parcela']) ?>
                                     </option>
                                 <?php endforeach ?>
@@ -56,7 +112,7 @@
                         <div class="mb-3">
                             <label for="fecha_pago" class="form-label fw-bold">Fecha de pago</label>
                             <input type="date" class="form-control" id="fecha_pago" name="fecha_pago" 
-                                   value="<?= htmlspecialchars($datos['values']['fecha_pago'] ?? '') ?>" required>
+                                   value="<?= $fecha_pago ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese la fecha de pago
                             </div>
@@ -64,8 +120,8 @@
 
                         <div class="mb-3">
                             <label for="fecha_vencimiento" class="form-label fw-bold">Fecha de vencimiento</label>
-                            <input type="date" class="form-control" id="fecha_pago" name="fecha_vencimiento" 
-                                   value="<?= htmlspecialchars($datos['values']['fecha_vencimiento'] ?? '') ?>" required>
+                            <input type="date" class="form-control" id="fecha_vencimiento" name="fecha_vencimiento" 
+                                   value="<?= $fecha_vencimiento ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese la fecha de vencimiento
                             </div>
@@ -73,8 +129,8 @@
                         
                         <div class="mb-3">
                             <label for="importe" class="form-label fw-bold">Importe</label>
-                            <input type="number" class="form-control" id="hilera" name="importe" 
-                                   value="<?= htmlspecialchars($datos['values']['importe'] ?? '') ?>" required>
+                            <input type="number" class="form-control" id="importe" name="importe" 
+                                   value="<?= $importe ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese el importe
                             </div>
@@ -86,7 +142,7 @@
                         <div class="mb-3">
                             <label for="recargo" class="form-label fw-bold">Recargo</label>
                             <input type="number" class="form-control" id="recargo" name="recargo" 
-                                   value="<?= htmlspecialchars($datos['values']['recargo'] ?? '') ?>" required>
+                                   value="<?= $recargo ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese el recargo
                             </div>
@@ -95,7 +151,7 @@
                         <div class="mb-3">
                             <label for="total" class="form-label fw-bold">Total</label>
                             <input type="number" class="form-control" id="total" name="total" 
-                                   value="<?= htmlspecialchars($datos['values']['total'] ?? '') ?>" required>
+                                   value="<?= $total ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese la fracción
                             </div>
@@ -115,6 +171,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Agrega este script para la validación del formulario -->
 <script>
