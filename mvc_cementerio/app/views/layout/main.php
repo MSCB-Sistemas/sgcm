@@ -81,7 +81,6 @@ foreach ($routes as $key => [$ctrl, $method, $guard])
 $labelFor = [
   'home'            => 'Home',
   'estadisticas'    => 'Listas y Estadísticas',
-  'registro_traslado' => 'Registro Traslado',
   'usuario'         => 'Usuarios',
   'deudo'           => 'Deudos',
   'difunto'         => 'Difuntos',
@@ -99,7 +98,6 @@ $labelFor = [
 $groupFor = [
   'home'         => null,           // ítems sueltos
   'estadisticas' => null,
-  'registro_traslado' => null,
   // Todo lo demás al grupo ABM:
   'usuario'        => 'ABM',
   'deudo'          => 'ABM',
@@ -118,7 +116,6 @@ $groupFor = [
 $iconFor = [
   'home'            => ['icon' => '#home'],            // sprite interno
   'estadisticas'    => ['bi'   => 'graph-up'],   // Bootstrap Icons
-  'registro_traslado' => ['bi'  => 'bar-chart-line'],
   'usuario'         => ['bi'   => 'person-plus-fill'],
   'deudo'           => ['bi'   => 'person-badge'],
   'difunto'         => ['bi'   => 'snapchat'],
