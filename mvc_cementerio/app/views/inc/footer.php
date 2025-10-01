@@ -31,7 +31,13 @@
 
       toggleBtn.addEventListener('click', () => {
         const currentTheme = html.getAttribute('data-bs-theme');
-        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+        if (currentTheme === 'light'){
+          const newTheme = 'dark';
+        }else{
+          const newTheme = 'light';
+        }
+
         setTheme(newTheme);
         localStorage.setItem('theme', newTheme);
       });

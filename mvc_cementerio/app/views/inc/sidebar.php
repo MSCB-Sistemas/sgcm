@@ -24,21 +24,40 @@ if (!function_exists('renderIcon')) {
         <ul class="nav nav-pills flex-column mb-auto">
             <?php foreach ($MENU as $item): ?>
                 <?php
-                    $perms = $item['perms'] ?? [];
+                    if (isset($item['perms'])) {
+                        $perms = $item['perms'];
+                    } else {
+                        $perms = [];
+                    }
                     $visible = empty($perms) || $canAny($perms);
                     if (!$visible) continue;
 
-                    $hasChildren = !empty($item['children'] ?? []);
+
+                    if (!empty($item['children'])) {
+                        $hasChildren = true;
+                    } else {
+                        $hasChildren = false;
+                    }
                     $children = [];
                     if ($hasChildren) {
                       foreach ($item['children'] as $ch) {
-                          $chPerms = $ch['perms'] ?? [];
+                          if (isset($ch['perms'])) {
+                              $chPerms = $ch['perms'];
+                          } else {
+                              $chPerms = [];
+                          }
+
                           if (empty($chPerms) || $canAny($chPerms)) $children[] = $ch;
                       }
                       if (empty($children)) $hasChildren = false;
                     }
 
-                    $itemHref = $item['href'] ?? null;
+                    if (isset($item['href'])) {
+                        $itemHref = $item['href'];
+                    } else {
+                        $itemHref = null;
+                    }
+
                     $itemActive = false;
                     if ($itemHref) {
                         $itemPath = trim(parse_url($itemHref, PHP_URL_PATH), '/');
