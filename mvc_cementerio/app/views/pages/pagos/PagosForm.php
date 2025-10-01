@@ -66,18 +66,15 @@
                     <!-- Primera columna -->
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="deudo" class="form-label fw-bold">Deudo</label>
-                            <select class="form-select" id="deudo" name="deudo" required>
-                                <option value="">Seleccione...</option>
+                            <label for="deudo_search" class="form-label">Deudo</label>
+                            <input list="deudos" id="deudo_search" name="deudo_search" class="form-control" placholder="Ingrese DNI o Nombre" autocomplete="off" >
+                            <input type="hidden" id="id_deudo" name="id_deudo">
+
+                            <datalist id="deudos">
                                 <?php foreach ($datos['deudos'] as $d): ?>
-                                    <option value="<?= $d['id_deudo'] ?>">
-                                        <?= htmlspecialchars($d['dni'] . ' - ' . $d['nombre'] . ' ' . $d['apellido']) ?>
-                                    </option>
-                                <?php endforeach ?>
-                            </select>
-                            <div class="invalid-feedback">
-                                Por favor seleccione un deudo
-                            </div>
+                                    <option value="<?= htmlspecialchars($d['dni'] . ' - ' . $d['nombre'] . ' ' . $d['apellido']) ?>">
+                                <?php endforeach; ?>
+                            </datalist>
                         </div>
 
                         <div class="mb-3">
@@ -158,7 +155,6 @@
     </div>
 </div>
 <script>
-
 function calcularTotal()
 {
     const importe = parseFloat(document.getElementById('importe').value) || 0;
@@ -187,4 +183,35 @@ function calcularTotal()
       }, false)
     })
 })()
+</script>
+
+<script>
+    function configurarAutocompletado(inputId, hiddenId, datalistId) {
+        const input = document.getElementById(inputId);
+        const hidden = document.getElementById(hiddenId);
+        const options = document.querySelectorAll(`#${datalistId} option`);
+
+        input.addEventListener('input', () => {
+            const val = input.value.trim();
+            hidden.value = '';
+            let valid = false;
+
+            options.forEach(opt => {
+                if (opt.value === val) {
+                    hidden.value = opt.dataset.id;
+                    valid = true;
+                }
+            });
+
+            if (!valid) {
+                input.setCustomValidity("Debe seleccionar un elemento de la lista");
+            } else {
+                input.setCustomValidity("");
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        configurarAutocompletado('deudo_search', 'id_deudo', 'deudos');
+    });
 </script>
