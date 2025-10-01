@@ -12,11 +12,21 @@ function errorMensaje($codigo, $extra = '') {
     ];
 
     if (isset($mensajes[$codigo])) {
-        return $mensajes[$codigo] . ($extra ? ': ' . $extra : '');
+        if ($extra) {
+            return $mensajes[$codigo] . ': ' . $extra;
+        } else {
+            return $mensajes[$codigo];
+        }
     }
 
+
+
     // Si no existe, devolver mensaje por defecto
-    return 'Error indefinido' . ($extra ? ': ' . $extra : '');
+    if ($extra) {
+            return 'Error indefinido' . ': ' . $extra;
+    } else {
+        return 'Error indefinido';
+    }
 }
 
 ?>
