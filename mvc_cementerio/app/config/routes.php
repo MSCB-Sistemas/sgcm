@@ -40,12 +40,13 @@ return [
     'estadoCivil/delete'  => ['EstadoCivilController', 'delete',  'eliminar_estado_civil'],
 
     // Parcela
-    'parcela'         => ['ParcelaController','index',            'ver_parcela'],
-    'parcela/create'  => ['ParcelaController','create',           'crear_parcela'],
-    'parcela/save'    => ['ParcelaController','save',             'crear_parcela'],
-    'parcela/edit'    => ['ParcelaController','edit',             'editar_parcela'],
-    'parcela/update'  => ['ParcelaController','update',           'editar_parcela'],
-    'parcela/delete'  => ['ParcelaController','delete',           'eliminar_parcela'],
+    'parcela'                    => ['ParcelaController','index',            'ver_parcela'],
+    'parcela/create'             => ['ParcelaController','create',           'crear_parcela'],
+    'parcela/save'               => ['ParcelaController','save',             'crear_parcela'],
+    'parcela/edit'               => ['ParcelaController','edit',             'editar_parcela'],
+    'parcela/update'             => ['ParcelaController','update',           'editar_parcela'],
+    'parcela/delete'             => ['ParcelaController','delete',           'eliminar_parcela'],
+    'parcela/obtenerInfoParcela' => ['ParcelaController', 'obtenerInfoParcela', 'ver_parcela'],
 
     // Sexo
     'sexo'            => ['SexoController', 'index',              'ver_sexo'],
@@ -113,6 +114,15 @@ return [
     'ubicacion/update'  => ['UbicacionDifuntoController','update', 'editar_ubicacion'],
     'ubicacion/delete'  => ['UbicacionDifuntoController','delete', 'eliminar_ubicacion'],
 
+    // Operacion
+    'operacion'        => ['OperacionController', 'index',       'ver_operacion'],
+    'operacion/create' => ['OperacionController', 'create',      'crear_operacion'],
+    'operacion/save'   => ['OperacionController', 'save',        'crear_operacion'],
+    'operacion/edit'   => ['OperacionController', 'edit',        'editar_operacion'],
+    'operacion/update' => ['OperacionController', 'update',      'editar_operacion'],
+    'operacion/delete' => ['OperacionController', 'delete',      'eliminar_operacion'],
+
+    // Errores
     'error-permisos' => ['ErrorController', 'permisosError', '__public__'],
 ];
 

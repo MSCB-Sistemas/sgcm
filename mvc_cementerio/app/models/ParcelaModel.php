@@ -7,7 +7,8 @@ require_once 'Database.php';
  * Modelo ParcelaModel
  * Maneja las operaciones CRUD para la tabla 'parcelas'
  */
-class ParcelaModel {
+class ParcelaModel
+{
     /**
      * @var PDO $db
      * Conexión a la base de datos
@@ -18,7 +19,8 @@ class ParcelaModel {
      * Constructor
      * Inicializa la conexión a la base de datos
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->db = Database::connect();
     }
 
@@ -55,17 +57,17 @@ class ParcelaModel {
     }
 
     /**
-    * Inserta una nueva parcela
-    * @param int $id_tipo ID del tipo de parcela
-    * @param int $id_deudo ID del deudor
-    * @param string $numero_ubicacion Número de ubicación
-    * @param string $hilera Hilera de la parcela
-    * @param string $seccion Sección de la parcela
-    * @param string $fraccion Fracción de la parcela
-    * @param int $nivel Nivel de la parcela
-    * @param int $id_orientacion ID de la orientación
-    * @return int Resultado de la operación
-    */
+     * Inserta una nueva parcela
+     * @param int $id_tipo ID del tipo de parcela
+     * @param int $id_deudo ID del deudor
+     * @param string $numero_ubicacion Número de ubicación
+     * @param string $hilera Hilera de la parcela
+     * @param string $seccion Sección de la parcela
+     * @param string $fraccion Fracción de la parcela
+     * @param int $nivel Nivel de la parcela
+     * @param int $id_orientacion ID de la orientación
+     * @return int Resultado de la operación
+     */
     public function insertParcela($id_tipo_parcela, $id_deudo, $numero_ubicacion, $hilera, $seccion, $fraccion, $nivel, $id_orientacion): int
     {
         $sql = "INSERT INTO parcela (id_tipo_parcela, id_deudo, numero_ubicacion, hilera, seccion, fraccion, nivel, id_orientacion) 
@@ -85,18 +87,15 @@ class ParcelaModel {
 
         $stmt->execute($parametros);
 
-        // aquí registramos la auditoría
-        //var_dump( "Entró a AuditoriaHelper::log");
-        //var_dump($_SESSION);
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Parcela Model",             // Modelo
-            "Insert"                    // Accion
+            $_SESSION['usuario_id'],   
+            $sql,                 
+            $parametros,           
+            "Parcela Model",            
+            "Insert"                
         );
         return (int) $this->db->lastInsertId();
-       
+
     }
 
     /** 
@@ -118,7 +117,7 @@ class ParcelaModel {
                 SET id_tipo_parcela = :id_tipo_parcela, id_deudo = :id_deudo, numero_ubicacion = :numero_ubicacion, hilera = :hilera, seccion = :seccion, fraccion = :fraccion, nivel = :nivel, id_orientacion = :id_orientacion 
                 WHERE id_parcela = :id_parcela";
         $stmt = $this->db->prepare($sql);
-        
+
         $parametros = [
             'id_parcela' => $id_parcela,
             'id_tipo_parcela' => $id_tipo_parcela,
@@ -129,16 +128,15 @@ class ParcelaModel {
             'fraccion' => $fraccion,
             'nivel' => $nivel,
             'id_orientacion' => $id_orientacion
-        ];        
+        ];
         $stmt->execute($parametros);
 
-        // aquí registramos la auditoría
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Parcela Model",             // Modelo
-            "Update"                    // Accion
+            $_SESSION['usuario_id'],  
+            $sql,                     
+            $parametros,            
+            "Parcela Model",             
+            "Update"              
         );
         return $stmt->rowCount() > 0;
     }
@@ -156,15 +154,43 @@ class ParcelaModel {
 
         $stmt->execute($parametros);
 
-        // aquí registramos la auditoría
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Parcela Model",             // Modelo
-            "Delete"                    // Accion
+            $_SESSION['usuario_id'],
+            $sql,                      
+            $parametros,               
+            "Parcela Model",            
+            "Delete"                    
         );
         return $stmt->rowCount() > 0;
+    }
+
+    public function obtenerPagosPorParcela($id_parcela)
+    {
+        $sql = "SELECT pg.id_pago, pg.fecha_pago, pg.fecha_vencimiento, pg.total,
+                CONCAT(de.nombre, ' ', de.apellido) AS Deudo
+                FROM pago pg
+                JOIN deudo de ON pg.id_deudo = de.id_deudo
+                WHERE pg.id_parcela = :id_parcela";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':id_parcela', $id_parcela, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function obtenerDifuntosPorParcela($id_parcela)
+    {
+        $sql = "SELECT di.id_difunto, di.dni, di.nombre, di.apellido, ubi.fecha_ingreso
+                FROM ubicacion_difunto ubi
+                JOIN difunto di ON ubi.id_difunto = di.id_difunto
+                WHERE ubi.id_parcela = :id_parcela";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':id_parcela', $id_parcela, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
 ?>

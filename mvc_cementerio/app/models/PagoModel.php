@@ -67,10 +67,10 @@ class PagoModel {
      */
     public function insertPago($id_deudo, $id_parcela, $fecha_pago, $fecha_vencimiento, $importe, $recargo, $total, $id_usuario): int
     {
-        $sql = "INSERT INTO pago (id_deudo, id_parcela, fecha_pago, importe, recargo, total, id_usuario) 
-                VALUES (:id_deudo, :id_parcela, :fecha_pago, :importe, :recargo, :total, :id_usuario)";
+        $sql = "INSERT INTO pago (id_deudo, id_parcela, fecha_pago, fecha_vencimiento, importe, recargo, total, id_usuario) 
+                VALUES (:id_deudo, :id_parcela, :fecha_pago, :fecha_vencimiento, :importe, :recargo, :total, :id_usuario)";
+
         $stmt = $this->db->prepare($sql);
-        
         $parametros = [
             "id_deudo" => $id_deudo,
             "id_parcela" => $id_parcela,
@@ -108,7 +108,7 @@ class PagoModel {
      */
     public function updatePago($id_pago, $id_deudo, $id_parcela, $fecha_pago, $fecha_vencimiento, $importe, $recargo, $total, $id_usuario): bool
     {
-        $sql = "UPDATE pago SET id_deudo = :id_deudo, id_parcela = :id_parcela, fecha_pago = :fecha_pago, importe = :importe, recargo = :recargo, total = :total, id_usuario = :id_usuario
+        $sql = "UPDATE pago SET id_deudo = :id_deudo, id_parcela = :id_parcela, fecha_pago = :fecha_pago, fecha_vencimiento = :fecha_vencimiento, importe = :importe, recargo = :recargo, total = :total, id_usuario = :id_usuario
                 WHERE id_pago = :id_pago";
         $stmt = $this->db->prepare($sql);
         
