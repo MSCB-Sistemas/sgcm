@@ -120,7 +120,7 @@
     });
 </script>
 <script>
-    document.getElementById('parcela').addEventListener('change', function() {
+    document.getElementById('parcela_search').addEventListener('change', function() {
         const idParcela = this.value;
 
         if (!idParcela) {
@@ -138,26 +138,47 @@
                 let pagosHtml = `<div class="accordion-item">
                     <h2 class="accordion-header" id="headingPagos">
                         <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePagos" aria-expanded="true" aria-controls="collapsePagos">
-                            Pagos asociados
+                            <i class="fas fa-receipt me-2"></i>Pagos Asociados (${data.pagos.length})
                         </button>
                     </h2>
                     <div id="collapsePagos" class="accordion-collapse collapse show" aria-labelledby="headingPagos" data-bs-parent="#accordionParcelaInfo">
-                        <div class="accordion-body">`;
+                        <div class="accordion-body p-0">`;
 
                 if (data.pagos.length > 0) {
-                    pagosHtml += "<ul class='list-group'>";
+                    pagosHtml += `
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="text-nowrap">Fecha Pago</th>
+                                    <th class="text-nowrap">Fecha Vencimiento</th>
+                                    <th class="text-nowrap">Total</th>
+                                    <th class="text-nowrap">Deudo</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+                    
                     data.pagos.forEach(p => {
-                        pagosHtml += `<li class="list-group-item">
-                            <strong>Fecha pago:</strong> ${p.fecha_pago} | 
-                            <strong>Vencimiento:</strong> ${p.fecha_vencimiento} | 
-                            <strong>Total:</strong> $${p.total} | 
-                            <strong>Deudo:</strong> ${p.Deudo}
-                        </li>`;
+                        const estadoClass = p.Deudo === 'Pagado' ? 'badge bg-success' : 'badge bg-danger';
+                        pagosHtml += `
+                                <tr>
+                                    <td class="text-nowrap">${p.fecha_pago}</td>
+                                    <td class="text-nowrap">${p.fecha_vencimiento}</td>
+                                    <td class="text-nowrap">ARS ${p.total}</td>
+                                    <td class="text-nowrap">${p.Deudo}</td>
+                                </tr>`;
                     });
 
-                    pagosHtml += "</ul>";
+                    pagosHtml += `
+                            </tbody>
+                        </table>
+                    </div>`;
                 } else {
-                    pagosHtml += "<p>No hay pagos asociados a esta parcela.</p>";
+                    pagosHtml += `
+                    <div class="text-center py-4">
+                        <i class="fas fa-receipt fa-2x text-muted mb-3"></i>
+                        <p class="text-muted mb-0">No hay pagos asociados a esta parcela</p>
+                    </div>`;
                 }
 
                 pagosHtml += `</div></div></div>`;
@@ -165,36 +186,59 @@
                 let difuntosHtml = `<div class="accordion-item">
                     <h2 class="accordion-header" id="headingDifuntos">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDifuntos" aria-expanded="false" aria-controls="collapseDifuntos">
-                            Difuntos asociados
+                            <i class="fas fa-users me-2"></i>Difuntos Asociados (${data.difuntos.length})
                         </button>
                     </h2>
-
                     <div id="collapseDifuntos" class="accordion-collapse collapse" aria-labelledby="headingDifuntos" data-bs-parent="#accordionParcelaInfo">
-                        <div class="accordion-body">`;
+                        <div class="accordion-body p-0">`;
 
                 if (data.difuntos.length > 0) {
-                    difuntosHtml += "<ul class='list-group'>";
+                    difuntosHtml += `
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="text-nowrap">DNI</th>
+                                    <th class="text-nowrap">Nombre Completo</th>
+                                    <th class="text-nowrap">Apellido</th>
+                                    <th class="text-nowrap">Fecha Ubicación</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+                    
                     data.difuntos.forEach(d => {
-                        difuntosHtml += `<li class="list-group-item">
-                            <strong>DNI:</strong> ${d.dni} | 
-                            <strong>Nombre:</strong> ${d.nombre} ${d.apellido} | 
-                            <strong>Fecha ubicación:</strong> ${d.fecha_ubicacion}
-                        </li>`;
-
+                        difuntosHtml += `
+                                <tr>
+                                    <td class="text-nowrap">${d.dni}</td>
+                                    <td class="text-nowrap fw-bold">${d.nombre}</td>
+                                    <td class="text-nowrap">${d.apellido}</td>
+                                    <td class="text-nowrap">${d.fecha_ubicacion}</td>
+                                </tr>`;
                     });
 
-                    difuntosHtml += "</ul>";
+                    difuntosHtml += `
+                            </tbody>
+                        </table>
+                    </div>`;
                 } else {
-                    difuntosHtml += "<em>No hay difuntos registrados en esta parcela.</em>";
+                    difuntosHtml += `
+                    <div class="text-center py-4">
+                        <i class="fas fa-users fa-2x text-muted mb-3"></i>
+                        <p class="text-muted mb-0">No hay difuntos registrados en esta parcela</p>
+                    </div>`;
                 }
 
                 difuntosHtml += `</div></div></div>`;
                 accordion.innerHTML = pagosHtml + difuntosHtml;
             })
-
             .catch(err => {
-            console.error(err);
-            document.getElementById('accordionParcelaInfo').innerHTML = "<div class='alert alert-danger'>Error al cargar la información de la parcela.</div>";
-        });
+                console.error(err);
+                document.getElementById('accordionParcelaInfo').innerHTML = `
+                    <div class="alert alert-danger d-flex align-items-center" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <div>Error al cargar la información de la parcela.</div>
+                    </div>`;
+            });
     });
+</script>
 </script>

@@ -218,13 +218,22 @@ class ParcelaController extends Control
         header('Content-Type: application/json');
         $model = new ParcelaModel();
 
+        $todosLosPagos = $model->obtenerPagosPorParcela($id);
+        
+        usort($todosLosPagos, function($a, $b) {
+            $fechaA = strtotime($a['fecha_pago']);
+            $fechaB = strtotime($b['fecha_pago']);
+            return $fechaB - $fechaA;
+        });
+        
+        $pagosLimitados = array_slice($todosLosPagos, 0, 10);
+
         $data = [
-            'pagos' => $model->obtenerPagosPorParcela($id),
+            'pagos' => $pagosLimitados,
             'difuntos' => $model->obtenerDifuntosPorParcela($id),
         ];
 
         echo json_encode($data);
-
         exit;
     }
 }
