@@ -259,16 +259,52 @@ class DeudoController extends Control {
     {
         header('Content-Type: application/json; charset=utf-8');
         
-        $draw   = $_POST['draw'] ?? 1;
-        $start  = intval($_POST['start'] ?? 0);
-        $length = intval($_POST['length'] ?? 10);
-        $search = $_POST['search']['value'] ?? '';
-        $orderColumnIndex = $_POST['order'][0]['column'] ?? 0;
-        $orderDir = $_POST['order'][0]['dir'] ?? 'asc';
+        // Función auxiliar para obtener valores simples de $_POST
+        function getPost($key, $default = '') {
+            if (isset($_POST[$key])) {
+                return $_POST[$key];
+            } else {
+                return $default;
+            }
+        }
 
+        // Función auxiliar para obtener valores anidados (por ejemplo: $_POST['order'][0]['dir'])
+        function getNestedPost($keys, $default = '') {
+            $value = $_POST;
+            foreach ($keys as $key) {
+                if (!isset($value[$key])) {
+                    return $default;
+                }
+                $value = $value[$key];
+            }
+            return $value;
+        }
+
+        // Obtener parámetros de DataTables sin estructuras ternarias
+        $draw = getPost('draw', 1);
+
+        $startRaw = getPost('start', 0);
+        $start = intval($startRaw);
+
+        $lengthRaw = getPost('length', 10);
+        $length = intval($lengthRaw);
+
+        $search = getNestedPost(['search', 'value'], '');
+
+        $orderColumnIndex = getNestedPost(['order', 0, 'column'], 0);
+        $orderDir = getNestedPost(['order', 0, 'dir'], 'asc');
+
+        // Columnas permitidas para ordenamiento
         $columns = ['id_deudo','dni','nombre','apellido','telefono','email','domicilio','localidad','codigo_postal'];
-        $orderCol = $columns[$orderColumnIndex] ?? 'id_deudo';
 
+        // Validar si el índice de columna existe
+        if (isset($columns[$orderColumnIndex])) {
+            $orderCol = $columns[$orderColumnIndex];
+        } else {
+            $orderCol = 'id_deudo';
+        }
+
+        // Obtener el total de registros desde el modelo
         $totalRecords = $this->model->countAll();
 
         if ($search) {

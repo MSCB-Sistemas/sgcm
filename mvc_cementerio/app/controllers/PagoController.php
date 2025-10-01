@@ -29,10 +29,20 @@ class PagoController extends Control {
                 ['data' => 'nombre_deudo'],
                 ['data' => 'parcela'],
                 ['data' => 'fecha_pago', 'render' => function($data) {
-                    return $data ? date('d/m/Y', strtotime($data)) : '-';
+                    if ($data){
+                        return date('d/m/Y', strtotime($data));
+                    }
+                    else{
+                        return '-';
+                    }
                 }],
                 ['data' => 'fecha_vencimiento', 'render' => function($data) {
-                    return $data ? date('d/m/Y', strtotime($data)) : '-';
+                    if ($data){
+                        return date('d/m/Y', strtotime($data));
+                    }
+                    else{
+                        return '-';
+                    }
                 }],
                 ['data' => 'importe', 'render' => function($data) {
                     return '$ ' . number_format($data, 2);
@@ -272,20 +282,51 @@ class PagoController extends Control {
     public function ajax() {
         header('Content-Type: application/json; charset=utf-8');
         
-        $draw = $_POST['draw'] ?? 1;
-        $start = intval($_POST['start'] ?? 0);
-        $length = intval($_POST['length'] ?? 10);
-        $search = $_POST['search']['value'] ?? '';
-        $orderColumnIndex = $_POST['order'][0]['column'] ?? 0;
-        $orderDir = $_POST['order'][0]['dir'] ?? 'asc';
+        // Función para obtener valores simples de $_POST sin ternarias
+        function getPost($key, $default = '') {
+            if (isset($_POST[$key])) {
+                return $_POST[$key];
+            } else {
+                return $default;
+            }
+        }
 
+        // Función para obtener valores anidados en $_POST, p.ej. $_POST['search']['value']
+        function getNestedPost($keys, $default = '') {
+            $value = $_POST;
+            foreach ($keys as $key) {
+                if (!isset($value[$key])) {
+                    return $default;
+                }
+                $value = $value[$key];
+            }
+            return $value;
+        }
+
+        // Obtener parámetros usando las funciones auxiliares
+        $draw = getPost('draw', 1);
+        $start = intval(getPost('start', 0));
+        $length = intval(getPost('length', 10));
+        $search = getNestedPost(['search', 'value'], '');
+        $orderColumnIndex = getNestedPost(['order', 0, 'column'], 0);
+        $orderDir = getNestedPost(['order', 0, 'dir'], 'asc');
+
+        // Definir columnas permitidas para ordenamiento
         $columns = [
             'id_pago', 'nombre_deudo', 'parcela', 'fecha_pago', 
             'fecha_vencimiento', 'importe', 'recargo', 'total', 'usuario'
         ];
-        $orderCol = $columns[$orderColumnIndex] ?? 'id_pago';
 
+        // Validar si el índice de columna existe
+        if (isset($columns[$orderColumnIndex])) {
+            $orderCol = $columns[$orderColumnIndex];
+        } else {
+            $orderCol = 'id_pago';
+        }
+
+        // Obtener total de registros desde el modelo
         $totalRecords = $this->model->countAll();
+
 
         if ($search) {
             $data = $this->model->getFiltered($search, $orderCol, $orderDir, $start, $length);

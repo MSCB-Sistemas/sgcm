@@ -350,21 +350,53 @@ class DifuntoController extends Control
     {
         header('Content-Type: application/json; charset=utf-8');
         
-        $draw = $_POST['draw'] ?? 1;
-        $start = intval($_POST['start'] ?? 0);
-        $length = intval($_POST['length'] ?? 10);
-        $search = $_POST['search']['value'] ?? '';
-        $orderColumnIndex = $_POST['order'][0]['column'] ?? 0;
-        $orderDir = $_POST['order'][0]['dir'] ?? 'asc';
+        // Función auxiliar para obtener valores POST de forma segura
+        function getPost($key, $default = '') {
+            if (isset($_POST[$key])) {
+                return $_POST[$key];
+            } else {
+                return $default;
+            }
+        }
 
+
+        // Función auxiliar para obtener valores anidados en arrays (como search[value])
+        function getNestedPost($keys, $default = '') {
+            $value = $_POST;
+            foreach ($keys as $key) {
+                if (!isset($value[$key])) {
+                    return $default;
+                }
+                $value = $value[$key];
+            }
+            return $value;
+        }
+
+        // Obtener parámetros
+        $draw   = getPost('draw', 1);
+        $start  = intval(getPost('start', 0));
+        $length = intval(getPost('length', 10));
+        $search = getNestedPost(['search', 'value'], '');
+        $orderColumnIndex = getNestedPost(['order', 0, 'column'], 0);
+        $orderDir         = getNestedPost(['order', 0, 'dir'], 'asc');
+
+        // Definir columnas permitidas para ordenamiento
         $columns = [
             'id_difunto', 'nombre_deudo', 'nombre', 'apellido', 'dni', 'edad', 
             'fecha_fallecimiento', 'sexo', 'nacionalidad', 'estado_civil', 
             'domicilio', 'localidad', 'codigo_postal'
         ];
-        $orderCol = $columns[$orderColumnIndex] ?? 'id_difunto';
 
+        // Validar si el índice de columna existe
+        if (isset($columns[$orderColumnIndex])) {
+            $orderCol = $columns[$orderColumnIndex];
+        } else {
+            $orderCol = 'id_difunto';
+        }
+
+        // Obtener el total de registros desde el modelo
         $totalRecords = $this->model->countAll();
+
 
         if ($search) {
             $data = $this->model->getFiltered($search, $orderCol, $orderDir, $start, $length);

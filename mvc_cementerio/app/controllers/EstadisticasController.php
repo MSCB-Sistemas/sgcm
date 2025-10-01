@@ -132,13 +132,23 @@ class EstadisticasController extends Control {
 
         $deudores_morosos = $this->model->getDeudosMorosos();
  
-        $numero_ubicacion = isset($_GET['numero_ubicacion']) ? $_GET['numero_ubicacion'] : '';
-        $id_tipo_parcela = isset($_GET['id_tipo_parcela']) ? $_GET['id_tipo_parcela'] : '';
-        $seccion = isset($_GET['seccion']) ? $_GET['seccion'] : '';
-        $fraccion = isset($_GET['fraccion']) ? $_GET['fraccion'] : '';
-        $nivel = isset($_GET['nivel']) ? $_GET['nivel'] : '';
-        $id_orientacion = isset($_GET['id_orientacion']) ? $_GET['id_orientacion'] : '';
-        $hilera = isset($_GET['hilera']) ? $_GET['hilera'] : '';
+        function getParam($key) {
+            if (isset($_GET[$key])) {
+                return $_GET[$key];
+            } else {
+                return '';
+            }
+        }
+
+
+        $numero_ubicacion = getParam('numero_ubicacion');
+        $id_tipo_parcela  = getParam('id_tipo_parcela');
+        $seccion          = getParam('seccion');
+        $fraccion         = getParam('fraccion');
+        $nivel            = getParam('nivel');
+        $id_orientacion   = getParam('id_orientacion');
+        $hilera           = getParam('hilera');
+
 
         $filtros_parcela = [
             'numero_ubicacion' => $numero_ubicacion,

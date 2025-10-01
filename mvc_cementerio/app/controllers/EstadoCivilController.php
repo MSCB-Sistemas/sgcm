@@ -48,7 +48,7 @@ class EstadoCivilController extends Control
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (isset($_POST['descripcion'])) {
-            $descripcion = trim($_POST['descripcion']);
+                $descripcion = trim($_POST['descripcion']);
             } else {
                 $descripcion = '';
             }
