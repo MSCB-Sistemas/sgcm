@@ -2,7 +2,7 @@
     define('APP', dirname(dirname(__FILE__)));
     
     define('DB_HOST', 'localhost');
-    define('DB_NAME', 'cementerio');
+    define('DB_NAME', 'cementerio2');
     define('DB_USER', 'root');
     define('DB_PASS', '');
 
