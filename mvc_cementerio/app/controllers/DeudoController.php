@@ -33,8 +33,7 @@ class DeudoController extends Control {
                 ['data' => 'acciones', 'orderable' => false, 'searchable' => false]
             ],
             'puedeCrear'      => $puedeCrear,
-            'errores'         => [],
-            'csrfToken'         => $this->generateCsrfToken()
+            'errores'         => []
         ];
 
         $this->loadView("partials/tablaAbmAjax", $datos);
@@ -148,94 +147,64 @@ class DeudoController extends Control {
         ]);
     }
 
-    public function update($id){  
+    public function update($id)
+    {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $dni = trim($_POST['dni']);
-            
-            if (isset($_POST['nombre'])) {
-                $nombre = trim($_POST['nombre']);
-            } else {
-                $nombre = '';
-            }
-            if (isset($_POST['apellido'])) {
-                $apellido = trim($_POST['apellido']);
-            } else {
-                $apellido = '';
-            }
-            if (isset($_POST['telefono'])) {
-                $telefono = trim($_POST['telefono']);
-            } else {
-                $telefono = '';
-            }
-            if (isset($_POST['email'])) {
-                $email = trim($_POST['email']);
-            } else {
-                $email = '';
-            }
-            if (isset($_POST['domicilio'])) {
-                $domicilio = trim($_POST['domicilio']);
-            } else {
-                $domicilio = '';
-            }
-            if (isset($_POST['localidad'])) {
-                $localidad = trim($_POST['localidad']);
-            } else {
-                $localidad = '';
-            }
-            if (isset($_POST['codigo_postal'])) {
-                $codigo_postal = trim($_POST['codigo_postal']);
-            } else {
-                $codigo_postal = '';
-            }
+            // Definir campos y etiquetas personalizadas
+            $campos = [
+                'dni'           => 'DNI',
+                'nombre'        => 'nombre',
+                'apellido'      => 'apellido',
+                'telefono'      => 'teléfono',
+                'email'         => 'dirección de mail',
+                'domicilio'     => 'domicilio',
+                'localidad'     => 'localidad',
+                'codigo_postal' => 'código postal',
+            ];
 
+            $datos = [];
             $errores = [];
-            if (empty($dni)) {
-                $errores[] = "Tiene que ingresar un DNI";
-            }
-            if (empty($nombre)) {
-                $errores[] = "Tiene que ingresar un nombre";
-            }
-            if (empty($apellido)) {
-                $errores[] = "Tiene que ingresar un apellido";
-            }
-            if (empty($telefono)) {
-                $errores[] = "Tiene que ingresar un telefono";
-            }
-            if (empty($email)) {
-                $errores[] = "Tiene que ingresar una direccion de mail";
-            }
-            if (empty($domicilio)) {
-                $errores[] = "Tiene que ingresar un domicilio";
-            }
-            if (empty($localidad)) {
-                $errores[] = "Tiene que ingresar una localidad";
-            }
-            if (empty($codigo_postal)) {
-                $errores[] = "Tiene que ingresar un código postal";
+
+            // Procesar todos los campos
+            foreach ($campos as $campo => $etiqueta) {
+                if (isset($_POST[$campo])) {
+                    $valor = trim($_POST[$campo]);
+                } else {
+                    $valor = '';
+                }
+
+                $datos[$campo] = $valor;
+
+                if (empty($valor)) {
+                    $errores[] = "Tiene que ingresar un {$etiqueta}";
+                }
             }
 
+            // Si hay errores, mostrar el formulario con datos y errores
             if (!empty($errores)) {
-                $deudo = [
-                    "dni" => $dni,
-                    "nombre" => $nombre,
-                    "apellido" => $apellido,
-                    "telefono" => $telefono,
-                    "email" => $email,
-                    "domicilio" => $domicilio,
-                    "localidad" => $localidad,
-                    "codigo_postal" => $codigo_postal
-                ];
-
                 $this->loadView("deudos/DeudosForm", [
-                    'title' => 'Editar Deudo',
-                    'action' => URL . 'deudo/update/' . $id,
-                    'values' => $deudo,
+                    'title'   => 'Editar Deudo',
+                    'action'  => URL . 'deudo/update/' . $id,
+                    'values'  => $datos,
                     'errores' => $errores,
                 ]);
                 return;
             }
 
-            if ($this->model->updateDeudo($id, $dni, $nombre, $apellido, $telefono, $email, $domicilio, $localidad, $codigo_postal)) {
+            // Intentar actualizar el modelo
+            $exito = $this->model->updateDeudo(
+                $id,
+                $datos['dni'],
+                $datos['nombre'],
+                $datos['apellido'],
+                $datos['telefono'],
+                $datos['email'],
+                $datos['domicilio'],
+                $datos['localidad'],
+                $datos['codigo_postal']
+            );
+
+            if ($exito) {
                 header("Location: " . URL . "deudo");
                 exit;
             } else {
@@ -243,6 +212,7 @@ class DeudoController extends Control {
             }
         }
     }
+
 
     public function delete($id)
     {
@@ -343,11 +313,6 @@ class DeudoController extends Control {
             "data" => $data
         ]);
         exit;
-    }
-
-    private function generateCsrfToken()
-    {
-        return $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
 }
 ?>
