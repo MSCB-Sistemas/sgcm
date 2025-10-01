@@ -69,16 +69,9 @@
                             <label for="deudo" class="form-label fw-bold">Deudo</label>
                             <select class="form-select" id="deudo" name="deudo" required>
                                 <option value="">Seleccione...</option>
-                                <?php foreach ($datos['deudos'] as $n): ?>
-                                    <?php
-                                    if ($id_deudo_selected == $n['id_deudo']) {
-                                        $selected_deudo = 'selected';
-                                    } else {
-                                        $selected_deudo = '';
-                                    }
-                                    ?>
-                                    <option value="<?= $n['id_deudo'] ?>" <?= $selected_deudo ?>>
-                                        <?= htmlspecialchars($n['nombre']) ?>
+                                <?php foreach ($datos['deudos'] as $d): ?>
+                                    <option value="<?= $d['id_deudo'] ?>">
+                                        <?= htmlspecialchars($d['dni'] . ' - ' . $d['nombre'] . ' ' . $d['apellido']) ?>
                                     </option>
                                 <?php endforeach ?>
                             </select>
@@ -91,16 +84,9 @@
                             <label for="parcela" class="form-label fw-bold">Parcela</label>
                             <select class="form-select" id="parcela" name="parcela" required>
                                 <option value="">Seleccione...</option>
-                                <?php foreach ($datos['parcelas'] as $n): ?>
-                                    <?php
-                                    if ($id_parcela_selected == $n['id_parcela']) {
-                                        $selected_parcela = 'selected';
-                                    } else {
-                                        $selected_parcela = '';
-                                    }
-                                    ?>
-                                    <option value="<?= $n['id_parcela'] ?>" <?= $selected_parcela ?>>
-                                        <?= htmlspecialchars($n['id_parcela']) ?>
+                                <?php foreach ($datos['parcelas'] as $p): ?>
+                                    <option value="<?= $p['id_parcela'] ?>">
+                                        <?= htmlspecialchars($p['id_parcela'] . ' - ' . $p['id_tipo_parcela'] . ' - ' . $p['numero_ubicacion'] . ' - | ' . $p['hilera'] . ' | ' . $p['seccion'] . ' | ' . $p['fraccion'] . ' | ' . $p['nivel'] . ' |') ?>
                                     </option>
                                 <?php endforeach ?>
                             </select>
@@ -121,7 +107,7 @@
                         <div class="mb-3">
                             <label for="fecha_vencimiento" class="form-label fw-bold">Fecha de vencimiento</label>
                             <input type="date" class="form-control" id="fecha_vencimiento" name="fecha_vencimiento" 
-                                   value="<?= $fecha_vencimiento ?>" required>
+                                   value="<?= htmlspecialchars($datos['values']['fecha_vencimiento'] ?? '') ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese la fecha de vencimiento
                             </div>
@@ -129,8 +115,8 @@
                         
                         <div class="mb-3">
                             <label for="importe" class="form-label fw-bold">Importe</label>
-                            <input type="number" class="form-control" id="importe" name="importe" 
-                                   value="<?= $importe ?>" required>
+                            <input type="number" class="form-control" id="importe" name="importe"
+                                value="<?= htmlspecialchars($datos['values']['importe'] ?? '') ?>" required oninput="calcularTotal()">
                             <div class="invalid-feedback">
                                 Por favor ingrese el importe
                             </div>
@@ -140,9 +126,9 @@
                     <!-- Segunda columna -->
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="recargo" class="form-label fw-bold">Recargo</label>
-                            <input type="number" class="form-control" id="recargo" name="recargo" 
-                                   value="<?= $recargo ?>" required>
+                        <label for="recargo" class="form-label fw-bold">Recargo (%)</label>
+                        <input type="number" step="0.01" class="form-control" id="recargo" name="recargo" 
+                            value="<?= htmlspecialchars($datos['values']['recargo'] ?? '') ?>" required oninput="calcularTotal()">
                             <div class="invalid-feedback">
                                 Por favor ingrese el recargo
                             </div>
@@ -150,8 +136,8 @@
                         
                         <div class="mb-3">
                             <label for="total" class="form-label fw-bold">Total</label>
-                            <input type="number" class="form-control" id="total" name="total" 
-                                   value="<?= $total ?>" required>
+                            <input type="number" step="0.01" class="form-control" id="total" name="total"
+                                value="<?= htmlspecialchars($datos['values']['total'] ?? '') ?>" readonly>
                             <div class="invalid-feedback">
                                 Por favor ingrese la fracción
                             </div>
@@ -171,18 +157,24 @@
         </div>
     </div>
 </div>
-
-
-<!-- Agrega este script para la validación del formulario -->
 <script>
-// Ejemplo de validación de Bootstrap
+
+function calcularTotal()
+{
+    const importe = parseFloat(document.getElementById('importe').value) || 0;
+    const recargo = parseFloat(document.getElementById('recargo').value) || 0;
+
+    const montoRecargo = importe * (recargo / 100);
+    const total = importe + montoRecargo;
+
+    document.getElementById('total').value = total.toFixed(2);
+}
+
 (function () {
   'use strict'
 
-  // Selecciona todos los formularios a los que queremos aplicar estilos de validación de Bootstrap
   var forms = document.querySelectorAll('.needs-validation')
 
-  // Bucle sobre ellos y evitar el envío
   Array.prototype.slice.call(forms)
     .forEach(function (form) {
       form.addEventListener('submit', function (event) {

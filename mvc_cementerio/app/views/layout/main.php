@@ -2,12 +2,10 @@
 $user = currentUser();
 $base = rtrim(URL, '/');
 
-// ---- permisos
-// $can: verifica si el usuario tiene un permiso
 $can = function($perm) use ($user) 
 {
     if ($perm === '__login__') {
-        return (bool)$user;   // cualquiera logueado
+        return (bool)$user;
     }
 
     if ($user) {
@@ -20,10 +18,9 @@ $can = function($perm) use ($user)
     } else {   return false; }
 };
 
-// $canAny: devuelve true si tiene al menos uno de los permisos del array
 $canAny = function(array $perms) use ($can) 
 {
-    if (empty($perms)) return true;       // sin guard => visible
+    if (empty($perms)) return true;     
     foreach ($perms as $p) {
         if ($can($p)) { return true; }
     }
@@ -32,14 +29,13 @@ $canAny = function(array $perms) use ($can)
 
 $guardToPerms = function($guard) 
 {
-    if ($guard === '__public__' || $guard === null) return [];        // visible a todos
-    if ($guard === '__login__') return ['__login__'];                 // requiere login
-    if (is_string($guard)) return [$guard];                           // permiso único
-    if (is_array($guard))  return $guard;                             // OR de permisos
+    if ($guard === '__public__' || $guard === null) return [];      
+    if ($guard === '__login__') return ['__login__'];               
+    if (is_string($guard)) return [$guard];                        
+    if (is_array($guard))  return $guard;                       
     return [];
 };
 
-// Construcción de Ruta activa (para marcar “active”)
 $requestPath = '';
 if (isset($_SERVER['REQUEST_URI'])) 
 {
@@ -55,33 +51,24 @@ if (isset($_SERVER['REQUEST_URI']))
 
 $activePath = trim($requestPath, '/');
 
-// 1) Cargar rutas compartidas
 $routes = require APP . '/config/routes.php';
 
-// 2) Solo “rutas de índice” (sin slash)
 $indexRoutes = [];
 foreach ($routes as $key => [$ctrl, $method, $guard]) 
 {
     if (strpos($key, '/') === false) 
     {
-        // ignorar login/logout/públicas que no quieras en el menú
-        $ignorar = ['', 
-                    'login', 
-                    'logout', 
-                    'error-permisos'
-                    ];
+        $ignorar = ['', 'login', 'logout', 'error-permisos'];
         
         if (in_array($key, $ignorar, true)) continue;
         $indexRoutes[$key] = $routes[$key];
-        //Ese array es la base para construir el $MENU dinámico del sidebar.
     }
 }
 
-// 3) Mapeo de labels y grupos (controlás texto y agrupación acá)
 $labelFor = [
   'home'            => 'Home',
   'estadisticas'    => 'Listas y Estadísticas',
-  'registro_traslado' => 'Registro Traslado',
+  'operacion'       => 'Operaciones',
   'usuario'         => 'Usuarios',
   'deudo'           => 'Deudos',
   'difunto'         => 'Difuntos',
@@ -97,10 +84,9 @@ $labelFor = [
 ];
 
 $groupFor = [
-  'home'         => null,           // ítems sueltos
-  'estadisticas' => null,
-  'registro_traslado' => null,
-  // Todo lo demás al grupo ABM:
+  'home'           => null,
+  'estadisticas'   => null,
+  'operacion'      => null,
   'usuario'        => 'ABM',
   'deudo'          => 'ABM',
   'difunto'        => 'ABM',
@@ -155,7 +141,6 @@ foreach ($indexRoutes as $path => $def)
         continue;
     }
 
-    // Resto de Hijos al grupo ABM
     if ($group === 'ABM') 
     {
         $abmChildren[] = ['label'=>$label, 'href'=>$href, 'perms'=>$perms] + $icon;
@@ -163,23 +148,21 @@ foreach ($indexRoutes as $path => $def)
     }    
 }
 
-// Primero items sueltos
 $MENU = $solo;
 
-// Luego (si hay) un único grupo ABM
 if (!empty($abmChildren)) 
 {
     $MENU[] = [
         'label' => 'Alta, Baja y Modificación',
-        'perms' => [],                // visible para todos los logueados; cada hijo filtra lo suyo
+        'perms' => [],                
         'children' => $abmChildren
     ];
 }
 ?>
 
 <?php   #echo '<pre>'; print_r($MENU); echo '</pre>';
-        #exit;
- require_once APP . '/views/inc/header.php' ?>
+#exit;
+require_once APP . '/views/inc/header.php' ?>
 
 <body>
     <main class="d-flex flex-nowrap" style="min-height: 100vh">
@@ -188,4 +171,4 @@ if (!empty($abmChildren))
             <?php require_once $viewPath; ?>
         </div>
     </main>
-<?php require_once APP . '/views/inc/footer.php' ?>
+    <?php require_once APP . '/views/inc/footer.php' ?>

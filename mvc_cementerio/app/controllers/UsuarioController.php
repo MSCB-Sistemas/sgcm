@@ -252,7 +252,6 @@ class UsuarioController extends Control{
                     'id_tipo_usuario'  => $tipoUsuario,
                 ],
             ];
-
           
             $this->loadView('usuarios/UsuarioForm', array_merge($usuario, [
                 'errores' => $errores,
