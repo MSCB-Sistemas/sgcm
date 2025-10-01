@@ -10,37 +10,35 @@
 
 <form action="<?= isset($datos['action']) ? $datos['action'] : '' ?>" method="POST" id="operacionForm">
     <div class="row mb-3">
-
         <!-- Parcela -->
         <div class="col-md-6 d-flex align-items-end">
             <div class="flex-grow-1">
-                <label for="parcela" class="form-label">Parcela</label>
-                <select class="form-select" id="parcela" name="id_parcela" required>
-                    <option value="">Seleccione...</option>
+                <label for="parcela_search" class="form-label">Parcela</label>
+                <input list="parcelas" id="parcela_search" name="parcela_search" class="form-control" placeholder="Ingrese una parcela" autocomplete="off" required>
+                <input type="hidden" id="id_parcela" name="id_parcela">
+
+                <datalist id="parcelas">
                     <?php foreach ($datos['parcelas'] as $p): ?>
-                        <option value="<?= $p['id_parcela'] ?>">
-                            <?= htmlspecialchars($p['id_parcela'] . ' - ' . $p['id_tipo_parcela'] . ' - ' . $p['numero_ubicacion'] . ' - ' . $p['hilera'] . '/' . $p['seccion'] . '/' . $p['fraccion'] . '/' . $p['nivel']) ?>
-                        </option>
+                        <option value="<?= htmlspecialchars($p['id_parcela'] . ' - ' . $p['id_tipo_parcela'] . ' - ' . $p['numero_ubicacion'] . ' - ' . $p['hilera'] . '/' . $p['seccion'] . '/' . $p['fraccion'] . '/' . $p['nivel']) ?>">
                     <?php endforeach; ?>
-                </select>
+                </datalist>
             </div>
             <button type="button" class="btn btn-success ms-2" data-bs-toggle="modal"
                 data-bs-target="#modalParcela">+</button>
-
         </div>
 
         <!-- Deudo -->
         <div class="col-md-6 d-flex align-items-end">
             <div class="flex-grow-1">
-                <label for="deudo" class="form-label">Deudo</label>
-                <select class="form-select" data-live-search="true" id="deudo" name="id_deudo" required>
-                    <option value="">Seleccione...</option>
+                <label for="deudo_search" class="form-label">Deudo</label>
+                <input list="deudos" id="deudo_search" name="deudo_search" class="form-control" placholder="Ingrese DNI o Nombre" autocomplete="off" required>
+                <input type="hidden" id="id_deudo" name="id_deudo">
+
+                <datalist id="deudos">
                     <?php foreach ($datos['deudos'] as $d): ?>
-                        <option value="<?= $d['id_deudo'] ?>">
-                            <?= htmlspecialchars($d['dni'] . ' - ' . $d['nombre'] . ' ' . $d['apellido']) ?>
-                        </option>
+                        <option value="<?= htmlspecialchars($d['dni'] . ' - ' . $d['nombre'] . ' ' . $d['apellido']) ?>">
                     <?php endforeach; ?>
-                </select>
+                </datalist>
             </div>
             <button type="button" class="btn btn-success ms-2" data-bs-toggle="modal"
                 data-bs-target="#modalDeudo">+</button>
@@ -51,15 +49,15 @@
         <!-- Difunto -->
         <div class="col-md-6 d-flex align-items-end">
             <div class="flex-grow-1">
-                <label for="difunto" class="form-label">Difunto</label>
-                <select class="form-select" data-live-search="true" id="difunto" name="id_difunto" required>
-                    <option value="">Seleccione...</option>
+                <label for="difunto_search" class="form-label">Difunto</label>
+                <input list="difuntos" id="difunto_search" name="difunto_search" class="form-control" placholder="Ingrese un difunto" autocomplete="off" required>
+                <input type="hidden" id="id_difunto" name="id_difunto">
+
+                <datalist id="difuntos">
                     <?php foreach ($datos['difuntos'] as $di): ?>
-                        <option value="<?= $di['id_difunto'] ?>">
-                            <?= htmlspecialchars($di['dni'] . ' - ' . $di['nombre'] . ' ' . $di['apellido']) ?>
-                        </option>
+                        <option value="<?= htmlspecialchars($di['dni'] . ' - ' . $di['nombre'] . ' ' . $di['apellido']) ?>">
                     <?php endforeach; ?>
-                </select>
+                </datalist>
             </div>
             <button type="button" class="btn btn-success ms-2" data-bs-toggle="modal"
                 data-bs-target="#modalDifunto">+</button>
@@ -89,6 +87,38 @@
 </form>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function configurarAutocompletado(inputId, hiddenId, datalistId) {
+        const input = document.getElementById(inputId);
+        const hidden = document.getElementById(hiddenId);
+        const options = document.querySelectorAll(`#${datalistId} option`);
+
+        input.addEventListener('input', () => {
+            const val = input.value.trim();
+            hidden.value = '';
+            let valid = false;
+
+            options.forEach(opt => {
+                if (opt.value === val) {
+                    hidden.value = opt.dataset.id;
+                    valid = true;
+                }
+            });
+
+            if (!valid) {
+                input.setCustomValidity("Debe seleccionar un elemento de la lista");
+            } else {
+                input.setCustomValidity("");
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        configurarAutocompletado('deudo_search', 'id_deudo', 'deudos');
+        configurarAutocompletado('parcela_search', 'id_parcela', 'parcelas');
+        configurarAutocompletado('difunto_search', 'id_difunto', 'difuntos');
+    });
+</script>
 <script>
     document.getElementById('parcela').addEventListener('change', function() {
         const idParcela = this.value;
