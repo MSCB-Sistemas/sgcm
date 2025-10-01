@@ -16,13 +16,27 @@
                 </div>
             <?php endif; ?>
             
+            <?php                
+                if (isset($values['id_sexo'])) {
+                    $id_sexo = $values['id_sexo'];
+                } else {
+                    $id_sexo = '';
+                }
+
+                if (isset($datos['values']['descripcion'])) {
+                    $descripcion = htmlspecialchars($datos['values']['descripcion']);
+                } else {
+                    $descripcion = '';
+                }
+            ?>
+            
             <form action="<?= $datos['action'] ?>" method="POST" class="needs-validation" novalidate>
-                <input type="hidden" name="id_sexo" value="<?= $values['id_sexo'] ?? '' ?>">
+                <input type="hidden" name="id_sexo" value="<?= $id_sexo ?>">
                 
                 <div class="mb-3">
                     <label for="descripcion" class="form-label fw-bold">Descripción</label>
                     <input type="text" class="form-control" id="descripcion" name="descripcion" 
-                           value="<?= htmlspecialchars($datos['values']['descripcion'] ?? '') ?>" required>
+                           value="<?= $descripcion ?>" required>
                     <div class="invalid-feedback">
                         Por favor ingrese una descripción válida
                     </div>

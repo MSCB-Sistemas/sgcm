@@ -1,3 +1,20 @@
+<?php
+if (!function_exists('renderIcon')) {
+  function renderIcon(array $it): string {
+      if (!empty($it['icon'])) {
+          $href = htmlspecialchars($it['icon']);
+          return '<svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlink:href="' . $href . '"></use></svg>';
+      }
+      if (!empty($it['bi'])) {
+          $cls = 'bi bi-' . preg_replace('/[^a-z0-9\-]/i', '', $it['bi']) . ' me-2';
+          return '<i class="' . $cls . '" aria-hidden="true"></i>';
+      }
+      return '';
+  }
+}
+?>
+
+
 <h1 class="visually-hidden">Barra inicio</h1>
 <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark " style="width: 289px; background-color: #fd7e14 !important;">
     <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none" href="https://www.bariloche.gov.ar/" target="_blank">
@@ -33,6 +50,7 @@
                   <li class="nav-item">
                     <a class="nav-link text-white <?= $itemActive ? 'active' : '' ?>"
                       href="<?= htmlspecialchars($itemHref ?? '#') ?>">
+                      <?= renderIcon($item) ?>
                       <?= htmlspecialchars($item['label']) ?>
                     </a>
                   </li>
@@ -45,6 +63,7 @@
                       href="#<?= $grpId ?>"
                       role="button" aria-expanded="false"
                       aria-controls="<?= $grpId ?>">
+                      <?= renderIcon($item) /* <-- icono en el título del grupo */ ?>
                       <?= htmlspecialchars($item['label']) ?>
                       <span class="position-absolute end-0 me-3" id="<?= $grpId ?>-arrow">&#x25BC;</span>
                     </a>
@@ -54,7 +73,8 @@
                         <?php foreach ($children as $ch): ?>
                           <li>
                             <a class="nav-link text-white" href="<?= htmlspecialchars($ch['href']) ?>">
-                              <?= htmlspecialchars($ch['label']) ?>
+                                <?= renderIcon($ch) /* <-- icono en el hijo */ ?>                              
+                                <?= htmlspecialchars($ch['label']) ?>
                             </a>
                           </li>
                         <?php endforeach; ?>
@@ -66,7 +86,7 @@
         </ul>
     
     <div class="dropup mt-auto text-center">
-      <hr>
+        <hr>
         <a class="d-block text-white dropdown-toggle fw-bold fs-6 text-decoration-none" 
         href="#" 
         role="button" 

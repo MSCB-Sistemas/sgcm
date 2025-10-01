@@ -15,6 +15,57 @@
                     </ul>
                 </div>
             <?php endif; ?>
+
+            <?php                
+                if (isset($datos['values']['usuario'])) {
+                    $usuario = htmlspecialchars($datos['values']['usuario']);
+                } else {
+                    $usuario = '';
+                }
+
+                if (isset($datos['values']['nombre'])) {
+                    $nombre = htmlspecialchars($datos['values']['nombre']);
+                } else {
+                    $nombre = '';
+                }
+
+                if (isset($datos['values']['apellido'])) {
+                    $apellido = htmlspecialchars($datos['values']['apellido']);
+                } else {
+                    $apellido = '';
+                }
+
+                if (isset($datos['values']['telefono'])) {
+                    $telefono = htmlspecialchars($datos['values']['telefono']);
+                } else {
+                    $telefono = '';
+                }
+
+                if (isset($datos['values']['email'])) {
+                    $email = htmlspecialchars($datos['values']['email']);
+                } else {
+                    $email = '';
+                }
+
+                if (isset($datos['values']['cargo'])) {
+                    $cargo = htmlspecialchars($datos['values']['cargo']);
+                } else {
+                    $cargo = '';
+                }
+
+                if (isset($datos['values']['sector'])) {
+                    $sector = htmlspecialchars($datos['values']['sector']);
+                } else {
+                    $sector = '';
+                }
+
+                if (isset($datos['values']['id_tipo_usuario'])) {
+                    $id_tipo_usuario = $datos['values']['id_tipo_usuario'];
+                } else {
+                    $id_tipo_usuario = '';
+                }
+            ?>
+
             
             <form action="<?= $datos['action'] ?>" method="POST" class="needs-validation" novalidate>
             <div class="row g-3">
@@ -23,7 +74,7 @@
                     <div class="mb-3">
                         <label for="usuario" class="form-label fw-bold">Usuario</label>
                         <input type="text" class="form-control" id="usuario" name="usuario" 
-                            value="<?= htmlspecialchars($datos['values']['usuario'] ?? '') ?>" required>
+                            value="<?= $usuario ?>" required>
                         <div class="invalid-feedback">
                             Por favor ingrese un nombre de usuario
                         </div>
@@ -42,7 +93,7 @@
                     <div class="mb-3">
                         <label for="nombre" class="form-label fw-bold">Nombre</label>
                         <input type="text" class="form-control" id="nombre" name="nombre" 
-                            value="<?= htmlspecialchars($datos['values']['nombre'] ?? '') ?>" required>
+                            value="<?= $nombre ?>" required>
                         <div class="invalid-feedback">
                             Por favor ingrese el nombre
                         </div>
@@ -51,7 +102,7 @@
                     <div class="mb-3">
                         <label for="apellido" class="form-label fw-bold">Apellido</label>
                         <input type="text" class="form-control" id="apellido" name="apellido" 
-                            value="<?= htmlspecialchars($datos['values']['apellido'] ?? '') ?>" required>
+                            value="<?= $apellido ?>" required>
                         <div class="invalid-feedback">
                             Por favor ingrese el apellido
                         </div>
@@ -60,7 +111,7 @@
                     <div class="mb-3">
                         <label for="telefono" class="form-label fw-bold">Número de teléfono</label>
                         <input type="text" class="form-control" id="telefono" name="telefono" 
-                            value="<?= htmlspecialchars($datos['values']['telefono'] ?? '') ?>" required>
+                            value="<?= $telefono ?>" required>
                         <div class="invalid-feedback">
                             Por favor ingrese su número de teléfono
                         </div>
@@ -72,7 +123,7 @@
                     <div class="mb-3">
                         <label for="email" class="form-label fw-bold">Correo electrónico</label>
                         <input type="email" class="form-control" id="email" name="email" 
-                            value="<?= htmlspecialchars($datos['values']['email'] ?? '') ?>" required>
+                            value="<?= $email ?>" required>
                         <div class="invalid-feedback">
                             Por favor ingrese su dirección de correo electrónico
                         </div>
@@ -81,13 +132,13 @@
                     <div class="mb-3">
                         <label for="cargo" class="form-label fw-bold">Cargo</label>
                         <input type="text" class="form-control" id="cargo" name="cargo" 
-                            value="<?= htmlspecialchars($datos['values']['cargo'] ?? '') ?>">
+                            value="<?= $cargo ?>">
                     </div>
 
                     <div class="mb-3">
                         <label for="sector" class="form-label fw-bold">Sector</label>
                         <input type="text" class="form-control" id="sector" name="sector" 
-                            value="<?= htmlspecialchars($datos['values']['sector'] ?? '') ?>">
+                            value="<?= $sector ?>">
                     </div>
 
                     <div class="mb-3">
@@ -95,8 +146,14 @@
                         <select class="form-select" id="tipo_usuario" name="tipo_usuario" required>
                             <option value="">Seleccione...</option>
                             <?php foreach ($datos['tipos'] as $n): ?>
-                                <option value="<?= $n['id_tipo_usuario'] ?>"
-                                    <?= ($datos['values']['id_tipo_usuario'] ?? '') == $n['id_tipo_usuario'] ? 'selected' : '' ?>>
+                                <?php
+                                if ($id_tipo_usuario == $n['id_tipo_usuario']) {
+                                    $selected = 'selected';
+                                } else {
+                                    $selected = '';
+                                }
+                                ?>
+                                <option value="<?= $n['id_tipo_usuario'] ?>" <?= $selected ?>>
                                     <?= htmlspecialchars($n['descripcion']) ?>
                                 </option>
                             <?php endforeach ?>
@@ -106,14 +163,14 @@
                         </div>
                     </div>
                     
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-save"></i> Guardar
-                </button>
-                <a href="<?= URL ?>usuario" class="btn btn-outline-secondary me-md-2">
-                    <i class="bi bi-x-circle"></i> Cancelar
-                </a>             
-            </div> 
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Guardar
+                        </button>
+                        <a href="<?= URL ?>usuario" class="btn btn-outline-secondary me-md-2">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>             
+                    </div> 
                 </div>
             </div>
         </form>

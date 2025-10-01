@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
         language: {
             url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
         },
-        pageLength: 10,       // Número de filas por página
+        pageLength: 8,       // Número de filas por página
         lengthMenu: [5, 10, 25, 50, 100], // Opciones para cambiar cantidad
         order: []             // Sin orden inicial (para que el usuario elija)
     });

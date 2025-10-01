@@ -16,8 +16,8 @@ class TipoUsuariosController extends Control
         $datos = [
             'title' => 'Lista de tipos de usuarios',
             'urlCrear' => URL . 'tipoUsuario/create',
-            'columnas' => ['ID', 'Descripcion'],
-            'columnas_claves' => ['id_tipo_usuario', 'descripcion'],
+            'columnas' => ['ID', 'Rol'],
+            'columnas_claves' => ['id_tipo_usuario', 'rol'],
             'data' => $tipos_usuarios,
             'acciones' => function ($fila) {
                 $id = $fila['id_tipo_usuario'];
@@ -48,10 +48,14 @@ class TipoUsuariosController extends Control
     public function save()
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $descripcion = trim($_POST['descripcion'] ?? '');
+            if (isset($_POST['rol'])) {
+                $rol = trim($_POST['rol']);
+            } else {
+                $rol = '';
+            }
             $errores = [];
 
-            if (empty($descripcion))
+            if (empty($rol))
                 $errores[] = 'El nombre del tipo de usuario es obligatorio';
 
             if (!empty($errores)) {
@@ -64,7 +68,7 @@ class TipoUsuariosController extends Control
                 return;
             }
 
-            $id_tipo_usuario = $this->model->insertTipoUsuario($descripcion);
+            $id_tipo_usuario = $this->model->insertTipoUsuario($rol);
             if ($id_tipo_usuario) {
                 header('Location: ' . URL . 'tipoUsuario');
                 exit;
@@ -86,24 +90,27 @@ class TipoUsuariosController extends Control
             'title' => 'Editar tipo de usuario',
             'action' => URL . 'tipoUsuario/update/' . $id,
             'values' => [
-                'descripcion' => $tipo_usuario['descripcion'],
+                'rol' => $tipo_usuario['rol'],
             ],
             'errores' => []
         ]);
     }
-
     public function update($id)
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $descripcion = trim($_POST['descripcion'] ?? '');
+            if (isset($_POST['rol'])) {
+                $rol = trim($_POST['rol']);
+            } else {
+                $rol = '';
+            }
             $errores = [];
 
-            if (empty($descripcion))
+            if (empty($rol))
                 $errores[] = 'El nombre del usuario no puede quedar vacio.';
 
             if (!empty($errores)) {
                 $tipo_usuario = [
-                    'descripcion' => $descripcion
+                    'rol' => $rol
                 ];
 
                 $this->loadView("tipos_usuarios/TipoUsuarioForm", [
@@ -115,7 +122,7 @@ class TipoUsuariosController extends Control
                 return;
             }
 
-            if ($this->model->updateTipoUsuario($id, $descripcion)) {
+            if ($this->model->updateTipoUsuario($id, $rol)) {
                 header('Location: ' . URL . 'tipoUsuario');
                 exit;
             } else {

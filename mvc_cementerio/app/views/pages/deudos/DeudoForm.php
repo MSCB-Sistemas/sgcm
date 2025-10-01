@@ -15,47 +15,92 @@
                     </ul>
                 </div>
             <?php endif; ?>
-            
+
+            <?php
+                // Valores de los campos con if-else
+                if (isset($datos['values']['id_deudo'])) {
+                    $id_deudo = $datos['values']['id_deudo'];
+                } else {
+                    $id_deudo = '';
+                }
+
+                if (isset($datos['values']['dni'])) {
+                    $dni = htmlspecialchars($datos['values']['dni']);
+                } else {
+                    $dni = '';
+                }
+
+                if (isset($datos['values']['nombre'])) {
+                    $nombre = htmlspecialchars($datos['values']['nombre']);
+                } else {
+                    $nombre = '';
+                }
+
+                if (isset($datos['values']['apellido'])) {
+                    $apellido = htmlspecialchars($datos['values']['apellido']);
+                } else {
+                    $apellido = '';
+                }
+
+                if (isset($datos['values']['telefono'])) {
+                    $telefono = htmlspecialchars($datos['values']['telefono']);
+                } else {
+                    $telefono = '';
+                }
+
+                if (isset($datos['values']['email'])) {
+                    $email = htmlspecialchars($datos['values']['email']);
+                } else {
+                    $email = '';
+                }
+
+                if (isset($datos['values']['domicilio'])) {
+                    $domicilio = htmlspecialchars($datos['values']['domicilio']);
+                } else {
+                    $domicilio = '';
+                }
+
+                if (isset($datos['values']['localidad'])) {
+                    $localidad = htmlspecialchars($datos['values']['localidad']);
+                } else {
+                    $localidad = '';
+                }
+
+                if (isset($datos['values']['codigo_postal'])) {
+                    $codigo_postal = htmlspecialchars($datos['values']['codigo_postal']);
+                } else {
+                    $codigo_postal = '';
+                }
+            ?>
+
             <form action="<?= $datos['action'] ?>" method="POST" class="needs-validation" novalidate>
-                <input type="hidden" name="id" value="<?= $values['id_deudo'] ?? '' ?>">
-                
+                <input type="hidden" name="id" value="<?= $id_deudo ?>">
+
                 <div class="row g-3">
                     <!-- Primera columna -->
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label for="dni" class="form-label fw-bold">DNI</label>
-                            <input type="text" class="form-control" id="dni" name="dni" 
-                                   value="<?= htmlspecialchars($datos['values']['dni'] ?? '') ?>" required>
-                            <div class="invalid-feedback">
-                                Por favor ingrese el DNI
-                            </div>
+                            <input type="text" class="form-control" id="dni" name="dni" value="<?= $dni ?>" required>
+                            <div class="invalid-feedback">Por favor ingrese el DNI</div>
                         </div>
                         
                         <div class="mb-3">
                             <label for="nombre" class="form-label fw-bold">Nombre</label>
-                            <input type="text" class="form-control" id="nombre" name="nombre" 
-                                   value="<?= htmlspecialchars($datos['values']['nombre'] ?? '') ?>" required>
-                            <div class="invalid-feedback">
-                                Por favor ingrese el nombre
-                            </div>
+                            <input type="text" class="form-control" id="nombre" name="nombre" value="<?= $nombre ?>" required>
+                            <div class="invalid-feedback">Por favor ingrese el nombre</div>
                         </div>
                         
                         <div class="mb-3">
                             <label for="apellido" class="form-label fw-bold">Apellido</label>
-                            <input type="text" class="form-control" id="apellido" name="apellido" 
-                                   value="<?= htmlspecialchars($datos['values']['apellido'] ?? '') ?>" required>
-                            <div class="invalid-feedback">
-                                Por favor ingrese el apellido
-                            </div>
+                            <input type="text" class="form-control" id="apellido" name="apellido" value="<?= $apellido ?>" required>
+                            <div class="invalid-feedback">Por favor ingrese el apellido</div>
                         </div>
                         
                         <div class="mb-3">
                             <label for="telefono" class="form-label fw-bold">Teléfono</label>
-                            <input type="text" class="form-control" id="telefono" name="telefono" 
-                                   value="<?= htmlspecialchars($datos['values']['telefono'] ?? '') ?>" required>
-                            <div class="invalid-feedback">
-                                Por favor ingrese el teléfono
-                            </div>
+                            <input type="text" class="form-control" id="telefono" name="telefono" value="<?= $telefono ?>" required>
+                            <div class="invalid-feedback">Por favor ingrese el teléfono</div>
                         </div>
                     </div>
                     
@@ -63,42 +108,30 @@
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label for="email" class="form-label fw-bold">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" 
-                                   value="<?= htmlspecialchars($datos['values']['email'] ?? '') ?>" required>
-                            <div class="invalid-feedback">
-                                Por favor ingrese un email válido
-                            </div>
+                            <input type="email" class="form-control" id="email" name="email" value="<?= $email ?>" required>
+                            <div class="invalid-feedback">Por favor ingrese un email válido</div>
                         </div>
                         
                         <div class="mb-3">
                             <label for="domicilio" class="form-label fw-bold">Domicilio</label>
-                            <input type="text" class="form-control" id="domicilio" name="domicilio" 
-                                   value="<?= htmlspecialchars($datos['values']['domicilio'] ?? '') ?>" required>
-                            <div class="invalid-feedback">
-                                Por favor ingrese el domicilio
-                            </div>
+                            <input type="text" class="form-control" id="domicilio" name="domicilio" value="<?= $domicilio ?>" required>
+                            <div class="invalid-feedback">Por favor ingrese el domicilio</div>
                         </div>
                         
                         <div class="mb-3">
                             <label for="localidad" class="form-label fw-bold">Localidad</label>
-                            <input type="text" class="form-control" id="localidad" name="localidad" 
-                                   value="<?= htmlspecialchars($datos['values']['localidad'] ?? '') ?>" required>
-                            <div class="invalid-feedback">
-                                Por favor ingrese la localidad
-                            </div>
+                            <input type="text" class="form-control" id="localidad" name="localidad" value="<?= $localidad ?>" required>
+                            <div class="invalid-feedback">Por favor ingrese la localidad</div>
                         </div>
                         
                         <div class="mb-3">
                             <label for="codigo_postal" class="form-label fw-bold">Código Postal</label>
-                            <input type="text" class="form-control" id="codigo_postal" name="codigo_postal" 
-                                   value="<?= htmlspecialchars($datos['values']['codigo_postal'] ?? '') ?>" required>
-                            <div class="invalid-feedback">
-                                Por favor ingrese el código postal
-                            </div>
+                            <input type="text" class="form-control" id="codigo_postal" name="codigo_postal" value="<?= $codigo_postal ?>" required>
+                            <div class="invalid-feedback">Por favor ingrese el código postal</div>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
                     <a href="<?= URL ?>deudo" class="btn btn-outline-secondary me-md-2">
                         <i class="bi bi-x-circle"></i> Cancelar
@@ -114,14 +147,10 @@
 
 <!-- Script para validación -->
 <script>
-// Ejemplo de validación de Bootstrap
 (function () {
   'use strict'
 
-  // Selecciona todos los formularios a los que queremos aplicar estilos de validación de Bootstrap
   var forms = document.querySelectorAll('.needs-validation')
-
-  // Bucle sobre ellos y evitar el envío
   Array.prototype.slice.call(forms)
     .forEach(function (form) {
       form.addEventListener('submit', function (event) {
@@ -129,7 +158,6 @@
           event.preventDefault()
           event.stopPropagation()
         }
-
         form.classList.add('was-validated')
       }, false)
     })

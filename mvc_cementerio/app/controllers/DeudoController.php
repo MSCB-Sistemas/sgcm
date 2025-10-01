@@ -13,40 +13,31 @@ class DeudoController extends Control {
         $puedeCrear    = $this->can('crear_deudo');
         $puedeEditar   = $this->can('editar_deudo');
         $puedeEliminar = $this->can('eliminar_deudo');
-
-        $deudos = $this->model->getAllDeudos();
         
         $datos = [
             "title"             => "Lista de Deudos",
             'urlCrear'          => URL . 'deudo/create',
-            'columnas'          => ['ID', 'Nombre', 'Apellido', 'DNI', 'Teléfono', 'Email', 'Domicilio', 'Codigo Postal'],
-            'columnas_claves'   => ['id_deudo', 'nombre', 'apellido', 'dni', 'telefono', 'email', 'domicilio', 'codigo_postal'],
-            'data'              => $deudos,
-            "acciones"  => function (array $fila) use ($puedeEditar, $puedeEliminar)
-            {
-                $id = $fila['id_deudo'];
-                $url = rtrim(URL,'/') . '/deudo';
-
-                $html = '';
-                if ($puedeEditar) 
-                {
-                    $html .= '<a href="'.$url.'/edit/'.$id.'" class="btn btn-sm btn-primary">Editar</a> ';
-                    $html .= '<form action="'.$url.'/activate/'.$id.'" method="post" style="display:inline">'
-                          .  '<button class="btn btn-sm btn-success" onclick="return confirm(\'¿Activar este deudo?\');">Activar</button>'
-                          .  '</form> ';
-                }
-                if ($puedeEliminar) {
-                    $html .= '<form action="'.$url.'/delete/'.$id.'" method="post" style="display:inline" onsubmit="return confirm(\'¿Eliminar este deudo?\');">'
-                          .  '<button class="btn btn-sm btn-danger">Eliminar</button>'
-                          .  '</form>';
-                }
-                return $html;
-            },
-            'puedeCrear'      => $puedeCrear,   // por si tu partial muestra el botón “Nuevo”
+            'ajaxUrl'           => URL . 'deudo/ajax',
+            'baseUrl'           => URL . 'deudo/',
+            'columnas' => ['ID', 'DNI', 'Nombre', 'Apellido', 'Teléfono', 'Email', 'Domicilio', 'Localidad', 'Código Postal'],
+            'columnsConfig'     => [
+                ['data' => 'id_deudo'],
+                ['data' => 'dni'],
+                ['data' => 'nombre'],
+                ['data' => 'apellido'],
+                ['data' => 'telefono'],
+                ['data' => 'email'],
+                ['data' => 'domicilio'],
+                ['data' => 'localidad'],
+                ['data' => 'codigo_postal'],
+                ['data' => 'acciones', 'orderable' => false, 'searchable' => false]
+            ],
+            'puedeCrear'      => $puedeCrear,
             'errores'         => [],
+            'csrfToken'         => $this->generateCsrfToken()
         ];
 
-        $this->loadView("partials/tablaAbm", $datos);
+        $this->loadView("partials/tablaAbmAjax", $datos);
     }
 
     public function create()
@@ -157,17 +148,45 @@ class DeudoController extends Control {
         ]);
     }
 
-    public function update($id)
-    {
+    public function update($id){  
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $dni = trim($_POST['dni']);
-            $nombre = trim($_POST['nombre'] ?? '');
-            $apellido = trim($_POST['apellido'] ?? '');
-            $telefono = trim($_POST['telefono'] ?? '');
-            $email = trim($_POST['email'] ?? '');
-            $domicilio = trim($_POST['domicilio'] ?? '');
-            $localidad = trim($_POST['localidad'] ?? '');
-            $codigo_postal = trim($_POST['codigo_postal'] ?? '');
+            
+            if (isset($_POST['nombre'])) {
+                $nombre = trim($_POST['nombre']);
+            } else {
+                $nombre = '';
+            }
+            if (isset($_POST['apellido'])) {
+                $apellido = trim($_POST['apellido']);
+            } else {
+                $apellido = '';
+            }
+            if (isset($_POST['telefono'])) {
+                $telefono = trim($_POST['telefono']);
+            } else {
+                $telefono = '';
+            }
+            if (isset($_POST['email'])) {
+                $email = trim($_POST['email']);
+            } else {
+                $email = '';
+            }
+            if (isset($_POST['domicilio'])) {
+                $domicilio = trim($_POST['domicilio']);
+            } else {
+                $domicilio = '';
+            }
+            if (isset($_POST['localidad'])) {
+                $localidad = trim($_POST['localidad']);
+            } else {
+                $localidad = '';
+            }
+            if (isset($_POST['codigo_postal'])) {
+                $codigo_postal = trim($_POST['codigo_postal']);
+            } else {
+                $codigo_postal = '';
+            }
 
             $errores = [];
             if (empty($dni)) {
@@ -234,6 +253,65 @@ class DeudoController extends Control {
         }
         header("Location: " . URL . "deudo");
         exit;
+    }
+
+    public function ajax()
+    {
+        header('Content-Type: application/json; charset=utf-8');
+        
+        $draw   = $_POST['draw'] ?? 1;
+        $start  = intval($_POST['start'] ?? 0);
+        $length = intval($_POST['length'] ?? 10);
+        $search = $_POST['search']['value'] ?? '';
+        $orderColumnIndex = $_POST['order'][0]['column'] ?? 0;
+        $orderDir = $_POST['order'][0]['dir'] ?? 'asc';
+
+        $columns = ['id_deudo','dni','nombre','apellido','telefono','email','domicilio','localidad','codigo_postal'];
+        $orderCol = $columns[$orderColumnIndex] ?? 'id_deudo';
+
+        $totalRecords = $this->model->countAll();
+
+        if ($search) {
+            $data = $this->model->getFiltered($search, $orderCol, $orderDir, $start, $length);
+            $filteredRecords = $this->model->countFiltered($search);
+        } else {
+            $data = $this->model->getPage($orderCol, $orderDir, $start, $length);
+            $filteredRecords = $totalRecords;
+        }
+
+        foreach ($data as &$fila) {
+            $id  = $fila['id_deudo'];
+            $url = rtrim(URL,'/') . '/deudo';
+    
+            $acciones = '';
+    
+            if ($this->can('editar_deudo')) {
+                $acciones .= '<a href="'.$url.'/edit/'.$id.'" class="btn btn-sm btn-primary">Editar</a> ';
+                $acciones .= '<form action="'.$url.'/activate/'.$id.'" method="post" style="display:inline">'
+                           . '</form> ';
+            }
+    
+            if ($this->can('eliminar_deudo')) {
+                $acciones .= '<form action="'.$url.'/delete/'.$id.'" method="post" style="display:inline" onsubmit="return confirm(\'¿Eliminar este deudo?\');">'
+                           . '<button class="btn btn-sm btn-danger">Eliminar</button>'
+                           . '</form>';
+            }
+    
+            $fila['acciones'] = $acciones; // Esta es la clave que espera DataTables
+        }  
+
+        echo json_encode([
+            "draw" => intval($draw),
+            "recordsTotal" => $totalRecords,
+            "recordsFiltered" => $filteredRecords,
+            "data" => $data
+        ]);
+        exit;
+    }
+
+    private function generateCsrfToken()
+    {
+        return $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
 }
 ?>

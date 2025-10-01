@@ -8,31 +8,95 @@ class EstadisticasController extends Control {
         $this->model = $this->loadModel("EstadisticasModel");
     }
 
-    public function index()
-    {
+    public function index(){
+       
         // Filtros de Defunciones
-        $fecha_inicio_defuncion = $_GET['fecha_inicio_defuncion'] ?? $_GET['fecha_inicio_defuncion'] ?? '1900-01-01';
-        $fecha_fin_defuncion   = $_GET['fecha_fin_defuncion']   ?? $_GET['fecha_fin_defuncion'] ?? date('Y-m-d');
-        $letra_apellido_difunto = $_GET['letra_apellido_difunto'] ?? '';
+        if (isset($_GET['fecha_inicio_defuncion'])) {
+            $fecha_inicio_defuncion = $_GET['fecha_inicio_defuncion'];
+        } else {
+            $fecha_inicio_defuncion = '1900-01-01';
+        }
+        if (isset($_GET['fecha_fin_defuncion'])) {
+            $fecha_fin_defuncion = $_GET['fecha_fin_defuncion'];
+        } else {
+            $fecha_fin_defuncion = date('Y-m-d');
+        }
+        if (isset($_GET['letra_apellido_difunto'])) {
+            $letra_apellido_difunto = $_GET['letra_apellido_difunto'];
+        } else {
+            $letra_apellido_difunto = '';
+        }
 
         // Filtros de Traslados
-        $fecha_inicio_defuncion_traslado = $_GET['fecha_inicio_defuncion_traslado'] ?? $_GET['fecha_inicio_defuncion_traslado'] ?? '1900-01-01';
-        $fecha_fin_defuncion_traslado   = $_GET['fecha_fin_defuncion_traslado']   ?? $_GET['fecha_fin_defuncion_traslado']    ?? date('Y-m-d');
-        $fecha_inicio_traslado = $_GET['fecha_inicio_traslado'] ?? $_GET['fecha_inicio_traslado'] ?? '1900-01-01';
-        $fecha_fin_traslado   = $_GET['fecha_fin_traslado']   ?? $_GET['fecha_fin_traslado'] ?? date('Y-m-d');
-        $letra_apellido_traslado = $_GET['letra_apellido_traslado'] ?? '';
+        if (isset($_GET['fecha_inicio_defuncion_traslado'])) {
+            $fecha_inicio_defuncion_traslado = $_GET['fecha_inicio_defuncion_traslado'];
+        } else {
+            $fecha_inicio_defuncion_traslado = '1900-01-01';
+        }
+        if (isset($_GET['fecha_fin_defuncion_traslado'])) {
+            $fecha_fin_defuncion_traslado = $_GET['fecha_fin_defuncion_traslado'];
+        } else {
+            $fecha_fin_defuncion_traslado = date('Y-m-d');
+        }
+        if (isset($_GET['fecha_inicio_traslado'])) {
+            $fecha_inicio_traslado = $_GET['fecha_inicio_traslado'];
+        } else {
+            $fecha_inicio_traslado = '1900-01-01';
+        }
+        if (isset($_GET['fecha_fin_traslado'])) {
+            $fecha_fin_traslado = $_GET['fecha_fin_traslado'];
+        } else {
+            $fecha_fin_traslado = date('Y-m-d');
+        }
+        if (isset($_GET['letra_apellido_traslado'])) {
+            $letra_apellido_traslado = $_GET['letra_apellido_traslado'];
+        } else {
+            $letra_apellido_traslado = '';
+        }
 
         // Filtros de Parcelas Vendidas
-        $fecha_inicio_parcela = $_GET['fecha_inicio_parcela'] ?? $_GET['fecha_parcela_inicio'] ?? '1900-01-01';
-        $fecha_fin_parcela   = $_GET['fecha_fin_parcela']   ?? $_GET['fecha_parcela_fin']    ?? date('Y-m-d');
-        $letra_apellido_deudo   = $_GET['letra_apellido_deudo'] ?? '';
+        if (isset($_GET['fecha_inicio_parcela'])) {
+            $fecha_inicio_parcela = $_GET['fecha_inicio_parcela'];
+        } elseif (isset($_GET['fecha_parcela_inicio'])) {
+            $fecha_inicio_parcela = $_GET['fecha_parcela_inicio'];
+        } else {
+            $fecha_inicio_parcela = '1900-01-01';
+        }
+        if (isset($_GET['fecha_fin_parcela'])) {
+            $fecha_fin_parcela = $_GET['fecha_fin_parcela'];
+        } elseif (isset($_GET['fecha_parcela_fin'])) {
+            $fecha_fin_parcela = $_GET['fecha_parcela_fin'];
+        } else {
+            $fecha_fin_parcela = date('Y-m-d');
+        }
+        if (isset($_GET['letra_apellido_deudo'])) {
+            $letra_apellido_deudo = $_GET['letra_apellido_deudo'];
+        } else {
+            $letra_apellido_deudo = '';
+        }
 
         // Filtros para defunciones mensuales
-        $fecha_inicio_mensual = $_GET['fecha_inicio_mensual'] ?? '1900-01-01';
-        $fecha_fin_mensual = $_GET['fecha_fin_mensual'] ?? date('Y-m-d');
-       
-        $sort_col = $_GET['sort_col'] ?? 'fecha_fallecimiento';
-        $sort_dir = strtoupper($_GET['sort_dir'] ?? 'ASC');
+        if (isset($_GET['fecha_inicio_mensual'])) {
+            $fecha_inicio_mensual = $_GET['fecha_inicio_mensual'];
+        } else {
+            $fecha_inicio_mensual = '1900-01-01';
+        }
+        if (isset($_GET['fecha_fin_mensual'])) {
+            $fecha_fin_mensual = $_GET['fecha_fin_mensual'];
+        } else {
+            $fecha_fin_mensual = date('Y-m-d');
+        }
+
+        if (isset($_GET['sort_col'])) {
+            $sort_col = $_GET['sort_col'];
+        } else {
+            $sort_col = 'fecha_fallecimiento';
+        }
+        if (isset($_GET['sort_dir'])) {
+            $sort_dir = strtoupper($_GET['sort_dir']);
+        } else {
+            $sort_dir = 'ASC';
+        }
         if (!in_array($sort_dir, ['ASC', 'DESC'])) {
             $sort_dir = 'ASC';
         }
@@ -67,18 +131,26 @@ class EstadisticasController extends Control {
         );
 
         $deudores_morosos = $this->model->getDeudosMorosos();
+ 
+        $numero_ubicacion = isset($_GET['numero_ubicacion']) ? $_GET['numero_ubicacion'] : '';
+        $id_tipo_parcela = isset($_GET['id_tipo_parcela']) ? $_GET['id_tipo_parcela'] : '';
+        $seccion = isset($_GET['seccion']) ? $_GET['seccion'] : '';
+        $fraccion = isset($_GET['fraccion']) ? $_GET['fraccion'] : '';
+        $nivel = isset($_GET['nivel']) ? $_GET['nivel'] : '';
+        $id_orientacion = isset($_GET['id_orientacion']) ? $_GET['id_orientacion'] : '';
+        $hilera = isset($_GET['hilera']) ? $_GET['hilera'] : '';
 
-        
         $filtros_parcela = [
-            'numero_ubicacion' => $_GET['numero_ubicacion'] ?? '',
-            'id_tipo_parcela' => $_GET['id_tipo_parcela'] ?? '',
-            'seccion' => $_GET['seccion'] ?? '',
-            'fraccion' => $_GET['fraccion'] ?? '',
-            'nivel' => $_GET['nivel'] ?? '',
-            'id_orientacion' => $_GET['id_orientacion'] ?? '',
-            'hilera' => $_GET['hilera'] ?? ''        
+            'numero_ubicacion' => $numero_ubicacion,
+            'id_tipo_parcela' => $id_tipo_parcela,
+            'seccion' => $seccion,
+            'fraccion' => $fraccion,
+            'nivel' => $nivel,
+            'id_orientacion' => $id_orientacion,
+            'hilera' => $hilera        
         ];
-        $uso_filtro_parcela = array_filter($filtros_parcela, fn($v) => $v !== '');
+
+        $uso_filtro_parcela = array_filter($filtros_parcela, function($v) { return $v !== ''; });
 
         if ($uso_filtro_parcela) {
             $parcelas_vendidas = $this->model->getParcelasVendidasPorDatosParcela($filtros_parcela);
@@ -87,13 +159,18 @@ class EstadisticasController extends Control {
             $parcelas_vendidas = $this->model->getParcelasVendidas($fecha_inicio_parcela, $fecha_fin_parcela, $letra_apellido_deudo);
             $total_parcelas_vendidas = count($parcelas_vendidas);
         }
-
+        
        
         $difuntos_trasladados = $this->model->getDifuntosTrasladados(
             $fecha_inicio_defuncion_traslado,
             $fecha_fin_defuncion_traslado,
             $fecha_inicio_traslado,
             $fecha_fin_traslado,
+            $letra_apellido_traslado,
+            $sort_col,
+            $sort_dir,
+            $limite,
+            $offset
         );
 
         $total_difuntos = $this->model->getTotalDifuntos();

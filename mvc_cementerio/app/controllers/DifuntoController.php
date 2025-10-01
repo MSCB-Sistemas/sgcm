@@ -23,39 +23,34 @@ class DifuntoController extends Control
         $puedeEditar   = $this->can('editar_difunto');
         $puedeEliminar = $this->can('eliminar_difunto');
 
-        $difuntos = $this->model->getAllDifuntos();
-
         $datos = [
             'title'             => 'Lista de difuntos',
             'urlCrear'          => URL . 'difunto/create',
-            'columnas'          => ['ID', 'Deudo', 'Nombre', 'Apellido', 'DNI', 'Edad', 'Fecha fallecimiento', 'Genero', 'Nacionalidad', 'Estado civil', 'Domicilio', 'Localidad', 'Codigo postal'],
-            'columnas_claves'   => ['id_difunto', 'nombre_deudo', 'nombre', 'apellido', 'dni', 'edad', 'fecha_fallecimiento', 'sexo', 'nacionalidad', 'estado_civil', 'domicilio', 'localidad', 'codigo_postal'],
-            'data'              => $difuntos,
-            'acciones' => function (array $fila) use ($puedeEditar, $puedeEliminar)
-            {
-                $id = $fila['id_difunto'];
-                $url = rtrim(URL,'/') . '/difunto';
-                
-                $html = '';
-                if ($puedeEditar) 
-                {
-                    $html .= '<a href="'.$url.'/edit/'.$id.'" class="btn btn-sm btn-primary">Editar</a> ';
-                    $html .= '<form action="'.$url.'/activate/'.$id.'" method="post" style="display:inline">'
-                          .  '<button class="btn btn-sm btn-success" onclick="return confirm(\'¿Activar este usuario?\');">Activar</button>'
-                          .  '</form> ';
-                }
-                if ($puedeEliminar) {
-                    $html .= '<form action="'.$url.'/delete/'.$id.'" method="post" style="display:inline" onsubmit="return confirm(\'¿Eliminar este usuario?\');">'
-                          .  '<button class="btn btn-sm btn-danger">Eliminar</button>'
-                          .  '</form>';
-                }
-                return $html;
-            },
-            'puedeCrear'      => $puedeCrear,   // por si tu partial muestra el botón “Nuevo”
+            'ajaxUrl'           => URL . 'difunto/ajax',
+            'baseUrl'           => URL . 'difunto',
+            'columnas'          => ['ID', 'Deudo', 'Nombre', 'Apellido', 'DNI', 'Edad', 'Fecha defuncion', 'Genero', 'Nacionalidad', 'Estado civil', 'Domicilio', 'Localidad', 'Codigo postal'],
+            'columnsConfig'     => [
+                ['data' => 'id_difunto'],
+                ['data' => 'nombre_deudo'],
+                ['data' => 'nombre'],
+                ['data' => 'apellido'],
+                ['data' => 'dni'],
+                ['data' => 'edad'],
+                ['data' => 'fecha_fallecimiento'],
+                ['data' => 'sexo'],
+                ['data' => 'nacionalidad'],
+                ['data' => 'estado_civil'],
+                ['data' => 'domicilio'],
+                ['data' => 'localidad'],
+                ['data' => 'codigo_postal'],
+                ['data' => 'acciones', 'orderable' => false, 'searchable' => false]
+            ],
+            'puedeCrear'      => $puedeCrear,
             'errores'         => [],
+            'csrfToken'       => $this->generateCsrfToken()
         ];
 
-        $this->loadView('partials/tablaAbm', $datos);
+        $this->loadView('partials/tablaAbmAjax', $datos);
     }
 
     public function create()
@@ -81,20 +76,70 @@ class DifuntoController extends Control
 
     public function save()
     {
+        
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $deudo = $_POST["deudo"] ?? '';
-            $nombre = trim($_POST["nombre"] ?? '');
-            $apellido = trim($_POST["apellido"] ?? '');
-            $dni = trim($_POST["dni"] ?? '');
-            $edad = trim($_POST["edad"] ?? '');
-            $fechaFallecimiento = trim($_POST["fecha_fallecimiento"] ?? '');
-            $sexo = $_POST["sexo"] ?? '';
-            $nacionalidad = $_POST["nacionalidad"] ?? '';
-            $estadoCivil = $_POST["estado_civil"] ?? '';
-            $domicilio = trim($_POST["domicilio"] ?? '');
-            $localidad = trim($_POST["localidad"] ?? '');
-            $codigoPostal = trim($_POST["codigo_postal"] ?? '');
+            if (isset($_POST["deudo"])) {
+                $deudo = $_POST["deudo"];
+            } else {
+                $deudo = '';
+            }
+            if (isset($_POST["nombre"])) {
+                $nombre = trim($_POST["nombre"]);
+            } else {
+                $nombre = '';
+            }
+            if (isset($_POST["apellido"])) {
+                $apellido = trim($_POST["apellido"]);
+            } else {
+                $apellido = '';
+            }
+            if (isset($_POST["dni"])) {
+                $dni = trim($_POST["dni"]);
+            } else {
+                $dni = '';
+            }
+            if (isset($_POST["edad"])) {
+                $edad = trim($_POST["edad"]);
+            } else {
+                $edad = '';
+            }
+            if (isset($_POST["fecha_fallecimiento"])) {
+                $fechaFallecimiento = trim($_POST["fecha_fallecimiento"]);
+            } else {
+                $fechaFallecimiento = '';
+            }
+            if (isset($_POST["sexo"])) {
+                $sexo = $_POST["sexo"];
+            } else {
+                $sexo = '';
+            }
+            if (isset($_POST["nacionalidad"])) {
+                $nacionalidad = $_POST["nacionalidad"];
+            } else {
+                $nacionalidad = '';
+            }
+            if (isset($_POST["estado_civil"])) {
+                $estadoCivil = $_POST["estado_civil"];
+            } else {
+                $estadoCivil = '';
+            }
+            if (isset($_POST["domicilio"])) {
+                $domicilio = trim($_POST["domicilio"]);
+            } else {
+                $domicilio = '';
+            }
+            if (isset($_POST["localidad"])) {
+                $localidad = trim($_POST["localidad"]);
+            } else {
+                $localidad = '';
+            }
+            if (isset($_POST["codigo_postal"])) {
+                $codigoPostal = trim($_POST["codigo_postal"]);
+            } else {
+                $codigoPostal = '';
+            }
             $errores = [];
+
 
             if (empty($deudo))
                 $errores[] = "El deudo es obligatorio";
@@ -172,21 +217,69 @@ class DifuntoController extends Control
         ]);
     }
 
-    public function update($id)
-    {
+    public function update($id) {    
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $deudo = $_POST["deudo"] ?? '';
-            $nombre = trim($_POST["nombre"] ?? '');
-            $apellido = trim($_POST["apellido"] ?? '');
-            $dni = trim($_POST["dni"] ?? '');
-            $edad = trim($_POST["edad"] ?? '');
-            $fechaFallecimiento = trim($_POST["fecha_fallecimiento"] ?? '');
-            $sexo = $_POST["sexo"] ?? '';
-            $nacionalidad = $_POST["nacionalidad"] ?? '';
-            $estadoCivil = $_POST["estado_civil"] ?? '';
-            $domicilio = trim($_POST["domicilio"] ?? '');
-            $localidad = trim($_POST["localidad"] ?? '');
-            $codigoPostal = trim($_POST["codigo_postal"] ?? '');
+            if (isset($_POST["deudo"])) {
+                $deudo = $_POST["deudo"];
+            } else {
+                $deudo = '';
+            }
+            if (isset($_POST["nombre"])) {
+                $nombre = trim($_POST["nombre"]);
+            } else {
+                $nombre = '';
+            }
+            if (isset($_POST["apellido"])) {
+                $apellido = trim($_POST["apellido"]);
+            } else {
+                $apellido = '';
+            }
+            if (isset($_POST["dni"])) {
+                $dni = trim($_POST["dni"]);
+            } else {
+                $dni = '';
+            }
+            if (isset($_POST["edad"])) {
+                $edad = trim($_POST["edad"]);
+            } else {
+                $edad = '';
+            }
+            if (isset($_POST["fecha_fallecimiento"])) {
+                $fechaFallecimiento = trim($_POST["fecha_fallecimiento"]);
+            } else {
+                $fechaFallecimiento = '';
+            }
+            if (isset($_POST["sexo"])) {
+                $sexo = $_POST["sexo"];
+            } else {
+                $sexo = '';
+            }
+            if (isset($_POST["nacionalidad"])) {
+                $nacionalidad = $_POST["nacionalidad"];
+            } else {
+                $nacionalidad = '';
+            }
+            if (isset($_POST["estado_civil"])) {
+                $estadoCivil = $_POST["estado_civil"];
+            } else {
+                $estadoCivil = '';
+            }
+            if (isset($_POST["domicilio"])) {
+                $domicilio = trim($_POST["domicilio"]);
+            } else {
+                $domicilio = '';
+            }
+            if (isset($_POST["localidad"])) {
+                $localidad = trim($_POST["localidad"]);
+            } else {
+                $localidad = '';
+            }
+            if (isset($_POST["codigo_postal"])) {
+                $codigoPostal = trim($_POST["codigo_postal"]);
+            } else {
+                $codigoPostal = '';
+            }
+
 
             if (empty($deudo))
                 $errores[] = "El deudo es obligatorio";
@@ -252,5 +345,84 @@ class DifuntoController extends Control
             die("No se pudo eliminar al difunto");
         }
     }
+
+    public function ajax()
+    {
+        header('Content-Type: application/json; charset=utf-8');
+        
+        $draw = $_POST['draw'] ?? 1;
+        $start = intval($_POST['start'] ?? 0);
+        $length = intval($_POST['length'] ?? 10);
+        $search = $_POST['search']['value'] ?? '';
+        $orderColumnIndex = $_POST['order'][0]['column'] ?? 0;
+        $orderDir = $_POST['order'][0]['dir'] ?? 'asc';
+
+        $columns = [
+            'id_difunto', 'nombre_deudo', 'nombre', 'apellido', 'dni', 'edad', 
+            'fecha_fallecimiento', 'sexo', 'nacionalidad', 'estado_civil', 
+            'domicilio', 'localidad', 'codigo_postal'
+        ];
+        $orderCol = $columns[$orderColumnIndex] ?? 'id_difunto';
+
+        $totalRecords = $this->model->countAll();
+
+        if ($search) {
+            $data = $this->model->getFiltered($search, $orderCol, $orderDir, $start, $length);
+            $filteredRecords = $this->model->countFiltered($search);
+        } else {
+            $data = $this->model->getPage($orderCol, $orderDir, $start, $length);
+            $filteredRecords = $totalRecords;
+        }
+
+        foreach ($data as &$row) {
+            if (!empty($row['fecha_fallecimiento'])) {
+                $fecha = DateTime::createFromFormat('Y-m-d H:i:s', $row['fecha_fallecimiento']);
+                if ($fecha) {
+                    $row['fecha_fallecimiento'] = $fecha->format('Y-m-d');
+                } else {
+                    $fecha = DateTime::createFromFormat('Y-m-d', $row['fecha_fallecimiento']);
+                    if ($fecha) {
+                        $row['fecha_fallecimiento'] = $fecha->format('Y-m-d');
+                    }
+                }
+            }
+        }
+
+        foreach ($data as &$fila) {
+            $id  = $fila['id_difunto'];
+            $url = rtrim(URL,'/') . '/difunto';
+    
+            $acciones = '';
+    
+            if ($this->can('editar_difunto')) {
+                $acciones .= '<a href="'.$url.'/edit/'.$id.'" class="btn btn-sm btn-primary">Editar</a> '
+                           . '</form> ';
+            }
+    
+            if ($this->can('eliminar_difunto')) {
+                $acciones .= '<form action="'.$url.'/delete/'.$id.'" method="post" style="display:inline" onsubmit="return confirm(\'¿Eliminar este difunto?\');">'
+                           . '<button class="btn btn-sm btn-danger">Eliminar</button>'
+                           . '</form>';
+            }
+    
+            $fila['acciones'] = $acciones;
+        }  
+
+        echo json_encode([
+            "draw" => intval($draw),
+            "recordsTotal" => $totalRecords,
+            "recordsFiltered" => $filteredRecords,
+            "data" => $data
+        ]);
+        exit;
+    }
+
+    private function generateCsrfToken() {
+        if (!isset($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+        return $_SESSION['csrf_token'];
+    }
+
 }
 ?>

@@ -20,17 +20,24 @@ class DifuntoModel {
      */
     public function getAllDifuntos(): array {
         $stmt = $this->db->prepare("SELECT 
-                                                d.*,
-                                                de.nombre AS nombre_deudo,
-                                                s.descripcion AS sexo,
-                                                ec.descripcion AS estado_civil,
-                                                n.nacionalidad AS nacionalidad
-                                        FROM difunto d
-                                        LEFT JOIN deudo de ON d.id_deudo = de.id_deudo
-                                        LEFT JOIN sexo s ON d.id_sexo = s.id_sexo
-                                        LEFT JOIN estado_civil ec ON d.id_estado_civil = ec.id_estado_civil
-                                        LEFT JOIN nacionalidades n ON d.id_nacionalidad = n.id_nacionalidad
-    ");
+                    d.id_difunto,
+                    de.nombre AS nombre_deudo,
+                    d.nombre,
+                    d.apellido,
+                    d.dni,
+                    d.edad,
+                    d.fecha_fallecimiento,
+                    COALESCE(s.descripcion, ' ') AS sexo,
+                    COALESCE(n.nacionalidad, ' ') AS nacionalidad,
+                    COALESCE(ec.descripcion, ' ') AS estado_civil,
+                    d.domicilio,
+                    d.localidad,
+                    d.codigo_postal
+                FROM difunto d
+                LEFT JOIN deudo de ON d.id_deudo = de.id_deudo
+                LEFT JOIN sexo s ON d.id_sexo = s.id_sexo
+                LEFT JOIN estado_civil ec ON d.id_estado_civil = ec.id_estado_civil
+                LEFT JOIN nacionalidades n ON d.id_nacionalidad = n.id_nacionalidad");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -91,11 +98,11 @@ class DifuntoModel {
         $stmt->execute($parametros); 
         
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Difunto Model",             // Modelo
-            "Insert"                    // Accion
+            $_SESSION['usuario_id'],  
+            $sql,                  
+            $parametros,              
+            "Difunto Model",    
+            "Insert"      
         );
         return $this->db->lastInsertId();
     }
@@ -143,11 +150,11 @@ class DifuntoModel {
         $stmt->execute($parametros);
 
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Difunto Model",             // Modelo
-            "Update"                    // Accion
+            $_SESSION['usuario_id'],  
+            $sql,                     
+            $parametros,          
+            "Difunto Model",        
+            "Update"             
         );
         return $stmt->rowCount() > 0;
     }
@@ -165,13 +172,139 @@ class DifuntoModel {
         $stmt->execute($parametros);
         
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Difunto Model",             // Modelo
-            "Update"                    // Accion
+            $_SESSION['usuario_id'],   
+            $sql,                    
+            $parametros,            
+            "Difunto Model",           
+            "Update"                   
         );
         return $stmt->rowCount() > 0;
+    }
+
+    public function countAll(): int
+    {
+        $stmt = $this->db->prepare("SELECT COUNT(*) as total FROM difunto");
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return (int)$result['total'];
+    }
+
+    public function countFiltered($search): int
+    {
+        $sql = "SELECT COUNT(*) as total 
+                FROM difunto d
+                LEFT JOIN deudo de ON d.id_deudo = de.id_deudo
+                LEFT JOIN sexo s ON d.id_sexo = s.id_sexo
+                LEFT JOIN estado_civil ec ON d.id_estado_civil = ec.id_estado_civil
+                LEFT JOIN nacionalidades n ON d.id_nacionalidad = n.id_nacionalidad
+                WHERE d.nombre LIKE :search 
+                   OR d.apellido LIKE :search 
+                   OR d.dni LIKE :search 
+                   OR de.nombre LIKE :search 
+                   OR s.descripcion LIKE :search 
+                   OR n.nacionalidad LIKE :search 
+                   OR ec.descripcion LIKE :search 
+                   OR d.domicilio LIKE :search 
+                   OR d.localidad LIKE :search";
+
+        $stmt = $this->db->prepare($sql);
+        $searchTerm = "%$search%";
+        $stmt->bindParam(':search', $searchTerm);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return (int)$result['total'];
+    }
+
+    public function getPage($orderCol, $orderDir, $start, $length): array
+    {
+        $allowedColumns = ['id_difunto', 'nombre_deudo', 'nombre', 'apellido', 'dni', 'edad', 
+                        'fecha_fallecimiento', 'sexo', 'nacionalidad', 'estado_civil', 
+                        'domicilio', 'localidad', 'codigo_postal'];
+        if (!in_array($orderCol, $allowedColumns)) {
+            $orderCol = 'id_difunto';
+        }
+        
+        $orderDir = strtoupper($orderDir) === 'DESC' ? 'DESC' : 'ASC';
+
+        $sql = "SELECT 
+                    d.id_difunto,
+                    de.nombre AS nombre_deudo,  -- Primero los campos que usas
+                    d.nombre,
+                    d.apellido,
+                    d.dni,
+                    d.edad,
+                    d.fecha_fallecimiento,
+                    COALESCE(s.descripcion, 'No especificado') AS sexo,
+                    COALESCE(n.nacionalidad, 'No especificado') AS nacionalidad,
+                    COALESCE(ec.descripcion, 'No especificado') AS estado_civil,
+                    d.domicilio,
+                    d.localidad,
+                    d.codigo_postal
+                    -- No selecciones d.* para evitar campos duplicados
+                FROM difunto d
+                LEFT JOIN deudo de ON d.id_deudo = de.id_deudo
+                LEFT JOIN sexo s ON d.id_sexo = s.id_sexo
+                LEFT JOIN estado_civil ec ON d.id_estado_civil = ec.id_estado_civil
+                LEFT JOIN nacionalidades n ON d.id_nacionalidad = n.id_nacionalidad
+                ORDER BY $orderCol $orderDir 
+                LIMIT :start, :length";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':start', $start, PDO::PARAM_INT);
+        $stmt->bindParam(':length', $length, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getFiltered($search, $orderCol, $orderDir, $start, $length): array
+    {
+        $allowedColumns = ['id_difunto', 'nombre_deudo', 'nombre', 'apellido', 'dni', 'edad', 
+                        'fecha_fallecimiento', 'sexo', 'nacionalidad', 'estado_civil', 
+                        'domicilio', 'localidad', 'codigo_postal'];
+        if (!in_array($orderCol, $allowedColumns)) {
+            $orderCol = 'id_difunto';
+        }
+        
+        $orderDir = strtoupper($orderDir) === 'DESC' ? 'DESC' : 'ASC';
+
+        $sql = "SELECT 
+                    d.id_difunto,
+                    de.nombre AS nombre_deudo,
+                    d.nombre,
+                    d.apellido,
+                    d.dni,
+                    d.edad,
+                    d.fecha_fallecimiento,
+                    COALESCE(s.descripcion, 'No especificado') AS sexo,
+                    COALESCE(n.nacionalidad, 'No especificado') AS nacionalidad,
+                    COALESCE(ec.descripcion, 'No especificado') AS estado_civil,
+                    d.domicilio,
+                    d.localidad,
+                    d.codigo_postal
+                FROM difunto d
+                LEFT JOIN deudo de ON d.id_deudo = de.id_deudo
+                LEFT JOIN sexo s ON d.id_sexo = s.id_sexo
+                LEFT JOIN estado_civil ec ON d.id_estado_civil = ec.id_estado_civil
+                LEFT JOIN nacionalidades n ON d.id_nacionalidad = n.id_nacionalidad
+                WHERE d.nombre LIKE :search 
+                OR d.apellido LIKE :search 
+                OR d.dni LIKE :search 
+                OR de.nombre LIKE :search 
+                OR s.descripcion LIKE :search 
+                OR n.nacionalidad LIKE :search 
+                OR ec.descripcion LIKE :search 
+                OR d.domicilio LIKE :search 
+                OR d.localidad LIKE :search
+                ORDER BY $orderCol $orderDir 
+                LIMIT :start, :length";
+        
+        $stmt = $this->db->prepare($sql);
+        $searchTerm = "%$search%";
+        $stmt->bindParam(':search', $searchTerm);
+        $stmt->bindParam(':start', $start, PDO::PARAM_INT);
+        $stmt->bindParam(':length', $length, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
 ?>

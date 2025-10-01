@@ -6,9 +6,6 @@ require_once 'Database.php';
 class UsuarioModel {
     private PDO $db;
 
-    /* Constructor
-     * Inicializa la conexión a la base de datos
-     */
     public function __construct() {
         $this->db = Database::connect();
     }
@@ -41,9 +38,6 @@ class UsuarioModel {
             return [];
         }
 
-        // Convertir activo: 
-        // 1 → "Si", 
-        // 0 → "No" usando if...else
         foreach ($usuarios as &$usuario) {
             if ((int)$usuario['activo'] === 1) {
                 $usuario['activo'] = "Si";
@@ -53,7 +47,6 @@ class UsuarioModel {
         }
         return $usuarios;
     }
-
 
     /** 
      * Obtener un usuario por su ID
@@ -66,8 +59,6 @@ class UsuarioModel {
         $stmt->execute(['id_usuario' => $id_usuario]);
         return $stmt->fetch();
     }
-
-    
 
     /**
      * Summary of insertUsuario
@@ -101,11 +92,11 @@ class UsuarioModel {
         $stmt->execute($parametros);
 
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Usuario Model",             // Modelo
-            "Insert"                    // Accion
+            $_SESSION['usuario_id'],  
+            $sql,               
+            $parametros,       
+            "Usuario Model",         
+            "Insert"               
         );
         return (int)$this->db->lastInsertId();
     }
@@ -146,11 +137,11 @@ class UsuarioModel {
         $stmt->execute($parametros);
 
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Usuario Model",             // Modelo
-            "Update"                    // Accion
+            $_SESSION['usuario_id'],  
+            $sql,                  
+            $parametros,             
+            "Usuario Model",        
+            "Update"           
         );
         return $stmt->rowCount() > 0;
     }
@@ -168,11 +159,11 @@ class UsuarioModel {
         $stmt->execute($parametros);
         
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Usuario Model",             // Modelo
-            "Delete"                    // Accion
+            $_SESSION['usuario_id'],   
+            $sql,                      
+            $parametros,        
+            "Usuario Model",      
+            "Delete"               
         );
         return $stmt->rowCount() > 0;
     }
@@ -203,20 +194,15 @@ class UsuarioModel {
         $stmt->execute($parametros);
         
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Usuario Model",             // Modelo
-            "Password Update"            // Accion
+            $_SESSION['usuario_id'],   
+            $sql,                     
+            $parametros,            
+            "Usuario Model",        
+            "Password Update"      
         );
         return $stmt->rowCount() > 0;
     }
 
-    /**
-     * 
-     * @param mixed $nombre_usuario
-     * @return array|bool
-     */
     public function getUsuarioByNombreUsuario($nombre_usuario) : array|bool {
         $stmt = $this->db->prepare("SELECT * FROM usuarios WHERE usuario = :usuario");
         $stmt->execute(["usuario"=> $nombre_usuario]);

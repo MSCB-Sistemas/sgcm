@@ -101,6 +101,25 @@ $groupFor = [
   'pago'           => 'ABM',
 ];
 
+$iconFor = [
+  'home'            => ['icon' => '#home'],            // sprite interno
+  'estadisticas'    => ['bi'   => 'graph-up'],   // Bootstrap Icons
+  'registro_traslado' => ['bi'  => 'bar-chart-line'],
+  'usuario'         => ['bi'   => 'person-plus-fill'],
+  'deudo'           => ['bi'   => 'person-badge'],
+  'difunto'         => ['bi'   => 'snapchat'],
+  'estadoCivil'     => ['bi'   => 'people'],
+  'parcela'         => ['bi'   => 'grid-3x3-gap'],
+  'ubicacion'       => ['bi'   => 'geo-alt'],
+  'orientaciones'   => ['bi'   => 'compass'],
+  'sexo'            => ['bi'   => 'gender-ambiguous'],
+  'nacionalidades'  => ['bi'   => 'flag'],
+  'tipoParcela'     => ['bi'   => 'columns-gap'],
+  'tipoUsuario'     => ['bi'   => 'person-gear'],
+  'pago'            => ['bi'   => 'credit-card'],
+];
+
+// 4) Construcción del $MENU (⚠️ el grupo ABM se inserta UNA sola vez al final)
 $MENU = [];
 $solo = [];
 $abmChildren = [];
@@ -108,6 +127,7 @@ $abmChildren = [];
 foreach ($indexRoutes as $path => $def) 
 {
     [$ctrl, $method, $guard] = $def;
+    $icon = $iconFor[$path] ?? [];  // puede ser ['icon'=>'#..'] o ['bi'=>'...']
 
     $label = $labelFor[$path] ?? ucfirst($path);
     $perms = $guardToPerms($guard);
@@ -116,13 +136,14 @@ foreach ($indexRoutes as $path => $def)
     
     if ($group === null) 
     {
-        $solo []= ['label' => $label, 'href' => $href, 'perms' => $perms];
+        // Ítems sueltos (home, estadísticas, etc.)
+        $solo []= ['label' => $label, 'href' => $href, 'perms' => $perms] + $icon;
         continue;
     }
 
     if ($group === 'ABM') 
     {
-        $abmChildren[] = ['label' => $label, 'href' => $href, 'perms' => $perms];
+        $abmChildren[] = ['label'=>$label, 'href'=>$href, 'perms'=>$perms] + $icon;
         continue;
     }    
 }

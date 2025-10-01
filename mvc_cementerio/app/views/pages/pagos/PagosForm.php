@@ -15,6 +15,50 @@
                     </ul>
                 </div>
             <?php endif; ?>
+
+            <?php                
+                if (isset($datos['values']['id_deudo'])) {
+                    $id_deudo_selected = $datos['values']['id_deudo'];
+                } else {
+                    $id_deudo_selected = '';
+                }
+
+                if (isset($datos['values']['id_parcela'])) {
+                    $id_parcela_selected = $datos['values']['id_parcela'];
+                } else {
+                    $id_parcela_selected = '';
+                }
+
+                if (isset($datos['values']['fecha_pago'])) {
+                    $fecha_pago = htmlspecialchars($datos['values']['fecha_pago']);
+                } else {
+                    $fecha_pago = '';
+                }
+
+                if (isset($datos['values']['fecha_vencimiento'])) {
+                    $fecha_vencimiento = htmlspecialchars($datos['values']['fecha_vencimiento']);
+                } else {
+                    $fecha_vencimiento = '';
+                }
+
+                if (isset($datos['values']['importe'])) {
+                    $importe = htmlspecialchars($datos['values']['importe']);
+                } else {
+                    $importe = '';
+                }
+
+                if (isset($datos['values']['recargo'])) {
+                    $recargo = htmlspecialchars($datos['values']['recargo']);
+                } else {
+                    $recargo = '';
+                }
+
+                if (isset($datos['values']['total'])) {
+                    $total = htmlspecialchars($datos['values']['total']);
+                } else {
+                    $total = '';
+                }
+            ?>
             
             <form action="<?= $datos['action'] ?>" method="POST" class="needs-validation" novalidate>
                 <div class="row g-3">
@@ -54,7 +98,7 @@
                         <div class="mb-3">
                             <label for="fecha_pago" class="form-label fw-bold">Fecha de pago</label>
                             <input type="date" class="form-control" id="fecha_pago" name="fecha_pago" 
-                                   value="<?= htmlspecialchars($datos['values']['fecha_pago'] ?? '') ?>" required>
+                                   value="<?= $fecha_pago ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese la fecha de pago
                             </div>
@@ -113,7 +157,6 @@
         </div>
     </div>
 </div>
-
 <script>
 
 function calcularTotal()

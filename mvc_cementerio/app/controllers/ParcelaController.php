@@ -73,17 +73,50 @@ class ParcelaController extends Control
         $this->loadView('parcelas/ParcelaForm', $datos);
     }
 
+    
     public function save()
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $tipo_parcela = $_POST['tipo_parcela'] ?? '';
-            $deudo = $_POST['deudo'] ?? '';
-            $nro_ubicacion = trim($_POST['numero_ubicacion'] ?? '');
-            $hilera = trim($_POST['hilera'] ?? '');
-            $seccion = trim($_POST['seccion'] ?? '');
-            $fraccion = trim($_POST['fraccion'] ?? '');
-            $nivel = trim($_POST['nivel'] ?? '');
-            $orientacion = $_POST['orientacion'] ?? '';
+            if (isset($_POST['tipo_parcela'])) {
+                $tipo_parcela = $_POST['tipo_parcela'];
+            } else {
+                $tipo_parcela = '';
+            }
+            if (isset($_POST['deudo'])) {
+                $deudo = $_POST['deudo'];
+            } else {
+                $deudo = '';
+            }
+            if (isset($_POST['numero_ubicacion'])) {
+                $nro_ubicacion = trim($_POST['numero_ubicacion']);
+            } else {
+                $nro_ubicacion = '';
+            }
+            if (isset($_POST['hilera'])) {
+                $hilera = trim($_POST['hilera']);
+            } else {
+                $hilera = '';
+            }
+            if (isset($_POST['seccion'])) {
+                $seccion = trim($_POST['seccion']);
+            } else {
+                $seccion = '';
+            }
+            if (isset($_POST['fraccion'])) {
+                $fraccion = trim($_POST['fraccion']);
+            } else {
+                $fraccion = '';
+            }
+            if (isset($_POST['nivel'])) {
+                $nivel = trim($_POST['nivel']);
+            } else {
+                $nivel = '';
+            }
+            if (isset($_POST['orientacion'])) {
+                $orientacion = $_POST['orientacion'];
+            } else {
+                $orientacion = '';
+            }
             $errores = [];
 
             if (empty($tipo_parcela))
@@ -151,14 +184,46 @@ class ParcelaController extends Control
     public function update($id)
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $tipo_parcela = $_POST['tipo_parcela'] ?? '';
-            $deudo = $_POST['deudo'] ?? '';
-            $nro_ubicacion = trim($_POST['numero_ubicacion'] ?? '');
-            $hilera = trim($_POST['hilera'] ?? '');
-            $seccion = trim($_POST['seccion'] ?? '');
-            $fraccion = trim($_POST['fraccion'] ?? '');
-            $nivel = trim($_POST['nivel'] ?? '');
-            $orientacion = $_POST['orientacion'] ?? '';
+            if (isset($_POST['tipo_parcela'])) {
+                $tipo_parcela = $_POST['tipo_parcela'];
+            } else {
+                $tipo_parcela = '';
+            }
+            if (isset($_POST['deudo'])) {
+                $deudo = $_POST['deudo'];
+            } else {
+                $deudo = '';
+            }
+            if (isset($_POST['numero_ubicacion'])) {
+                $nro_ubicacion = trim($_POST['numero_ubicacion']);
+            } else {
+                $nro_ubicacion = '';
+            }
+            if (isset($_POST['hilera'])) {
+                $hilera = trim($_POST['hilera']);
+            } else {
+                $hilera = '';
+            }
+            if (isset($_POST['seccion'])) {
+                $seccion = trim($_POST['seccion']);
+            } else {
+                $seccion = '';
+            }
+            if (isset($_POST['fraccion'])) {
+                $fraccion = trim($_POST['fraccion']);
+            } else {
+                $fraccion = '';
+            }
+            if (isset($_POST['nivel'])) {
+                $nivel = trim($_POST['nivel']);
+            } else {
+                $nivel = '';
+            }
+            if (isset($_POST['orientacion'])) {
+                $orientacion = $_POST['orientacion'];
+            } else {
+                $orientacion = '';
+            }
 
             if (empty($tipo_parcela))
                 $errores[] = "El tipo de parcela es obligatorio.";
