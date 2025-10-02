@@ -6,7 +6,7 @@ class UsuarioController extends Control{
     public function __construct()
     {
         $this->requireLogin();
-        $this->model = $this->loadModel("UsuarioModel");
+        $this->model             = $this->loadModel("UsuarioModel");
         $this->tipoUsuariosModel = $this->loadModel("TiposUsuariosModel");
     }
 
@@ -24,10 +24,10 @@ class UsuarioController extends Control{
             'columnas'        => ['ID', 'Usuario', 'Nombre', 'Apellido', 'Cargo', 'Sector', 'Telefono', 'Email', 'Rol', 'Activo'],
             'columnas_claves' => ['id_usuario', 'usuario', 'nombre', 'apellido', 'cargo', 'sector', 'telefono', 'email', 'id_tipo_usuario', 'activo'],
             'data'            => $usuarios,
-            'acciones' => function (array $fila) use ($puedeEditar, $puedeEliminar) 
+            'acciones'        => function (array $fila) use ($puedeEditar, $puedeEliminar) 
             {
-                $id = $fila['id_usuario'];
-                $url = rtrim(URL,'/') . '/usuario';
+                $id     = $fila['id_usuario'];
+                $url    = rtrim(URL,'/') . '/usuario';
 
                 $html = '';
                 if ($puedeEditar) 
@@ -136,7 +136,7 @@ class UsuarioController extends Control{
                 'values'  => $_POST,
                 'errores' => $errores,
                 'tipos'   => $tipos,
-                'update' => false,
+                'update'  => false,
             ]);
             return;
         }
@@ -312,9 +312,9 @@ class UsuarioController extends Control{
         }
 
         $this->loadView('usuarios/UsuarioFormPass', [
-            'title' => 'Cambiar clave',
-            'action' => URL . 'usuario/savePass/' . $id,
-            'errores' => [],
+            'title'     => 'Cambiar clave',
+            'action'    => URL . 'usuario/savePass/' . $id,
+            'errores'   => [],
         ]);
     }
 

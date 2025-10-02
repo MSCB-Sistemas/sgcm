@@ -13,14 +13,14 @@ class EstadoCivilController extends Control
         $estadosCiviles = $this->model->getAllEstadosCiviles();
 
         $datos = [
-            'title' => 'Lista de estados civiles',
-            'urlCrear' => URL . 'estadoCivil/create',
-            'columnas' => ['ID', 'Descripcion'],
-            'columnas_claves' => ['id_estado_civil', 'descripcion'],
-            'data' => $estadosCiviles,
-            'acciones' => function ($fila) {
-                $id = $fila['id_estado_civil'];
-                $url = URL . 'estadoCivil';
+            'title'             => 'Lista de estados civiles',
+            'urlCrear'          => URL . 'estadoCivil/create',
+            'columnas'          => ['ID', 'Descripcion'],
+            'columnas_claves'   => ['id_estado_civil', 'descripcion'],
+            'data'              => $estadosCiviles,
+            'acciones'          => function ($fila) {
+                $id     = $fila['id_estado_civil'];
+                $url    = URL . 'estadoCivil';
                 return '
                 <a href="' . $url . '/edit/' . $id . '" class="btn btn-sm btn-outline-primary">Editar</a>
                 <a href="' . $url . '/delete/' . $id . '" class="btn btn-sm btn-outline-primary">Eliminar</a>
@@ -35,10 +35,10 @@ class EstadoCivilController extends Control
     public function create()
     {
         $datos = [
-            'title' => 'Crear estado civil',
-            'action' => URL . 'estadoCivil/save',
-            'values' => [],
-            'errores' => [],
+            'title'     => 'Crear estado civil',
+            'action'    => URL . 'estadoCivil/save',
+            'values'    => [],
+            'errores'   => [],
         ];
 
         $this->loadView('estados_civiles/EstadoCivilForm', $datos);
@@ -58,10 +58,10 @@ class EstadoCivilController extends Control
 
             if (!empty($errores)) {
                 $this->loadView('estados_civiles/EstadoCivilForm', [
-                    'title' => 'Crear estado civil',
-                    'action' => URL . 'estadoCivil/save',
-                    'values' => [],
-                    'errores' => $errores
+                    'title'     => 'Crear estado civil',
+                    'action'    => URL . 'estadoCivil/save',
+                    'values'    => [],
+                    'errores'   => $errores
                 ]);
                 return;
             }
@@ -85,9 +85,9 @@ class EstadoCivilController extends Control
         }
 
         $this->loadView("estados_civiles/EstadoCivilForm", [
-            'title' => 'Editar estado civil',
-            'action' => URL . 'estadoCivil/update/' . $id,
-            'values' => [
+            'title'     => 'Editar estado civil',
+            'action'    => URL . 'estadoCivil/update/' . $id,
+            'values'    => [
                 'descripcion' => $estadoCivil['descripcion'],
             ],
             'errores' => [],
@@ -112,10 +112,10 @@ class EstadoCivilController extends Control
                 ];
 
                 $this->loadView("estados_civiles/EstadoCivilForm", [
-                    'title' => 'Editar estado civil',
-                    'action' => URL . 'estadoCivil/update/' . $id,
-                    'values' => $estadoCivil,
-                    'errores' => $errores,
+                    'title'     => 'Editar estado civil',
+                    'action'    => URL . 'estadoCivil/update/' . $id,
+                    'values'    => $estadoCivil,
+                    'errores'   => $errores,
                 ]);
                 return;
             }

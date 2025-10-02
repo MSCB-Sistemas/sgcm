@@ -10,12 +10,12 @@ class OrientacionController extends Control {
     public function index(){
         $orientaciones = $this->model->getAllOrientaciones();
         $datos = [
-            'title' => 'Lista de Orientaciones',
-            'urlCrear' => URL . 'orientaciones/create',
-            'columnas' => ['ID', 'Descripción'],
-            'columnas_claves' => ['id_orientacion', 'descripcion'],
-            'data' => $orientaciones,
-            'acciones' =>  function($fila){
+            'title'             => 'Lista de Orientaciones',
+            'urlCrear'          => URL . 'orientaciones/create',
+            'columnas'          => ['ID', 'Descripción'],
+            'columnas_claves'   => ['id_orientacion', 'descripcion'],
+            'data'              => $orientaciones,
+            'acciones'          =>  function($fila){
                 $id = $fila['id_orientacion'];
                 $url = URL . 'orientaciones';
                 return '<a href="' . $url . '/edit/' . $id . '" class="btn btn-sm btn-outline-primary">Editar</a>
@@ -28,10 +28,10 @@ class OrientacionController extends Control {
 
     public function create(){
         $datos = [
-            'title' => 'Crear orientacion',
-            'action' => URL . 'orientaciones/save',
-            'values' => [],
-            'errores' => [],
+            'title'     => 'Crear orientacion',
+            'action'    => URL . 'orientaciones/save',
+            'values'    => [],
+            'errores'   => [],
         ];
         $this->loadView('orientaciones/OrientacionesForm', $datos);
     }
@@ -49,10 +49,10 @@ class OrientacionController extends Control {
 
             if(!empty($errores)){
                 $this->loadView('orientaciones/OrientacionesForm', [
-                    'title' => 'Crear Orientacion',
-                    'action' => URL . 'orientaciones/save',
-                    'values' => $_POST,
-                    'errores' => $errores,
+                    'title'     => 'Crear Orientacion',
+                    'action'    => URL . 'orientaciones/save',
+                    'values'    => $_POST,
+                    'errores'   => $errores,
                 ]);
                 return;
             }
@@ -73,9 +73,9 @@ class OrientacionController extends Control {
         }
 
         $this->loadView('orientaciones/OrientacionesForm', [
-            'title' => 'Editar Orientacion',
-            'action' => URL . 'orientaciones/update/' . $id,
-            'values' => [
+            'title'     => 'Editar Orientacion',
+            'action'    => URL . 'orientaciones/update/' . $id,
+            'values'    => [
                 'descripcion' => $orientacion["descripcion"],
             ],
             'errores' => [],
@@ -97,17 +97,17 @@ class OrientacionController extends Control {
             }
             if(!empty($errores)){
                 $orientacion = [
-                    'id_orientacion' => $id,
-                    'descripcion' => $descripcion,
+                    'id_orientacion'    => $id,
+                    'descripcion'       => $descripcion,
                 ];
                 
                 $this->loadView('orientaciones/OrientacionesForm', [
-                    'title' => 'Editar Orientacion',
-                    'action' => URL . 'orientaciones/update/' . $id,
-                    'values' => [
+                    'title'     => 'Editar Orientacion',
+                    'action'    => URL . 'orientaciones/update/' . $id,
+                    'values'    => [
                         'descripcion' => $orientacion["descripcion"],
                     ],
-                    'errores' => [],
+                    'errores'   => [],
                 ]);
                 return;
             }

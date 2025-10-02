@@ -10,14 +10,14 @@ class NacionalidadesController extends Control {
     public function index(){
         $nacionalidades = $this->model->getAllNacionalidades();
         $datos = [
-            'title' => 'Lista de Nacionalidades',
-            'urlCrear' => URL . 'nacionalidades/create',
-            'columnas' => ['ID', 'Nacionalidad'],
-            'columnas_claves'=>['id_nacionalidad', 'nacionalidad'],
-            'data'=> $nacionalidades,
-            'acciones'=> function($fila){
-                $id = $fila['id_nacionalidad'];
-                $url = URL . 'nacionalidades';
+            'title'             => 'Lista de Nacionalidades',
+            'urlCrear'          => URL . 'nacionalidades/create',
+            'columnas'          => ['ID', 'Nacionalidad'],
+            'columnas_claves'   =>['id_nacionalidad', 'nacionalidad'],
+            'data'              => $nacionalidades,
+            'acciones'          => function($fila){
+                $id     = $fila['id_nacionalidad'];
+                $url    = URL . 'nacionalidades';
                 return '<a href="' . $url . '/edit/' . $id . '" class="btn btn-sm btn-outline-primary">Editar</a>
                 <a href="' . $url . '/delete/' . $id . '" class="btn btn-sm btn-outline-primary">Eliminar</a>';
             },
@@ -28,10 +28,10 @@ class NacionalidadesController extends Control {
 
     public function create(){
         $datos = [
-            'title' => 'Crear nacionalidad',
-            'action' => URL . 'nacionalidades/save',
-            'values' => [],
-            'errores' => [],
+            'title'     => 'Crear nacionalidad',
+            'action'    => URL . 'nacionalidades/save',
+            'values'    => [],
+            'errores'   => [],
         ];
         $this->loadView('nacionalidades/NacionalidadesForm', $datos);
     }
@@ -49,10 +49,10 @@ class NacionalidadesController extends Control {
 
             if(!empty($errores)){
                 $this->loadView('nacionalidades/NacionalidadesForm', [
-                    'title' => 'Crear Nacionalidad',
-                    'action' => URL  . 'nacionalidades/save',
-                    'values' => $_POST,
-                    'errores' => $errores,
+                    'title'     => 'Crear Nacionalidad',
+                    'action'    => URL  . 'nacionalidades/save',
+                    'values'    => $_POST,
+                    'errores'   => $errores,
                 ]);
                 return;
             }
@@ -74,9 +74,9 @@ class NacionalidadesController extends Control {
         }
 
         $this->loadView('nacionalidades/NacionalidadesForm', [
-            'title' => 'Editar nacionalidad',
-            'action' => URL . 'nacionalidades/update/' . $id,
-            'values' => [
+            'title'     => 'Editar nacionalidad',
+            'action'    => URL . 'nacionalidades/update/' . $id,
+            'values'    => [
                 'nacionalidad' => $nacionalidad["nacionalidad"],
             ],
             'errores' => [],
@@ -98,16 +98,17 @@ class NacionalidadesController extends Control {
 
             if(!empty($errores)){
                 $nacionalidad = [
-                    'id_nacionalidad'=> $id,
-                    'nacionalidad' => $nombreNacionalidad,
+                    'id_nacionalidad'   => $id,
+                    'nacionalidad'      => $nombreNacionalidad,
                 ];
 
             $this->loadView('nacionalidades/NacionalidadesForm', [
-                'title' => 'Editar nacionalidad',
-                'action' => URL . 'nacionalidades/update/' . $id,
-                'values' => [
-                'nacionalidad' => $nacionalidad["nacionalidad"],],
-                'errores' => [],
+                'title'     => 'Editar nacionalidad',
+                'action'    => URL . 'nacionalidades/update/' . $id,
+                'values'    => [
+                'nacionalidad' => $nacionalidad["nacionalidad"],
+                ],
+                'errores'   => [],
             ]);
             return;
             }

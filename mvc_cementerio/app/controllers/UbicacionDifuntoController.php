@@ -7,9 +7,9 @@ class UbicacionDifuntoController extends Control{
 
     public function __construct(){
         $this->requireLogin();
-       $this->model = $this->loadModel("UbicacionDifuntoModel"); 
-       $this->difuntoModel = $this->loadModel("DifuntoModel");
-       $this->parcelaModel = $this->loadModel("ParcelaModel");
+       $this->model         = $this->loadModel("UbicacionDifuntoModel"); 
+       $this->difuntoModel  = $this->loadModel("DifuntoModel");
+       $this->parcelaModel  = $this->loadModel("ParcelaModel");
     }
 
     public function index()
@@ -18,18 +18,18 @@ class UbicacionDifuntoController extends Control{
         $puedeEditar   = $this->can('editar_ubicacion');
         $puedeEliminar = $this->can('eliminar_ubicacion');
 
-        $ubicaciones = $this->model->getAllUbicaciones();
+        $ubicaciones   = $this->model->getAllUbicaciones();
 
         $datos = [
-            'title' => 'Lista de ubicaciones',
-            'urlCrear' => URL . 'ubicacion/create',
-            'columnas' => ['ID', 'ID de parcela', 'ID del difunto', 'Fecha de ingreso', 'Fecha de retiro'],
-            'columnas_claves' => ['id_ubicacion_difunto', 'id_parcela', 'id_difunto', 'fecha_ingreso', 'fecha_retiro'],
-            'data' => $ubicaciones,
-            'acciones' => function (array $fila) use ($puedeEditar, $puedeEliminar)
+            'title'             => 'Lista de ubicaciones',
+            'urlCrear'          => URL . 'ubicacion/create',
+            'columnas'          => ['ID', 'ID de parcela', 'ID del difunto', 'Fecha de ingreso', 'Fecha de retiro'],
+            'columnas_claves'   => ['id_ubicacion_difunto', 'id_parcela', 'id_difunto', 'fecha_ingreso', 'fecha_retiro'],
+            'data'              => $ubicaciones,
+            'acciones'          => function (array $fila) use ($puedeEditar, $puedeEliminar)
             {
-                $id = $fila['id_ubicacion_difunto'];
-                $url = rtrim(URL,'/') . '/ubicacion';
+                $id     = $fila['id_ubicacion_difunto'];
+                $url    = rtrim(URL,'/') . '/ubicacion';
 
                 $html = '';
                 if ($puedeEditar) 
@@ -59,12 +59,12 @@ class UbicacionDifuntoController extends Control{
         $parcelas = $this->parcelaModel->getAllParcelas();
         
         $datos = [
-            'title' => 'Crear Ubicación',
-            'action' => URL . 'ubicacion/save',
-            'values' => [],
-            'errores' => [],
-            'difuntos' => $difuntos,
-            'parcelas' => $parcelas,
+            'title'     => 'Crear Ubicación',
+            'action'    => URL . 'ubicacion/save',
+            'values'    => [],
+            'errores'   => [],
+            'difuntos'  => $difuntos,
+            'parcelas'  => $parcelas,
         ];
         $this->loadView('ubicaciones/UbicacionDifuntoForm', $datos);
     }
@@ -109,12 +109,12 @@ class UbicacionDifuntoController extends Control{
                 $parcelas = $this->parcelaModel->getAllParcelas();
 
                 $this->loadView('ubicaciones/UbicacionDifuntoForm',[
-                    'title' => 'Crear ubicación',
-                    'action' => URL . 'ubicacion/save',
-                    'values' => $_POST,
-                    'errores' => $errores,
-                    'difuntos' => $difuntos,
-                    'parcelas' => $parcelas,
+                    'title'     => 'Crear ubicación',
+                    'action'    => URL . 'ubicacion/save',
+                    'values'    => $_POST,
+                    'errores'   => $errores,
+                    'difuntos'  => $difuntos,
+                    'parcelas'  => $parcelas,
                 ]);
                 return;
             }
@@ -129,26 +129,26 @@ class UbicacionDifuntoController extends Control{
     }
 
     public function edit($id){
-        $ubicacion = $this->model->getUbicacionDifunto($id);
-        $difuntos = $this->difuntoModel->getAllDifuntos();
-        $parcelas = $this->parcelaModel->getAllParcelas();
+        $ubicacion  = $this->model->getUbicacionDifunto($id);
+        $difuntos   = $this->difuntoModel->getAllDifuntos();
+        $parcelas   = $this->parcelaModel->getAllParcelas();
 
         if(!$ubicacion){
             die("Ubicación no encontrada");
         }
 
         $this->loadView('ubicaciones/UbicacionDifuntoForm', [
-            'title' => 'Editar ubicación',
-            'action' => URL . 'ubicacion/update/' . $id,
-            'values' => [
-                'parcela' => $ubicacion['id_parcela'],
-                'difunto' => $ubicacion['id_difunto'],
+            'title'     => 'Editar ubicación',
+            'action'    => URL . 'ubicacion/update/' . $id,
+            'values'    => [
+                'parcela'       => $ubicacion['id_parcela'],
+                'difunto'       => $ubicacion['id_difunto'],
                 'fecha_ingreso' => $ubicacion['fecha_ingreso'],
-                'fecha_retiro' => $ubicacion['fecha_retiro'],
+                'fecha_retiro'  => $ubicacion['fecha_retiro'],
             ],
-            'errores' => [],
-            'parcelas' => $parcelas,
-            'difuntos' => $difuntos,
+            'errores'   => [],
+            'parcelas'  => $parcelas,
+            'difuntos'  => $difuntos,
         ]);
     }
 
@@ -188,22 +188,22 @@ class UbicacionDifuntoController extends Control{
             }
             if(!empty($errores)){
                 $ubicacion = [
-                    'id_ubicacion' => $id,
-                    'id_parcela' => $parcela,
-                    'id_difunto' => $difunto,
+                    'id_ubicacion'  => $id,
+                    'id_parcela'    => $parcela,
+                    'id_difunto'    => $difunto,
                     'fecha_ingreso' => $fecha_ingreso,
-                    'fecha_retiro' => $fecha_retiro,
+                    'fecha_retiro'  => $fecha_retiro,
                 ];
                 $difuntos = $this->difuntoModel->getAllDifuntos();
                 $parcelas = $this->parcelaModel->getAllParcelas();
 
                 $this->loadView('ubicaciones/UbicacionDifuntoForm',[
-                    'title' => 'Editar ubicación',
-                    'action' => URL . 'ubicacion/update/' . $id,
-                    'values' => $ubicacion,
-                    'errores' => $errores,
-                    'difuntos' => $difuntos,
-                    'parcelas' => $parcelas,
+                    'title'     => 'Editar ubicación',
+                    'action'    => URL . 'ubicacion/update/' . $id,
+                    'values'    => $ubicacion,
+                    'errores'   => $errores,
+                    'difuntos'  => $difuntos,
+                    'parcelas'  => $parcelas,
                 ]);
                 return;
             }
