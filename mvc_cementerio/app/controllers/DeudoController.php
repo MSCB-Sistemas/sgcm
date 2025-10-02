@@ -19,7 +19,7 @@ class DeudoController extends Control {
             'urlCrear'          => URL . 'deudo/create',
             'ajaxUrl'           => URL . 'deudo/ajax',
             'baseUrl'           => URL . 'deudo/',
-            'columnas' => ['ID', 'DNI', 'Nombre', 'Apellido', 'Teléfono', 'Email', 'Domicilio', 'Localidad', 'Código Postal'],
+            'columnas'  => ['ID', 'DNI', 'Nombre', 'Apellido', 'Teléfono', 'Email', 'Domicilio', 'Localidad', 'Código Postal'],
             'columnsConfig'     => [
                 ['data' => 'id_deudo'],
                 ['data' => 'dni'],
@@ -43,11 +43,11 @@ class DeudoController extends Control {
     {
         $deudos = $this->model->getAllDeudos();
         $datos = [
-            'title' => 'Crear Deudo',
-            'action' => URL . 'deudo/save',
-            'values' => [],
-            'errores' => [],
-            'deudos' => $deudos
+            'title'     => 'Crear Deudo',
+            'action'    => URL . 'deudo/save',
+            'values'    => [],
+            'errores'   => [],
+            'deudos'    => $deudos
         ];
 
         $this->loadView('deudos/DeudoForm', $datos);
@@ -56,15 +56,15 @@ class DeudoController extends Control {
     public function save()
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $dni = trim($_POST['dni']);
-            $nombre = trim($_POST['nombre']);
-            $apellido = trim($_POST['apellido']);
-            $telefono = trim($_POST['telefono']);
-            $email = trim($_POST['email']);
-            $domicilio = trim($_POST['domicilio']);
-            $localidad = trim($_POST['localidad']);
-            $codigo_postal = trim($_POST['codigo_postal']);
-            $errores = [];
+            $dni            = trim($_POST['dni']);
+            $nombre         = trim($_POST['nombre']);
+            $apellido       = trim($_POST['apellido']);
+            $telefono       = trim($_POST['telefono']);
+            $email          = trim($_POST['email']);
+            $domicilio      = trim($_POST['domicilio']);
+            $localidad      = trim($_POST['localidad']);
+            $codigo_postal  = trim($_POST['codigo_postal']);
+            $errores        = [];
             
             if (empty($dni)) {
                 $errores[] = "El DNI es obligatorio.";
@@ -96,13 +96,13 @@ class DeudoController extends Control {
                     'title' => 'Crear Deudo',
                     'action' => URL . 'deudo/save',
                     'values' => [
-                        'dni' => $dni,
-                        'nombre' => $nombre,
-                        'apellido' => $apellido,
-                        'telefono' => $telefono,
-                        'email' => $email,
-                        'domicilio' => $domicilio,
-                        'localidad' => $localidad,
+                        'dni'           => $dni,
+                        'nombre'        => $nombre,
+                        'apellido'      => $apellido,
+                        'telefono'      => $telefono,
+                        'email'         => $email,
+                        'domicilio'     => $domicilio,
+                        'localidad'     => $localidad,
                         'codigo_postal' => $codigo_postal
                     ],
                     'errores' => $errores
@@ -134,13 +134,13 @@ class DeudoController extends Control {
             'title' => 'Editar Deudo',
             'action' => URL . 'deudo/update/' . $id,
             'values' => [
-                'dni' => $deudo['dni'],
-                'nombre' => $deudo['nombre'],
-                'apellido' => $deudo['apellido'],
-                'telefono' => $deudo['telefono'],
-                'email' => $deudo['email'],
-                'domicilio' => $deudo['domicilio'],
-                'localidad' => $deudo['localidad'],
+                'dni'           => $deudo['dni'],
+                'nombre'        => $deudo['nombre'],
+                'apellido'      => $deudo['apellido'],
+                'telefono'      => $deudo['telefono'],
+                'email'         => $deudo['email'],
+                'domicilio'     => $deudo['domicilio'],
+                'localidad'     => $deudo['localidad'],
                 'codigo_postal' => $deudo['codigo_postal'],
             ],
             'errores' => [],
@@ -307,10 +307,10 @@ class DeudoController extends Control {
         }  
 
         echo json_encode([
-            "draw" => intval($draw),
-            "recordsTotal" => $totalRecords,
-            "recordsFiltered" => $filteredRecords,
-            "data" => $data
+            "draw"              => intval($draw),
+            "recordsTotal"      => $totalRecords,
+            "recordsFiltered"   => $filteredRecords,
+            "data"              => $data
         ]);
         exit;
     }
