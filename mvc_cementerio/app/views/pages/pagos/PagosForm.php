@@ -16,48 +16,33 @@
                 </div>
             <?php endif; ?>
 
-            <?php                
-                if (isset($datos['values']['id_deudo'])) {
-                    $id_deudo_selected = $datos['values']['id_deudo'];
-                } else {
-                    $id_deudo_selected = '';
-                }
+            <?php
+            // Campos que requieren htmlspecialchars
+            $campos_html = ['fecha_pago', 'fecha_vencimiento', 'importe', 'recargo', 'total'];
 
-                if (isset($datos['values']['id_parcela'])) {
-                    $id_parcela_selected = $datos['values']['id_parcela'];
-                } else {
-                    $id_parcela_selected = '';
-                }
+            // Campos directos (sin htmlspecialchars)
+            $campos_directos = [
+                'id_deudo' => 'id_deudo_selected',
+                'id_parcela' => 'id_parcela_selected'
+            ];
 
-                if (isset($datos['values']['fecha_pago'])) {
-                    $fecha_pago = htmlspecialchars($datos['values']['fecha_pago']);
+            // Asignación de campos con htmlspecialchars
+            foreach ($campos_html as $campo) {
+                if (isset($datos['values'][$campo])) {
+                    $$campo = htmlspecialchars($datos['values'][$campo]);
                 } else {
-                    $fecha_pago = '';
+                    $$campo = '';
                 }
+            }
 
-                if (isset($datos['values']['fecha_vencimiento'])) {
-                    $fecha_vencimiento = htmlspecialchars($datos['values']['fecha_vencimiento']);
+            // Asignación de campos directos con nombres personalizados
+            foreach ($campos_directos as $campo => $variable) {
+                if (isset($datos['values'][$campo])) {
+                    $$variable = $datos['values'][$campo];
                 } else {
-                    $fecha_vencimiento = '';
+                    $$variable = '';
                 }
-
-                if (isset($datos['values']['importe'])) {
-                    $importe = htmlspecialchars($datos['values']['importe']);
-                } else {
-                    $importe = '';
-                }
-
-                if (isset($datos['values']['recargo'])) {
-                    $recargo = htmlspecialchars($datos['values']['recargo']);
-                } else {
-                    $recargo = '';
-                }
-
-                if (isset($datos['values']['total'])) {
-                    $total = htmlspecialchars($datos['values']['total']);
-                } else {
-                    $total = '';
-                }
+            }
             ?>
             
             <form action="<?= $datos['action'] ?>" method="POST" class="needs-validation" novalidate>

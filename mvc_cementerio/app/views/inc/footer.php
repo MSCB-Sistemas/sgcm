@@ -4,7 +4,7 @@
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     const abmCollapse = document.getElementById('submenuABM');
-    const abmArrow = document.getElementById('abm-arrow');
+    const abmArrow    = document.getElementById('abm-arrow');
 
     if (abmCollapse && abmArrow) {
       abmCollapse.addEventListener('show.bs.collapse', () => {
@@ -21,9 +21,9 @@
 <script>
   document.addEventListener('DOMContentLoaded', function () {
 
-    const html = document.documentElement;
+    const html      = document.documentElement;
     const toggleBtn = document.getElementById('toggleTheme');
-    const body = document.body
+    const body      = document.body
 
     if (toggleBtn) {
       const savedTheme = localStorage.getItem('theme') || 'light';
@@ -46,8 +46,8 @@
     function setTheme(theme) {
       html.setAttribute('data-bs-theme', theme);
 
-      const form = document.getElementById('loginForm');
-      const navLinks = document.querySelectorAll('.nav-link');
+      const form      = document.getElementById('loginForm');
+      const navLinks  = document.querySelectorAll('.nav-link');
 
       if (theme === 'dark') {
         body.classList.add('bg-dark', 'text-white');
