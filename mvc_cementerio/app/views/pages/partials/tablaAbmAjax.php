@@ -137,16 +137,6 @@ function eliminarItem(id) {
         ?>
         form.action = `<?= $baseUrl ?>delete/${id}`;
 
-        
-        
-        const csrfToken = document.createElement('input');
-        csrfToken.type = 'hidden';
-        csrfToken.name = 'csrf_token';
-        csrfToken.value = '<?= $datos['csrfToken'] ?? '' ?>';
-        
-        form.appendChild(csrfToken);
-        document.body.appendChild(form);
-        form.submit();
     }
 }
 </script>
