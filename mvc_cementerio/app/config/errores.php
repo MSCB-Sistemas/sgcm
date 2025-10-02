@@ -8,7 +8,7 @@ function errorMensaje($codigo, $extra = '') {
         '401' => 'Error 401: No autorizado',
         '400' => 'Error 400: Solicitud inválida',
         '405' => 'Error 405: Método no permitido',
-        '' => 'Error desconocido'
+        ''    => 'Error desconocido'
     ];
 
     if (isset($mensajes[$codigo])) {

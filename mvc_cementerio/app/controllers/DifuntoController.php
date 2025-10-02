@@ -47,7 +47,6 @@ class DifuntoController extends Control
             ],
             'puedeCrear'      => $puedeCrear,
             'errores'         => [],
-            'csrfToken'       => $this->generateCsrfToken()
         ];
 
         $this->loadView('partials/tablaAbmAjax', $datos);
@@ -196,17 +195,17 @@ class DifuntoController extends Control
             'title' => 'Editar difunto',
             'action' => URL . 'difunto/update/' . $id,
             'values' => [
-                'deudo' => $difunto['id_deudo'],
-                'nombre' => $difunto['nombre'],
-                'apellido' => $difunto['apellido'],
-                'dni' => $difunto['dni'],
-                'edad' => $difunto['edad'],
+                'deudo'         => $difunto['id_deudo'],
+                'nombre'        => $difunto['nombre'],
+                'apellido'      => $difunto['apellido'],
+                'dni'           => $difunto['dni'],
+                'edad'          => $difunto['edad'],
                 'fecha_fallecimiento' => $difunto['fecha_fallecimiento'],
-                'sexo' => $difunto['id_sexo'],
-                'nacionalidad' => $difunto['id_nacionalidad'],
-                'estado_civil' => $difunto['id_estado_civil'],
-                'domicilio' => $difunto['domicilio'],
-                'localidad' => $difunto['localidad'],
+                'sexo'          => $difunto['id_sexo'],
+                'nacionalidad'  => $difunto['id_nacionalidad'],
+                'estado_civil'  => $difunto['id_estado_civil'],
+                'domicilio'     => $difunto['domicilio'],
+                'localidad'     => $difunto['localidad'],
                 'codigo_postal' => $difunto['codigo_postal'],
             ],
             'errores' => [],
@@ -294,19 +293,19 @@ class DifuntoController extends Control
 
             if (!empty($errores)) {
                 $difunto = [
-                    'id_difunto' => $id,
-                    'id_deudo' => $deudo,
-                    'nombre' => $nombre,
-                    'apellido' => $apellido,
-                    'dni' => $dni,
-                    'edad' => $edad,
+                    'id_difunto'        => $id,
+                    'id_deudo'          => $deudo,
+                    'nombre'            => $nombre,
+                    'apellido'          => $apellido,
+                    'dni'               => $dni,
+                    'edad'              => $edad,
                     'fecha_fallecimiento' => $fechaFallecimiento,
-                    'id_sexo' => $sexo,
-                    'id_nacionalidad' => $nacionalidad,
-                    'id_estado_civil' => $estadoCivil,
-                    'domicilio' => $domicilio,
-                    'localidad' => $localidad,
-                    'codigo_postal' => $codigoPostal
+                    'id_sexo'           => $sexo,
+                    'id_nacionalidad'   => $nacionalidad,
+                    'id_estado_civil'   => $estadoCivil,
+                    'domicilio'         => $domicilio,
+                    'localidad'         => $localidad,
+                    'codigo_postal'     => $codigoPostal
                 ];
 
                 $deudos = $this->deudoModel->getAllDeudos();
@@ -315,14 +314,14 @@ class DifuntoController extends Control
                 $estadosCiviles = $this->estadoCivilModel->getAllestadosCiviles();
 
                 $this->loadView('difuntos/DifuntoForm', [
-                    'title' => 'Editar difunto',
-                    'action' => URL . 'difunto/update/' . $id,
-                    'values' => $difunto,
-                    'errores' => $errores,
-                    'deudos' => $deudos,
-                    'nacionalidades' => $nacionalidades,
-                    'sexos' => $sexos,
-                    'estados_civiles' => $estadosCiviles,
+                    'title'     => 'Editar difunto',
+                    'action'    => URL . 'difunto/update/' . $id,
+                    'values'    => $difunto,
+                    'errores'   => $errores,
+                    'deudos'    => $deudos,
+                    'nacionalidades'    => $nacionalidades,
+                    'sexos'     => $sexos,
+                    'estados_civiles'   => $estadosCiviles,
                 ]);
                 return;
             }
