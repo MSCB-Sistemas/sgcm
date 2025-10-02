@@ -82,13 +82,13 @@ class OperacionModel
 
     public function realizarTraslado($id_difunto, $id_parcela_nueva, $fecha_traslado)
     {
-        $sql = "INSERT INTO ubicacion_difunto (id_difunto, id_parcela, fecha_ubicacion)
-                VALUES (:id_difunto, :id_parcela, :fecha_ubicacion)";
+        $sql = "INSERT INTO ubicacion_difunto (id_difunto, id_parcela, fecha_ingreso)
+                VALUES (:id_difunto, :id_parcela, :fecha_ingreso)";
 
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue(':id_difunto', $id_difunto, PDO::PARAM_INT);
         $stmt->bindValue(':id_parcela', $id_parcela_nueva, PDO::PARAM_INT);
-        $stmt->bindValue(':fecha_ubicacion', $fecha_traslado);
+        $stmt->bindValue(':fecha_ingreso', $fecha_traslado);
 
         return $stmt->execute();
     }
