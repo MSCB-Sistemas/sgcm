@@ -76,7 +76,7 @@ class DifuntoController extends Control
 
     public function save()
     {
-        
+
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (isset($_POST["deudo"])) {
                 $deudo = $_POST["deudo"];
@@ -217,7 +217,8 @@ class DifuntoController extends Control
         ]);
     }
 
-    public function update($id) {    
+    public function update($id)
+    {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (isset($_POST["deudo"])) {
                 $deudo = $_POST["deudo"];
@@ -349,7 +350,7 @@ class DifuntoController extends Control
     public function ajax()
     {
         header('Content-Type: application/json; charset=utf-8');
-        
+
         $draw = $_POST['draw'] ?? 1;
         $start = intval($_POST['start'] ?? 0);
         $length = intval($_POST['length'] ?? 10);
@@ -358,9 +359,19 @@ class DifuntoController extends Control
         $orderDir = $_POST['order'][0]['dir'] ?? 'asc';
 
         $columns = [
-            'id_difunto', 'nombre_deudo', 'nombre', 'apellido', 'dni', 'edad', 
-            'fecha_fallecimiento', 'sexo', 'nacionalidad', 'estado_civil', 
-            'domicilio', 'localidad', 'codigo_postal'
+            'id_difunto',
+            'nombre_deudo',
+            'nombre',
+            'apellido',
+            'dni',
+            'edad',
+            'fecha_fallecimiento',
+            'sexo',
+            'nacionalidad',
+            'estado_civil',
+            'domicilio',
+            'localidad',
+            'codigo_postal'
         ];
         $orderCol = $columns[$orderColumnIndex] ?? 'id_difunto';
 
@@ -390,23 +401,23 @@ class DifuntoController extends Control
 
         foreach ($data as &$fila) {
             $id  = $fila['id_difunto'];
-            $url = rtrim(URL,'/') . '/difunto';
-    
+            $url = rtrim(URL, '/') . '/difunto';
+
             $acciones = '';
-    
+
             if ($this->can('editar_difunto')) {
-                $acciones .= '<a href="'.$url.'/edit/'.$id.'" class="btn btn-sm btn-primary">Editar</a> '
-                           . '</form> ';
+                $acciones .= '<a href="' . $url . '/edit/' . $id . '" class="btn btn-sm btn-primary">Editar</a> '
+                    . '</form> ';
             }
-    
+
             if ($this->can('eliminar_difunto')) {
-                $acciones .= '<form action="'.$url.'/delete/'.$id.'" method="post" style="display:inline" onsubmit="return confirm(\'¿Eliminar este difunto?\');">'
-                           . '<button class="btn btn-sm btn-danger">Eliminar</button>'
-                           . '</form>';
+                $acciones .= '<form action="' . $url . '/delete/' . $id . '" method="post" style="display:inline" onsubmit="return confirm(\'¿Eliminar este difunto?\');">'
+                    . '<button class="btn btn-sm btn-danger">Eliminar</button>'
+                    . '</form>';
             }
-    
+
             $fila['acciones'] = $acciones;
-        }  
+        }
 
         echo json_encode([
             "draw" => intval($draw),
@@ -417,12 +428,22 @@ class DifuntoController extends Control
         exit;
     }
 
-    private function generateCsrfToken() {
+    private function generateCsrfToken()
+    {
         if (!isset($_SESSION['csrf_token'])) {
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         }
         return $_SESSION['csrf_token'];
     }
 
+    public function verificar($id)
+    {
+        $advertencias = [];
+
+        if ($this->model->yaAlocado($id)) {
+            $advertencias[] = "El difunto que selecciono ya tiene una parcela asignada.";
+        }
+
+        echo json_encode(['advertencias' => $advertencias]);
+    }
 }
-?>

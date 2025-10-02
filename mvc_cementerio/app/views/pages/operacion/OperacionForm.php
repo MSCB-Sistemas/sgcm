@@ -8,6 +8,24 @@
     </div>
 <?php endif; ?>
 
+<?php if (!empty($advertencias)): ?>
+    <div class="alert alert-warning alert-dismissible fade show shadow-sm" role="alert">
+        <h5 class="alert-heading">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> Advertencia
+        </h5>
+        <ul class="mb-0">
+            <?php foreach ($advertencias as $a): ?>
+                <li><?= htmlspecialchars($a) ?></li>
+            <?php endforeach ?>
+        </ul>
+        <hr class="my-2">
+        <p class="mb-0"><small>La operación se realizó igualmente.</small></p>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+<?php endif; ?>
+
+<div id="alertas-form"></div>
+
 <form action="<?= isset($datos['action']) ? $datos['action'] : '' ?>" method="POST" id="operacionForm">
     <div class="row mb-3">
         <!-- Parcela -->
@@ -19,7 +37,8 @@
 
                 <datalist id="parcelas">
                     <?php foreach ($datos['parcelas'] as $p): ?>
-                        <option value="<?= htmlspecialchars($p['id_parcela'] . ' - ' . $p['id_tipo_parcela'] . ' - ' . $p['numero_ubicacion'] . ' - ' . $p['hilera'] . '/' . $p['seccion'] . '/' . $p['fraccion'] . '/' . $p['nivel']) ?>">
+                        <option value="<?= htmlspecialchars($p['id_parcela'] . ' - ' . $p['id_tipo_parcela'] . ' - ' . $p['numero_ubicacion'] . ' - ' . $p['hilera'] . '/' . $p['seccion'] . '/' . $p['fraccion'] . '/' . $p['nivel']) ?>"
+                        data-id="<?= $p['id_parcela'] ?>">
                     <?php endforeach; ?>
                 </datalist>
             </div>
@@ -31,12 +50,13 @@
         <div class="col-md-6 d-flex align-items-end">
             <div class="flex-grow-1">
                 <label for="deudo_search" class="form-label">Deudo</label>
-                <input list="deudos" id="deudo_search" name="deudo_search" class="form-control" placholder="Ingrese DNI o Nombre" autocomplete="off" required>
+                <input list="deudos" id="deudo_search" name="deudo_search" class="form-control" placeholder="Ingrese DNI o Nombre" autocomplete="off" required>
                 <input type="hidden" id="id_deudo" name="id_deudo">
 
                 <datalist id="deudos">
                     <?php foreach ($datos['deudos'] as $d): ?>
-                        <option value="<?= htmlspecialchars($d['dni'] . ' - ' . $d['nombre'] . ' ' . $d['apellido']) ?>">
+                        <option value="<?= htmlspecialchars($d['dni'] . ' - ' . $d['nombre'] . ' ' . $d['apellido']) ?>"
+                        data-id="<?= $d['id_deudo'] ?>">
                     <?php endforeach; ?>
                 </datalist>
             </div>
@@ -50,12 +70,13 @@
         <div class="col-md-6 d-flex align-items-end">
             <div class="flex-grow-1">
                 <label for="difunto_search" class="form-label">Difunto</label>
-                <input list="difuntos" id="difunto_search" name="difunto_search" class="form-control" placholder="Ingrese un difunto" autocomplete="off" required>
+                <input list="difuntos" id="difunto_search" name="difunto_search" class="form-control" placeholder="Ingrese un difunto" autocomplete="off" required>
                 <input type="hidden" id="id_difunto" name="id_difunto">
 
                 <datalist id="difuntos">
                     <?php foreach ($datos['difuntos'] as $di): ?>
-                        <option value="<?= htmlspecialchars($di['dni'] . ' - ' . $di['nombre'] . ' ' . $di['apellido']) ?>">
+                        <option value="<?= htmlspecialchars($di['dni'] . ' - ' . $di['nombre'] . ' ' . $di['apellido']) ?>"
+                        data-id="<?= $di['id_difunto'] ?>">
                     <?php endforeach; ?>
                 </datalist>
             </div>
@@ -91,21 +112,20 @@
     function configurarAutocompletado(inputId, hiddenId, datalistId) {
         const input = document.getElementById(inputId);
         const hidden = document.getElementById(hiddenId);
-        const options = document.querySelectorAll(`#${datalistId} option`);
 
         input.addEventListener('input', () => {
-            const val = input.value.trim();
             hidden.value = '';
-            let valid = false;
+            const val = input.value;
+            const options = document.querySelectorAll(`#${datalistId} option`);
+            const match = Array.from(options).find(opt => opt.value === val);
+            if (match) {
+                hidden.value = match.dataset.id;
+                input.setCustomValidity("");
+            }
+        });
 
-            options.forEach(opt => {
-                if (opt.value === val) {
-                    hidden.value = opt.dataset.id;
-                    valid = true;
-                }
-            });
-
-            if (!valid) {
+        input.addEventListener('blur', () => {
+            if (!hidden.value) { 
                 input.setCustomValidity("Debe seleccionar un elemento de la lista");
             } else {
                 input.setCustomValidity("");
@@ -118,8 +138,14 @@
         configurarAutocompletado('parcela_search', 'id_parcela', 'parcelas');
         configurarAutocompletado('difunto_search', 'id_difunto', 'difuntos');
     });
-</script>
-<script>
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        configurarAutocompletado('deudo_search', 'id_deudo', 'deudos');
+        configurarAutocompletado('parcela_search', 'id_parcela', 'parcelas');
+        configurarAutocompletado('difunto_search', 'id_difunto', 'difuntos');
+    });
+
     document.getElementById('parcela_search').addEventListener('change', function() {
         const idParcela = this.value;
 
@@ -240,5 +266,49 @@
                     </div>`;
             });
     });
-</script>
+
+    function mostrarAdvertencia(mensajes) {
+        const contenedor = document.getElementById("alertas-form");
+        contenedor.innerHTML = "";
+
+        if (mensajes.length > 0) {
+            let html = `
+            <div class="alert alert-warning alert-dismissible fade show shadow-sm" role="alert">
+                <h6 class="alert-heading">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> Advertencia
+                </h6>
+                <ul class="mb-0">
+            `;
+            mensajes.forEach(msg => {
+                html += `<li>${msg}</li>`;
+            });
+            html += `
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>`;
+            contenedor.innerHTML = html;
+        }
+    }
+
+    document.getElementById("deudo_search").addEventListener("change", function () {
+        const idDeudo = document.getElementById("id_deudo").value;
+        if (idDeudo) {
+            fetch(`/deudo/verificar/${idDeudo}`)
+                .then(res => res.json())
+                .then(data => {
+                    mostrarAdvertencia(data.advertencias);
+                });
+        }
+    });
+
+    document.getElementById("difunto_search").addEventListener("change", function () {
+        const idDifunto = document.getElementById("id_difunto").value;
+        if (idDifunto) {
+            fetch(`/difunto/verificar/${idDifunto}`)
+                .then(res => res.json())
+                .then(data => {
+                    mostrarAdvertencia(data.advertencias);
+                });
+        }
+    });
 </script>

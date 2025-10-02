@@ -1,5 +1,6 @@
 <?php
-class DeudoController extends Control {
+class DeudoController extends Control
+{
     private DeudoModel $model;
 
     public function __construct()
@@ -13,7 +14,7 @@ class DeudoController extends Control {
         $puedeCrear    = $this->can('crear_deudo');
         $puedeEditar   = $this->can('editar_deudo');
         $puedeEliminar = $this->can('eliminar_deudo');
-        
+
         $datos = [
             "title"             => "Lista de Deudos",
             'urlCrear'          => URL . 'deudo/create',
@@ -66,7 +67,7 @@ class DeudoController extends Control {
             $localidad = trim($_POST['localidad']);
             $codigo_postal = trim($_POST['codigo_postal']);
             $errores = [];
-            
+
             if (empty($dni)) {
                 $errores[] = "El DNI es obligatorio.";
             }
@@ -148,10 +149,11 @@ class DeudoController extends Control {
         ]);
     }
 
-    public function update($id){  
+    public function update($id)
+    {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $dni = trim($_POST['dni']);
-            
+
             if (isset($_POST['nombre'])) {
                 $nombre = trim($_POST['nombre']);
             } else {
@@ -258,7 +260,7 @@ class DeudoController extends Control {
     public function ajax()
     {
         header('Content-Type: application/json; charset=utf-8');
-        
+
         $draw   = $_POST['draw'] ?? 1;
         $start  = intval($_POST['start'] ?? 0);
         $length = intval($_POST['length'] ?? 10);
@@ -266,7 +268,7 @@ class DeudoController extends Control {
         $orderColumnIndex = $_POST['order'][0]['column'] ?? 0;
         $orderDir = $_POST['order'][0]['dir'] ?? 'asc';
 
-        $columns = ['id_deudo','dni','nombre','apellido','telefono','email','domicilio','localidad','codigo_postal'];
+        $columns = ['id_deudo', 'dni', 'nombre', 'apellido', 'telefono', 'email', 'domicilio', 'localidad', 'codigo_postal'];
         $orderCol = $columns[$orderColumnIndex] ?? 'id_deudo';
 
         $totalRecords = $this->model->countAll();
@@ -281,24 +283,24 @@ class DeudoController extends Control {
 
         foreach ($data as &$fila) {
             $id  = $fila['id_deudo'];
-            $url = rtrim(URL,'/') . '/deudo';
-    
+            $url = rtrim(URL, '/') . '/deudo';
+
             $acciones = '';
-    
+
             if ($this->can('editar_deudo')) {
-                $acciones .= '<a href="'.$url.'/edit/'.$id.'" class="btn btn-sm btn-primary">Editar</a> ';
-                $acciones .= '<form action="'.$url.'/activate/'.$id.'" method="post" style="display:inline">'
-                           . '</form> ';
+                $acciones .= '<a href="' . $url . '/edit/' . $id . '" class="btn btn-sm btn-primary">Editar</a> ';
+                $acciones .= '<form action="' . $url . '/activate/' . $id . '" method="post" style="display:inline">'
+                    . '</form> ';
             }
-    
+
             if ($this->can('eliminar_deudo')) {
-                $acciones .= '<form action="'.$url.'/delete/'.$id.'" method="post" style="display:inline" onsubmit="return confirm(\'¿Eliminar este deudo?\');">'
-                           . '<button class="btn btn-sm btn-danger">Eliminar</button>'
-                           . '</form>';
+                $acciones .= '<form action="' . $url . '/delete/' . $id . '" method="post" style="display:inline" onsubmit="return confirm(\'¿Eliminar este deudo?\');">'
+                    . '<button class="btn btn-sm btn-danger">Eliminar</button>'
+                    . '</form>';
             }
-    
+
             $fila['acciones'] = $acciones; // Esta es la clave que espera DataTables
-        }  
+        }
 
         echo json_encode([
             "draw" => intval($draw),
@@ -313,5 +315,15 @@ class DeudoController extends Control {
     {
         return $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
+
+    public function verificar($id)
+    {
+        $advertencias = [];
+
+        if ($this->model->tienePagos($id)) {
+            $advertencias[] = "El deudo que selecciono tiene pagos asociados.";
+        }
+
+        echo json_encode(['advertencias' => $advertencias]);
+    }
 }
-?>

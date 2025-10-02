@@ -10,14 +10,14 @@ class OperacionController extends Control
 
     public function index($errores = [])
     {
-        $traslados = $this->loadModel('OperacionModel')->getAllTraslados();
+        $operaciones = $this->loadModel('OperacionModel')->getAllTraslados();
         $parcelas = $this->loadModel('ParcelaModel')->getAllParcelas();
         $deudos = $this->loadModel('DeudoModel')->getAllDeudos();
         $difuntos = $this->loadModel('DifuntoModel')->getAllDifuntos();
 
         $datos = [
             'title' => 'Operacion',
-            'data' => $traslados,
+            'data' => $operaciones,
             'action' => URL . 'operacion/save',
             'parcelas' => $parcelas,
             'deudos' => $deudos,
@@ -32,11 +32,11 @@ class OperacionController extends Control
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errores = [];
-            $id_difunto = $_POST['id_difunto'] ?? '';
-            $id_parcela = $_POST['id_parcela'] ?? '';
-            $id_deudo = $_POST['id_deudo'] ?? '';
-            $fecha_traslado = $_POST['fecha_traslado'] ?? '';
-            $fecha_vencimiento = $_POST['fecha_vencimiento'] ?? '';
+            $id_difunto = $_POST['id_difunto'];
+            $id_parcela = $_POST['id_parcela'];
+            $id_deudo = $_POST['id_deudo'];
+            $fecha_traslado = $_POST['fecha_traslado'];
+            $fecha_vencimiento = $_POST['fecha_vencimiento'];
 
             if (empty($id_difunto))
                 $errores[] = 'Seleccione un difunto';
@@ -48,7 +48,7 @@ class OperacionController extends Control
                 $errores[] = 'Ingrese la fecha de vencimiento';
 
             if (empty($errores)) {
-                $model = $this->loadModel('TrasladoModel');
+                $model = $this->loadModel('OperacionModel');
 
                 if ($model->verificarParcelaOcupada($id_parcela)) {
                     $errores[] = 'La parcela seleccionada ya está ocupada';
