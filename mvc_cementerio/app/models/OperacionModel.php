@@ -42,10 +42,10 @@ class OperacionModel
     public function obtenerUbicacionActual($id_difunto)
     {
         $sql = "SELECT ubi.*, pg.id_pago
-                FROM ubicaion_difunto ubi
+                FROM ubicacion_difunto ubi
                 JOIN pago pg ON ubi.id_parcela = pg.id_parcela
                 WHERE ubi.id_difunto = :id_difunto
-                ORDER BY ubi.fecha_ubicacion DESC LIMIT 1";
+                ORDER BY ubi.fecha_ingreso DESC LIMIT 1";
 
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue(':id_difunto', $id_difunto, PDO::PARAM_INT);
@@ -64,10 +64,10 @@ class OperacionModel
         return $stmt->execute();
     }
 
-    public function crearNuevoPago($id_deudo, $id_parcela, $fecha_inicio, $fecha_vencimiento, $total)
+    public function crearNuevoPago($id_deudo, $id_parcela, $fecha_inicio, $fecha_vencimiento, $total, $id_usuario)
     {
-        $sql = "INSERT INTO pago (id_deudo, id_parcela, fecha_pago, fecha_vencimiento, total)
-                VALUES (:id_deudo, :id_parcela, :fecha_pago, :fecha_vencimiento, :total)";
+        $sql = "INSERT INTO pago (id_deudo, id_parcela, fecha_pago, fecha_vencimiento, total, id_usuario)
+                VALUES (:id_deudo, :id_parcela, :fecha_pago, :fecha_vencimiento, :total, :id_usuario)";
 
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue(':id_deudo', $id_deudo, PDO::PARAM_INT);
@@ -75,6 +75,7 @@ class OperacionModel
         $stmt->bindValue(':fecha_pago', $fecha_inicio);
         $stmt->bindValue(':fecha_vencimiento', $fecha_vencimiento);
         $stmt->bindValue(':total', $total);
+        $stmt->bindValue(':id_usuario', $id_usuario, PDO::PARAM_INT);
 
         return $stmt->execute() ? $this->db->lastInsertId() : false;
     }

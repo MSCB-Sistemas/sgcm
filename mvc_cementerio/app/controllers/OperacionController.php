@@ -37,6 +37,7 @@ class OperacionController extends Control
             $id_deudo = $_POST['id_deudo'];
             $fecha_traslado = $_POST['fecha_traslado'];
             $fecha_vencimiento = $_POST['fecha_vencimiento'];
+            $id_usuario = $_SESSION['usuario_id'];
 
             if (empty($id_difunto))
                 $errores[] = 'Seleccione un difunto';
@@ -66,7 +67,8 @@ class OperacionController extends Control
                         $id_parcela,
                         $fecha_traslado,
                         $fecha_vencimiento,
-                        $total
+                        $total,
+                        $id_usuario
                     );
 
                     if ($nuevo_pago_id) {
