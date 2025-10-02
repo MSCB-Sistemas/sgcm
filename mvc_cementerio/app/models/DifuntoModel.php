@@ -250,9 +250,9 @@ class DifuntoModel
                     d.dni,
                     d.edad,
                     d.fecha_fallecimiento,
-                    COALESCE(s.descripcion, 'No especificado') AS sexo,
-                    COALESCE(n.nacionalidad, 'No especificado') AS nacionalidad,
-                    COALESCE(ec.descripcion, 'No especificado') AS estado_civil,
+                    COALESCE(s.descripcion, ' ') AS sexo,
+                    COALESCE(n.nacionalidad, ' ') AS nacionalidad,
+                    COALESCE(ec.descripcion, ' ') AS estado_civil,
                     d.domicilio,
                     d.localidad,
                     d.codigo_postal

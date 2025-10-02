@@ -32,7 +32,9 @@
                 <?php foreach ($datos['data'] as $fila): ?>
                     <tr>
                         <?php foreach ($datos['columnas_claves'] as $key): ?>
-                            <td class="text-truncate" style="max-width: 200px;"><?= ucfirst(htmlspecialchars($fila[$key])) ?></td>
+                            <td class="text-truncate" style="max-width: 200px;">
+                                <?= isset($fila[$key]) && $fila[$key] !== '' ? ucfirst(htmlspecialchars($fila[$key])) : '' ?>
+                            </td>
                         <?php endforeach ?>
                         <?php if (!empty($datos['acciones'])): ?>
                             <td><?= $datos['acciones']($fila) ?></td>
