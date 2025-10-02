@@ -72,14 +72,14 @@ class PagoModel {
         $stmt = $this->db->prepare($sql);
         
         $parametros = [
-            "id_deudo" => $id_deudo,
-            "id_parcela" => $id_parcela,
-            "fecha_pago" => $fecha_pago,
+            "id_deudo"          => $id_deudo,
+            "id_parcela"        => $id_parcela,
+            "fecha_pago"        => $fecha_pago,
             "fecha_vencimiento" => $fecha_vencimiento,
-            "importe" => $importe,
-            "recargo" => $recargo,
-            "total" => $total,
-            "id_usuario" => $id_usuario
+            "importe"           => $importe,
+            "recargo"           => $recargo,
+            "total"             => $total,
+            "id_usuario"        => $id_usuario
         ];
         $stmt->execute($parametros);
 
@@ -113,15 +113,15 @@ class PagoModel {
         $stmt = $this->db->prepare($sql);
         
         $parametros = [
-            "id_pago" => $id_pago,
-            "id_deudo" => $id_deudo,
-            "id_parcela" => $id_parcela,
-            "fecha_pago" => $fecha_pago,
+            "id_pago"           => $id_pago,
+            "id_deudo"          => $id_deudo,
+            "id_parcela"        => $id_parcela,
+            "fecha_pago"        => $fecha_pago,
             "fecha_vencimiento" => $fecha_vencimiento,
-            "importe" => $importe,
-            "recargo" => $recargo,
-            "total" => $total,
-            "id_usuario" => $id_usuario
+            "importe"           => $importe,
+            "recargo"           => $recargo,
+            "total"             => $total,
+            "id_usuario"        => $id_usuario
         ];
         $stmt->execute($parametros);
 
@@ -143,8 +143,8 @@ class PagoModel {
      */
     public function deletePago($id_pago): bool
     {
-        $sql = "DELETE FROM pago WHERE id_pago = :id_pago";
-        $stmt = $this->db->prepare($sql);
+        $sql        = "DELETE FROM pago WHERE id_pago = :id_pago";
+        $stmt       = $this->db->prepare($sql);
         $parametros = ['id_pago' => $id_pago];
         $stmt->execute($parametros);
         
@@ -160,7 +160,7 @@ class PagoModel {
 
     public function countAll(): int
     {
-        $stmt = $this->db->prepare("SELECT COUNT(*) as total FROM pago");
+        $stmt   = $this->db->prepare("SELECT COUNT(*) as total FROM pago");
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return (int)$result['total'];

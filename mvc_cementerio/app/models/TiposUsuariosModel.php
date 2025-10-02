@@ -54,8 +54,8 @@ class TiposUsuariosModel {
      */
     public function insertTipoUsuario($rol): bool|string
     {
-        $sql = "INSERT INTO tipos_usuarios (rol) VALUES (:rol)";
-        $stmt = $this->db->prepare($sql);
+        $sql        = "INSERT INTO tipos_usuarios (rol) VALUES (:rol)";
+        $stmt       = $this->db->prepare($sql);
         $parametros = ['rol' => $rol];
         $stmt->execute($parametros);
         
@@ -78,9 +78,9 @@ class TiposUsuariosModel {
      */
     public function updateTipoUsuario($id_tipo_usuario, $rol): bool
     {
-        $sql = "UPDATE tipos_usuarios SET rol = :rol 
-                WHERE id_tipo_usuario = :id_tipo_usuario";
-        $stmt = $this->db->prepare($sql);
+        $sql        = "UPDATE tipos_usuarios SET rol = :rol 
+                        WHERE id_tipo_usuario = :id_tipo_usuario";
+        $stmt       = $this->db->prepare($sql);
         $parametros = [
             'id_tipo_usuario' => $id_tipo_usuario,
             'rol' => $rol
@@ -105,8 +105,8 @@ class TiposUsuariosModel {
      */
     public function deleteTipoUsuario(int $id_tipo_usuario): bool
     {
-        $sql = "DELETE FROM tipos_usuarios WHERE id_tipo_usuario = :id_tipo_usuario";
-        $stmt = $this->db->prepare($sql);
+        $sql        = "DELETE FROM tipos_usuarios WHERE id_tipo_usuario = :id_tipo_usuario";
+        $stmt       = $this->db->prepare($sql);
         $parametros = ['id_tipo_usuario' => $id_tipo_usuario];
         $stmt->execute($parametros);
         

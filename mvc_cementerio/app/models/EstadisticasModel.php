@@ -24,8 +24,8 @@ class EstadisticasModel extends Control {
     public function getTotalDifuntos()
     {
         try {
-            $stmt = $this->db->query("SELECT COUNT(*) as total FROM difunto");
-            $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmt       = $this->db->query("SELECT COUNT(*) as total FROM difunto");
+            $resultado  = $stmt->fetch(PDO::FETCH_ASSOC);
             
             if (isset($resultado['total'])){
                 return (int)$resultado['total'];
@@ -246,8 +246,8 @@ class EstadisticasModel extends Control {
         $this->establecerFechasPorDefecto($fecha_inicio_traslado, $fecha_fin_traslado);
 
         $columnas_permitidas = ['nombre', 'apellido', 'fecha_fallecimiento', 'fecha_retiro'];
-        $sort_col = in_array($sort_col, $columnas_permitidas) ? $sort_col : 'fecha_retiro';
-        $sort_dir = strtoupper($sort_dir) === 'DESC' ? 'DESC' : 'ASC';
+        $sort_col            = in_array($sort_col, $columnas_permitidas) ? $sort_col : 'fecha_retiro';
+        $sort_dir            = strtoupper($sort_dir) === 'DESC' ? 'DESC' : 'ASC';
 
         $sql = "SELECT 
                     d.*, d.dni, d.nombre, d.apellido, d.fecha_fallecimiento, 
@@ -312,8 +312,8 @@ class EstadisticasModel extends Control {
     public function getTotalTraslados()
     {
         try {
-            $stmt = $this->db->query("SELECT COUNT(*) as total FROM ubicacion_difunto WHERE fecha_retiro != '0000-00-00'");
-            $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmt       = $this->db->query("SELECT COUNT(*) as total FROM ubicacion_difunto WHERE fecha_retiro != '0000-00-00'");
+            $resultado  = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if(isset($resultado['total'])){
                 return (int)$resultado['total'];

@@ -32,7 +32,7 @@ class AuditoriaHelper {
                 'creado_en'  => date('Y-m-d H:i:s'),
                 'query_sql'  => $query_sql,
                 'parametros' => $parametrosJSON,
-                'model' => $model,
+                'model'      => $model,
                 'accion'     => $accion
             ];
 

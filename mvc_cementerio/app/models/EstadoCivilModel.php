@@ -54,8 +54,8 @@ class EstadoCivilModel {
     */
     public function insertEstadoCivil($descripcion)
     {
-        $sql = "INSERT INTO estado_civil (descripcion) VALUES (:descripcion)";
-        $stmt = $this->db->prepare($sql);
+        $sql        = "INSERT INTO estado_civil (descripcion) VALUES (:descripcion)";
+        $stmt       = $this->db->prepare($sql);
         $parametros = ['descripcion' => $descripcion];
         $stmt->execute($parametros);
 
@@ -83,8 +83,8 @@ class EstadoCivilModel {
         $stmt = $this->db->prepare($sql);
         
         $parametros = [
-            'id_estado_civil' => $id_estado_civil,
-            'descripcion' => $descripcion
+            'id_estado_civil'   => $id_estado_civil,
+            'descripcion'       => $descripcion
         ];
         $stmt->execute($parametros);
 
@@ -105,8 +105,8 @@ class EstadoCivilModel {
      */
     public function deleteEstadoCivil($id_estado_civil): bool
     {
-        $sql = "DELETE FROM estado_civil WHERE id_estado_civil = :id_estado_civil";
-        $stmt = $this->db->prepare($sql);
+        $sql        = "DELETE FROM estado_civil WHERE id_estado_civil = :id_estado_civil";
+        $stmt       = $this->db->prepare($sql);
         $parametros = ['id_estado_civil' => $id_estado_civil];
         $stmt->execute($parametros);
         

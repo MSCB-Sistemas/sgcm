@@ -79,15 +79,15 @@ class UsuarioModel {
         $stmt = $this->db->prepare($sql);
         
         $parametros = [
-            "usuario" => $usuario,
-            "nombre" => $nombre,
-            "apellido" => $apellido,
-            "cargo" => $cargo,
-            "sector" => $sector,
-            'telefono' => $telefono,
-            'email' => $email,
-            "contrasenia" => password_hash($contrasenia, PASSWORD_DEFAULT),
-            "id_tipo_usuario" => $id_tipo_usuario
+            "usuario"           => $usuario,
+            "nombre"            => $nombre,
+            "apellido"          => $apellido,
+            "cargo"             => $cargo,
+            "sector"            => $sector,
+            'telefono'          => $telefono,
+            'email'             => $email,
+            "contrasenia"       => password_hash($contrasenia, PASSWORD_DEFAULT),
+            "id_tipo_usuario"   => $id_tipo_usuario
         ];
         $stmt->execute($parametros);
 
@@ -124,14 +124,14 @@ class UsuarioModel {
         $stmt = $this->db->prepare($sql);
         
         $parametros = [
-            "id_usuario" => $id_usuario,
-            "usuario" => $usuario,
-            "nombre" => $nombre,
-            "apellido" => $apellido,
-            "cargo" => $cargo,
-            "sector" => $sector,
-            'telefono' => $telefono,
-            'email' => $email,
+            "id_usuario"      => $id_usuario,
+            "usuario"         => $usuario,
+            "nombre"          => $nombre,
+            "apellido"        => $apellido,
+            "cargo"           => $cargo,
+            "sector"          => $sector,
+            'telefono'        => $telefono,
+            'email'           => $email,
             "id_tipo_usuario" => $id_tipo_usuario,
         ];
         $stmt->execute($parametros);
@@ -153,8 +153,8 @@ class UsuarioModel {
      */
     public function deleteUsuario($id_usuario): bool
     {
-        $sql = "UPDATE usuarios SET activo = 0 WHERE id_usuario = :id_usuario";
-        $stmt = $this->db->prepare($sql);
+        $sql        = "UPDATE usuarios SET activo = 0 WHERE id_usuario = :id_usuario";
+        $stmt       = $this->db->prepare($sql);
         $parametros = ['id_usuario' => $id_usuario];
         $stmt->execute($parametros);
         
@@ -188,8 +188,8 @@ class UsuarioModel {
      * @return bool True si se actualizó la contraseña, false en caso contrario.
      */
     public function updatePassword($id_usuario, $password) : bool {
-        $sql = "UPDATE usuarios SET contrasenia = :contrasenia WHERE id_usuario = :id_usuario";
-        $stmt = $this->db->prepare($sql);
+        $sql        = "UPDATE usuarios SET contrasenia = :contrasenia WHERE id_usuario = :id_usuario";
+        $stmt       = $this->db->prepare($sql);
         $parametros = ['id_usuario' => $id_usuario, 'contrasenia'=> $password];
         $stmt->execute($parametros);
         

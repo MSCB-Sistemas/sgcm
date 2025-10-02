@@ -54,8 +54,8 @@ class SexoModel {
      */
     public function insertSexo($descripcion)
     {
-        $sql = "INSERT INTO sexo (descripcion) VALUES (:descripcion)";
-        $stmt = $this->db->prepare($sql);
+        $sql        = "INSERT INTO sexo (descripcion) VALUES (:descripcion)";
+        $stmt       = $this->db->prepare($sql);
         $parametros = ['descripcion' => $descripcion];
         $stmt->execute($parametros);
 
@@ -81,8 +81,8 @@ class SexoModel {
         $stmt = $this->db->prepare($sql);
         
         $parametros = [
-            'id_sexo' => $id_sexo,
-            'descripcion' => $descripcion
+            'id_sexo'       => $id_sexo,
+            'descripcion'   => $descripcion
         ];
         $stmt->execute($parametros);
 
@@ -103,8 +103,8 @@ class SexoModel {
      */
     public function deleteSexo($id_sexo): bool
     {
-        $sql = "DELETE FROM sexo WHERE id_sexo = :id_sexo";
-        $stmt = $this->db->prepare($sql);
+        $sql        = "DELETE FROM sexo WHERE id_sexo = :id_sexo";
+        $stmt       = $this->db->prepare($sql);
         $parametros = ['id_sexo' => $id_sexo];
         $stmt->execute($parametros);
         
