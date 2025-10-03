@@ -58,6 +58,7 @@ CREATE TABLE `deudo` (
   `dni` int DEFAULT NULL,
   `nombre` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish2_ci DEFAULT NULL,
   `apellido` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish2_ci DEFAULT NULL,
+  `vinculo_familiar` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish2_ci DEFAULT NULL,
   `telefono` int DEFAULT NULL,
   `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish2_ci DEFAULT NULL,
   `domicilio` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish2_ci DEFAULT NULL,
@@ -73,7 +74,7 @@ CREATE TABLE `deudo` (
 
 LOCK TABLES `deudo` WRITE;
 /*!40000 ALTER TABLE `deudo` DISABLE KEYS */;
-INSERT INTO `deudo` VALUES (1,1818100000,'Rodrigo','rosales',4686884,'futcutuyv@gmail.com','galera','RN','8400');
+INSERT INTO `deudo` VALUES (1,18345263,'Rodrigo','Rosales', 'hijo', 2944564738,'rodrigo@gmail.com','Mitre 600','San Carlos de Bariloche','8400');
 /*!40000 ALTER TABLE `deudo` ENABLE KEYS */;
 UNLOCK TABLES;
 

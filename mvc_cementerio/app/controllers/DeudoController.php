@@ -19,12 +19,13 @@ class DeudoController extends Control {
             'urlCrear'          => URL . 'deudo/create',
             'ajaxUrl'           => URL . 'deudo/ajax',
             'baseUrl'           => URL . 'deudo/',
-            'columnas'  => ['ID', 'DNI', 'Nombre', 'Apellido', 'Teléfono', 'Email', 'Domicilio', 'Localidad', 'Código Postal'],
+            'columnas'  => ['ID', 'DNI', 'Nombre', 'Apellido', 'Vínculo Familiar', 'Teléfono', 'Email', 'Domicilio', 'Localidad', 'Código Postal'],
             'columnsConfig'     => [
                 ['data' => 'id_deudo'],
                 ['data' => 'dni'],
                 ['data' => 'nombre'],
                 ['data' => 'apellido'],
+                ['data' => 'vinculo_familiar'],
                 ['data' => 'telefono'],
                 ['data' => 'email'],
                 ['data' => 'domicilio'],
@@ -59,6 +60,7 @@ class DeudoController extends Control {
             $dni            = trim($_POST['dni']);
             $nombre         = trim($_POST['nombre']);
             $apellido       = trim($_POST['apellido']);
+            $vinculo_familiar = trim($_POST['vinculo_familiar']);
             $telefono       = trim($_POST['telefono']);
             $email          = trim($_POST['email']);
             $domicilio      = trim($_POST['domicilio']);
@@ -74,6 +76,9 @@ class DeudoController extends Control {
             }
             if (empty($apellido)) {
                 $errores[] = "Tenes que ingresar un apellido.";
+            }
+            if (empty($vinculo_familiar)) {
+                $errores[] = "Tenes que ingresar un vínculo familiar con el difunto.";
             }
             if (empty($telefono)) {
                 $errores[] = "Tenes que ingresar un telefono de referencia.";
@@ -99,6 +104,7 @@ class DeudoController extends Control {
                         'dni'           => $dni,
                         'nombre'        => $nombre,
                         'apellido'      => $apellido,
+                        'vinculo_familiar' => $vinculo_familiar,
                         'telefono'      => $telefono,
                         'email'         => $email,
                         'domicilio'     => $domicilio,
@@ -111,7 +117,7 @@ class DeudoController extends Control {
                 return;
             }
 
-            $idDeudo = $this->model->insertDeudo($dni, $nombre, $apellido, $telefono, $email, $domicilio, $localidad, $codigo_postal);
+            $idDeudo = $this->model->insertDeudo($dni, $nombre, $apellido, $vinculo_familiar, $telefono, $email, $domicilio, $localidad, $codigo_postal);
             if ($idDeudo) {
                 header('Location: ' . URL . 'deudo');
             } else {
@@ -137,6 +143,7 @@ class DeudoController extends Control {
                 'dni'           => $deudo['dni'],
                 'nombre'        => $deudo['nombre'],
                 'apellido'      => $deudo['apellido'],
+                'vinculo_familiar' => $deudo['vinculo_familiar'],
                 'telefono'      => $deudo['telefono'],
                 'email'         => $deudo['email'],
                 'domicilio'     => $deudo['domicilio'],
@@ -155,6 +162,7 @@ class DeudoController extends Control {
                 'dni'           => 'DNI',
                 'nombre'        => 'nombre',
                 'apellido'      => 'apellido',
+                'vinculo_familiar' => 'vínculo familiar',
                 'telefono'      => 'teléfono',
                 'email'         => 'dirección de mail',
                 'domicilio'     => 'domicilio',
@@ -197,6 +205,7 @@ class DeudoController extends Control {
                 $datos['dni'],
                 $datos['nombre'],
                 $datos['apellido'],
+                $datos['vinculo_familiar'],
                 $datos['telefono'],
                 $datos['email'],
                 $datos['domicilio'],
@@ -265,7 +274,7 @@ class DeudoController extends Control {
         $orderDir = getNestedPost(['order', 0, 'dir'], 'asc');
 
         // Columnas permitidas para ordenamiento
-        $columns = ['id_deudo','dni','nombre','apellido','telefono','email','domicilio','localidad','codigo_postal'];
+        $columns = ['id_deudo','dni','nombre','apellido', 'vinculo_familiar', 'telefono','email','domicilio','localidad','codigo_postal'];
 
         // Validar si el índice de columna existe
         if (isset($columns[$orderColumnIndex])) {
