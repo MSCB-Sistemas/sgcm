@@ -1,5 +1,6 @@
 <?php
-class ParcelaController extends Control {
+class ParcelaController extends Control
+{
     private ParcelaModel $model;
     private TipoParcelaModel $tipoParcelaModel;
     private DeudoModel $deudoModel;
@@ -16,8 +17,8 @@ class ParcelaController extends Control {
 
     public function index()
     {
-        $puedeCrear    = $this->can('crear_parcela');
-        $puedeEditar   = $this->can('editar_parcela');
+        $puedeCrear = $this->can('crear_parcela');
+        $puedeEditar = $this->can('editar_parcela');
         $puedeEliminar = $this->can('eliminar_parcela');
 
         $parcela = $this->model->getAllParcelas();
@@ -31,25 +32,24 @@ class ParcelaController extends Control {
             'acciones'          => function (array $fila) use ($puedeEditar, $puedeEliminar)
             {
                 $id = $fila['id_parcela'];
-                $url = rtrim(URL,'/') . '/parcela';
+                $url = rtrim(URL, '/') . '/parcela';
 
                 $html = '';
-                if ($puedeEditar) 
-                {
-                    $html .= '<a href="'.$url.'/edit/'.$id.'" class="btn btn-sm btn-primary">Editar</a> ';
-                    $html .= '<form action="'.$url.'/activate/'.$id.'" method="post" style="display:inline">'
-                          .  '<button class="btn btn-sm btn-success" onclick="return confirm(\'¿Activar este usuario?\');">Activar</button>'
-                          .  '</form> ';
+                if ($puedeEditar) {
+                    $html .= '<a href="' . $url . '/edit/' . $id . '" class="btn btn-sm btn-primary">Editar</a> ';
+                    $html .= '<form action="' . $url . '/activate/' . $id . '" method="post" style="display:inline">'
+                        . '<button class="btn btn-sm btn-success" onclick="return confirm(\'¿Activar este usuario?\');">Activar</button>'
+                        . '</form> ';
                 }
                 if ($puedeEliminar) {
-                    $html .= '<form action="'.$url.'/delete/'.$id.'" method="post" style="display:inline" onsubmit="return confirm(\'¿Eliminar este usuario?\');">'
-                          .  '<button class="btn btn-sm btn-danger">Eliminar</button>'
-                          .  '</form>';
+                    $html .= '<form action="' . $url . '/delete/' . $id . '" method="post" style="display:inline" onsubmit="return confirm(\'¿Eliminar este usuario?\');">'
+                        . '<button class="btn btn-sm btn-danger">Eliminar</button>'
+                        . '</form>';
                 }
                 return $html;
             },
-            'puedeCrear'      => $puedeCrear,   // por si tu partial muestra el botón “Nuevo”
-            'errores'         => [],
+            'puedeCrear' => $puedeCrear,   // por si tu partial muestra el botón “Nuevo”
+            'errores' => [],
         ];
 
         $this->loadView('partials/tablaAbm', $datos);
@@ -256,8 +256,7 @@ class ParcelaController extends Control {
                 return;
             }
 
-            if ($this->model->updateParcela($id, $tipo_parcela, $deudo, $nro_ubicacion, $hilera, $seccion, $fraccion, $nivel, $orientacion)) 
-            {
+            if ($this->model->updateParcela($id, $tipo_parcela, $deudo, $nro_ubicacion, $hilera, $seccion, $fraccion, $nivel, $orientacion)) {
                 header("Location: " . URL . "parcela");
                 exit;
             } else {
@@ -274,6 +273,30 @@ class ParcelaController extends Control {
         } else {
             die("No se pudo eliminar la parcela");
         }
+    }
+
+    public function obtenerInfoParcela($id = null)
+    {
+        header('Content-Type: application/json');
+        $model = new ParcelaModel();
+
+        $todosLosPagos = $model->obtenerPagosPorParcela($id);
+        
+        usort($todosLosPagos, function($a, $b) {
+            $fechaA = strtotime($a['fecha_pago']);
+            $fechaB = strtotime($b['fecha_pago']);
+            return $fechaB - $fechaA;
+        });
+        
+        $pagosLimitados = array_slice($todosLosPagos, 0, 10);
+
+        $data = [
+            'pagos' => $pagosLimitados,
+            'difuntos' => $model->obtenerDifuntosPorParcela($id),
+        ];
+
+        echo json_encode($data);
+        exit;
     }
 }
 ?>
