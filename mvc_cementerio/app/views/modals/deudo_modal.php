@@ -57,3 +57,46 @@
         </div>
     </div>
 </div>
+
+<script>
+    function setupModalAJAX(formId, endpoint, datalistId, inputId, mapOptionValue) {
+        document.getElementById(formId).addEventListener('submit', function(e){
+            e.preventDefault();
+            const formData = new FormData(this);
+            fetch(endpoint, {method:'POST', body:formData})
+                .then(res=>res.json())
+                .then(data=>{
+                    if(data.success){
+                        const modal = bootstrap.Modal.getInstance(this.closest('.modal'));
+                        modal.hide();
+                        this.reset();
+
+                        if(datalistId && inputId){
+                            const datalist = document.getElementById(datalistId);
+                            const option = document.createElement('option');
+                            option.value = mapOptionValue(data);
+                            option.dataset.id = data[formId==='formDifunto'?'difunto':'deudo']?.id_difunto ?? data[formId==='formDeudo'?'deudo':'parcela']?.id_deudo ?? data.parcela.id_parcela;
+                            datalist.appendChild(option);
+
+                            const input = document.getElementById(inputId);
+                            input.value = option.value;
+                            const hiddenId = inputId.replace('_search','');
+                            if(document.getElementById('id_'+hiddenId))
+                                document.getElementById('id_'+hiddenId).value = option.dataset.id;
+                        }
+                        alert(data.mensaje);
+                    } else {
+                        alert(data.mensaje);
+                    }
+                }).catch(err=>console.error(err));
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const formDeudo = document.getElementById('formDeudo');
+        if (formDeudo) {
+            setupModalAJAX('formDeudo', 'ajax_guardar_deudo.php','deudos','deudo_search',
+                data => `${data.deudo.dni} - ${data.deudo.nombre} ${data.deudo.apellido}`);
+        }
+    });
+</script>

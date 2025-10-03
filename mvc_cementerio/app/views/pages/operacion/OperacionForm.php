@@ -33,7 +33,6 @@
     <div class="card-body p-4">
         <form action="<?= isset($datos['action']) ? $datos['action'] : '' ?>" method="POST" id="operacionForm">
 
-            <!-- Parcela / Deudo -->
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
                     <label for="parcela_search" class="form-label">Parcela</label>
@@ -72,7 +71,6 @@
                 </div>
             </div>
 
-            <!-- Difunto / Fechas -->
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
                     <label for="difunto_search" class="form-label">Difunto</label>
@@ -104,7 +102,6 @@
                 </div>
             </div>
 
-            <!-- Importe / Recargo / Total -->
             <div class="row g-3 mb-3">
                 <div class="col-md-4">
                     <label for="importe" class="form-label">Importe</label>
