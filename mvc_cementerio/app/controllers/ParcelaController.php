@@ -9,9 +9,9 @@ class ParcelaController extends Control
     public function __construct()
     {
         $this->requireLogin();
-        $this->model = $this->loadModel("ParcelaModel");
+        $this->model            = $this->loadModel("ParcelaModel");
         $this->tipoParcelaModel = $this->loadModel("TipoParcelaModel");
-        $this->deudoModel = $this->loadModel("DeudoModel");
+        $this->deudoModel       = $this->loadModel("DeudoModel");
         $this->orientacionModel = $this->loadModel("OrientacionModel");
     }
 
@@ -24,12 +24,13 @@ class ParcelaController extends Control
         $parcela = $this->model->getAllParcelas();
 
         $datos = [
-            'title' => 'Lista de parcelas',
-            'urlCrear' => URL . 'parcela/create',
-            'columnas' => ['ID', 'Tipo', 'Deudo', 'Numero ubicacion', 'Hilera', 'Seccion', 'Fraccion', 'Nivel', 'Orientacion'],
-            'columnas_claves' => ['id_parcela', 'tipo_parcela', 'nombre_deudo', 'numero_ubicacion', 'hilera', 'seccion', 'fraccion', 'nivel', 'orientacion'],
-            'data' => $parcela,
-            'acciones' => function (array $fila) use ($puedeEditar, $puedeEliminar) {
+            'title'             => 'Lista de parcelas',
+            'urlCrear'          => URL . 'parcela/create',
+            'columnas'          => ['ID', 'Tipo', 'Deudo', 'Numero ubicacion', 'Hilera', 'Seccion', 'Fraccion', 'Nivel', 'Orientacion'],
+            'columnas_claves'   => ['id_parcela', 'tipo_parcela', 'nombre_deudo', 'numero_ubicacion', 'hilera', 'seccion', 'fraccion', 'nivel', 'orientacion'],
+            'data'              => $parcela,
+            'acciones'          => function (array $fila) use ($puedeEditar, $puedeEliminar)
+            {
                 $id = $fila['id_parcela'];
                 $url = rtrim(URL, '/') . '/parcela';
 
@@ -61,13 +62,13 @@ class ParcelaController extends Control
         $orientaciones = $this->orientacionModel->getAllOrientaciones();
 
         $datos = [
-            'title' => 'Crear parcela',
-            'action' => URL . 'parcela/save',
-            'values' => [],
-            'errores' => [],
-            'tipos_parcelas' => $tipos_parcelas,
-            'deudos' => $deudos,
-            'orientaciones' => $orientaciones
+            'title'             => 'Crear parcela',
+            'action'            => URL . 'parcela/save',
+            'values'            => [],
+            'errores'           => [],
+            'tipos_parcelas'    => $tipos_parcelas,
+            'deudos'            => $deudos,
+            'orientaciones'     => $orientaciones
         ];
 
         $this->loadView('parcelas/ParcelaForm', $datos);
@@ -119,10 +120,8 @@ class ParcelaController extends Control
             }
             $errores = [];
 
-            if (empty($tipo_parcela))
-                $errores[] = "El tipo de parcela es obligatorio.";
-            if (empty($orientacion))
-                $errores[] = "La orientacion de la parcela es obligatoria.";
+            if (empty($tipo_parcela)) $errores[]    = "El tipo de parcela es obligatorio.";
+            if (empty($orientacion)) $errores[]     = "La orientacion de la parcela es obligatoria.";
 
             if (!empty($errores)) {
                 $tipos_parcelas = $this->tipoParcelaModel->getAllTiposParcelas();
@@ -130,13 +129,13 @@ class ParcelaController extends Control
                 $orientaciones = $this->orientacionModel->getAllOrientaciones();
 
                 $this->loadView('parcelas/ParcelaForm', [
-                    'title' => 'Crear parcela',
-                    'action' => URL . 'parcela/save',
-                    'values' => $_POST,
-                    'errores' => $errores,
-                    'tipos_parcelas' => $tipos_parcelas,
-                    'deudos' => $deudos,
-                    'orientaciones' => $orientaciones,
+                    'title'             => 'Crear parcela',
+                    'action'            => URL . 'parcela/save',
+                    'values'            => $_POST,
+                    'errores'           => $errores,
+                    'tipos_parcelas'    => $tipos_parcelas,
+                    'deudos'            => $deudos,
+                    'orientaciones'     => $orientaciones,
                 ]);
                 return;
             }
@@ -152,32 +151,32 @@ class ParcelaController extends Control
 
     public function edit($id)
     {
-        $parcela = $this->model->getParcela($id);
+        $parcela        = $this->model->getParcela($id);
         $tipos_parcelas = $this->tipoParcelaModel->getAllTiposParcelas();
-        $deudos = $this->deudoModel->getAllDeudos();
-        $orientaciones = $this->orientacionModel->getAllOrientaciones();
+        $deudos         = $this->deudoModel->getAllDeudos();
+        $orientaciones  = $this->orientacionModel->getAllOrientaciones();
 
         if (!$parcela) {
             die("Parcela no encontrada");
         }
 
         $this->loadView('parcelas/ParcelaForm', [
-            'title' => 'Editar parcela',
-            'action' => URL . 'parcela/update/' . $id,
-            'values' => [
-                'tipo_parcela' => $parcela['id_tipo_parcela'],
-                'deudo' => $parcela['id_deudo'],
-                'numero_ubicacion' => $parcela['numero_ubicacion'],
-                'hilera' => $parcela['hilera'],
-                'seccion' => $parcela['seccion'],
-                'fraccion' => $parcela['fraccion'],
-                'nivel' => $parcela['nivel'],
-                'orientacion' => $parcela['id_orientacion'],
+            'title'     => 'Editar parcela',
+            'action'    => URL . 'parcela/update/' . $id,
+            'values'    => [
+                'tipo_parcela'      => $parcela['id_tipo_parcela'],
+                'deudo'             => $parcela['id_deudo'],
+                'numero_ubicacion'  => $parcela['numero_ubicacion'],
+                'hilera'            => $parcela['hilera'],
+                'seccion'           => $parcela['seccion'],
+                'fraccion'          => $parcela['fraccion'],
+                'nivel'             => $parcela['nivel'],
+                'orientacion'       => $parcela['id_orientacion'],
             ],
             'errores' => [],
-            'tipos_parcelas' => $tipos_parcelas,
-            'deudos' => $deudos,
-            'orientaciones' => $orientaciones,
+            'tipos_parcelas'    => $tipos_parcelas,
+            'deudos'            => $deudos,
+            'orientaciones'     => $orientaciones,
         ]);
     }
 
@@ -225,36 +224,34 @@ class ParcelaController extends Control
                 $orientacion = '';
             }
 
-            if (empty($tipo_parcela))
-                $errores[] = "El tipo de parcela es obligatorio.";
-            if (empty($orientacion))
-                $errores[] = "La orientacion de la parcela es obligatoria.";
+            if (empty($tipo_parcela)) $errores[]    = "El tipo de parcela es obligatorio.";
+            if (empty($orientacion)) $errores[]     = "La orientacion de la parcela es obligatoria.";
 
             if (!empty($errores)) {
                 $parcela = [
-                    'id_parcela' => $id,
-                    'id_tipo_parcela' => $tipo_parcela,
-                    'id_deudo' => $deudo,
-                    'numero_ubicacion' => $nro_ubicacion,
-                    'hilera' => $hilera,
-                    'seccion' => $seccion,
-                    'fraccion' => $fraccion,
-                    'nivel' => $nivel,
-                    'id_orientacion' => $orientacion
+                    'id_parcela'        => $id,
+                    'id_tipo_parcela'   => $tipo_parcela,
+                    'id_deudo'          => $deudo,
+                    'numero_ubicacion'  => $nro_ubicacion,
+                    'hilera'            => $hilera,
+                    'seccion'           => $seccion,
+                    'fraccion'          => $fraccion,
+                    'nivel'             => $nivel,
+                    'id_orientacion'    => $orientacion
                 ];
 
                 $tipos_parcelas = $this->tipoParcelaModel->getAllTiposParcelas();
-                $deudos = $this->deudoModel->getAllDeudos();
-                $orientaciones = $this->orientacionModel->getAllOrientaciones();
+                $deudos         = $this->deudoModel->getAllDeudos();
+                $orientaciones  = $this->orientacionModel->getAllOrientaciones();
 
                 $this->loadView('parcelas/ParcelaForm', [
-                    'title' => 'Editar parcela',
-                    'action' => URL . 'parcela/update/' . $id,
-                    'values' => $parcela,
-                    'errores' => $errores,
+                    'title'          => 'Editar parcela',
+                    'action'         => URL . 'parcela/update/' . $id,
+                    'values'         => $parcela,
+                    'errores'        => $errores,
                     'tipos_parcelas' => $tipos_parcelas,
-                    'deudos' => $deudos,
-                    'orientaciones' => $orientaciones
+                    'deudos'         => $deudos,
+                    'orientaciones'  => $orientaciones
                 ]);
                 return;
             }

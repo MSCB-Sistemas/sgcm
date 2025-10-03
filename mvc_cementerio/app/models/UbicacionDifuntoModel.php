@@ -63,10 +63,10 @@ class UbicacionDifuntoModel {
         $stmt = $this->db->prepare($sql);
         
         $parametros = [
-            'id_parcela' => $id_parcela,
-            'id_difunto' => $id_difunto,
+            'id_parcela'    => $id_parcela,
+            'id_difunto'    => $id_difunto,
             'fecha_ingreso' => $fecha_ingreso,
-            'fecha_retiro' => $fecha_retiro
+            'fecha_retiro'  => $fecha_retiro
         ];
         $stmt->execute($parametros);
 
@@ -98,11 +98,11 @@ class UbicacionDifuntoModel {
         $stmt = $this->db->prepare($sql);
         
         $parametros = [
-            'id_ubicacion_difunto' => $id_ubicacion_difunto,
-            'id_parcela' => $id_parcela,
-            'id_difunto' => $id_difunto,
-            'fecha_ingreso' => $fecha_ingreso,
-            'fecha_retiro' => $fecha_retiro
+            'id_ubicacion_difunto'  => $id_ubicacion_difunto,
+            'id_parcela'            => $id_parcela,
+            'id_difunto'            => $id_difunto,
+            'fecha_ingreso'         => $fecha_ingreso,
+            'fecha_retiro'          => $fecha_retiro
         ];
         $stmt->execute($parametros);
 
@@ -124,8 +124,8 @@ class UbicacionDifuntoModel {
      */
     public function deleteUbicacion($id_ubicacion_difunto): bool
     {
-        $sql = "DELETE FROM ubicacion_difunto WHERE id_ubicacion_difunto = :id_ubicacion_difunto";
-        $stmt = $this->db->prepare($sql);
+        $sql        = "DELETE FROM ubicacion_difunto WHERE id_ubicacion_difunto = :id_ubicacion_difunto";
+        $stmt       = $this->db->prepare($sql);
         $parametros = ['id_ubicacion_difunto' => $id_ubicacion_difunto];
         $stmt->execute($parametros);
         

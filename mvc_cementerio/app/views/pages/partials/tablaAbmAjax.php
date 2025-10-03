@@ -84,7 +84,18 @@ document.addEventListener('DOMContentLoaded', function () {
             url: '<?= $datos['ajaxUrl'] ?>',
             type: 'POST',
         },
-        columns: <?= json_encode($datos['columnsConfig'] ?? []) ?>,
+        
+        <?php
+        if (isset($datos['columnsConfig'])) {
+            $columns = $datos['columnsConfig'];
+        } else {
+            $columns = [];
+        }
+        ?>
+        columns: <?= json_encode($columns) 
+        ?>,
+
+        
         columnDefs: [
             {
                 targets: -1,
@@ -101,23 +112,31 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function editarItem(id) {
-    window.location.href = `<?= $datos['baseUrl'] ?? '' ?>edit/${id}`;
+    <?php
+    if (isset($datos['baseUrl'])) {
+        $baseUrl = $datos['baseUrl'];
+    } else {
+        $baseUrl = '';
+    }
+    ?>
+    window.location.href = `<?= $baseUrl ?>edit/${id}`;
+
 }
 
 function eliminarItem(id) {
     if (confirm('¿Está seguro de que desea eliminar este registro?')) {
         const form = document.createElement('form');
         form.method = 'POST';
-        form.action = `<?= $datos['baseUrl'] ?? '' ?>delete/${id}`;
-        
-        const csrfToken = document.createElement('input');
-        csrfToken.type = 'hidden';
-        csrfToken.name = 'csrf_token';
-        csrfToken.value = '<?= $datos['csrfToken'] ?? '' ?>';
-        
-        form.appendChild(csrfToken);
-        document.body.appendChild(form);
-        form.submit();
+
+        <?php
+        if (isset($datos['baseUrl'])) {
+            $baseUrl = $datos['baseUrl'];
+        } else {
+            $baseUrl = '';
+        }
+        ?>
+        form.action = `<?= $baseUrl ?>delete/${id}`;
+
     }
 }
 </script>

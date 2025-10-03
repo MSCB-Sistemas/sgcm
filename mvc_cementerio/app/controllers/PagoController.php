@@ -7,32 +7,42 @@ class PagoController extends Control {
 
     public function __construct() {
         $this->requireLogin();
-        $this->model = $this->loadModel("PagoModel");
-        $this->deudoModel = $this->loadModel("DeudoModel");
+        $this->model        = $this->loadModel("PagoModel");
+        $this->deudoModel   = $this->loadModel("DeudoModel");
         $this->parcelaModel = $this->loadModel("ParcelaModel");
         $this->usuarioModel = $this->loadModel("UsuarioModel");
     }
 
     public function index() {
-        $puedeCrear = $this->can('crear_pago');
-        $puedeEditar = $this->can('editar_pago');
-        $puedeEliminar = $this->can('eliminar_pago');
+        $puedeCrear         = $this->can('crear_pago');
+        $puedeEditar        = $this->can('editar_pago');
+        $puedeEliminar      = $this->can('eliminar_pago');
 
         $datos = [
-            'title' => 'Lista de pagos',
-            'urlCrear'=> URL . 'pago/create',
-            'ajaxUrl' => URL . 'pago/ajax',
-            'baseUrl' => URL . 'pago/',
-            'columnas' => ['ID', 'Deudo', 'Parcela', 'Fecha de pago', 'Fecha de vencimiento', 'Importe', 'Recargo', 'Total', 'Usuario'],
+            'title'         => 'Lista de pagos',
+            'urlCrear'      => URL . 'pago/create',
+            'ajaxUrl'       => URL . 'pago/ajax',
+            'baseUrl'       => URL . 'pago/',
+            'columnas'      => ['ID', 'Deudo', 'Parcela', 'Fecha de pago', 'Fecha de vencimiento', 'Importe', 'Recargo', 'Total', 'Usuario'],
             'columnsConfig' => [
                 ['data' => 'id_pago'],
                 ['data' => 'nombre_deudo'],
                 ['data' => 'parcela'],
                 ['data' => 'fecha_pago', 'render' => function($data) {
-                    return $data ? date('d/m/Y', strtotime($data)) : '-';
+                    if ($data){
+                        return date('d/m/Y', strtotime($data));
+                    }
+                    else{
+                        return '-';
+                    }
                 }],
                 ['data' => 'fecha_vencimiento', 'render' => function($data) {
-                    return $data ? date('d/m/Y', strtotime($data)) : '-';
+                    if ($data){
+                        return date('d/m/Y', strtotime($data));
+                    }
+                    else{
+                        return '-';
+                    }
                 }],
                 ['data' => 'importe', 'render' => function($data) {
                     return '$ ' . number_format($data, 2);
@@ -48,26 +58,25 @@ class PagoController extends Control {
             ],
             'puedeCrear' => $puedeCrear,
             'errores' => [],
-            'csrfToken' => $this->generateCsrfToken()
         ];
 
         $this->loadView('partials/tablaAbmAjax', $datos);
     }
 
     public function create() {
-        $deudos = $this->deudoModel->getAllDeudos();
-        $parcelas = $this->parcelaModel->getAllParcelas();
-        $usuarios = $this->usuarioModel->getAllUsuarios();
-        $values['id_usuario'] = $_SESSION['usuario_id'];
+        $deudos                 = $this->deudoModel->getAllDeudos();
+        $parcelas               = $this->parcelaModel->getAllParcelas();
+        $usuarios               = $this->usuarioModel->getAllUsuarios();
+        $values['id_usuario']   = $_SESSION['usuario_id'];
 
         $datos = [
-            'title' => 'Crear pago',
-            'action' => URL . 'pago/save',
-            'values' => $values,
-            'errores' => [],
-            'deudos' => $deudos,
-            'parcelas' => $parcelas,
-            'usuarios' => $usuarios
+            'title'     => 'Crear pago',
+            'action'    => URL . 'pago/save',
+            'values'    => $values,
+            'errores'   => [],
+            'deudos'    => $deudos,
+            'parcelas'  => $parcelas,
+            'usuarios'  => $usuarios
         ];
 
         $this->loadView('pagos/PagosForm', $datos);
@@ -114,28 +123,28 @@ class PagoController extends Control {
             $usuario = $_SESSION['usuario_id'];
             $errores = [];
 
-            if (empty($deudo)) $errores[] = 'El deudo es obligatorio';
-            if (empty($parcela)) $errores[] = 'La parcela es obligatoria';
-            if (empty($fecha_pago)) $errores[] = 'La fecha es obligatoria';
-            if (empty($fecha_vencimiento)) $errores[] = 'La fecha de vencimiento es obligatoria';
-            if (empty($importe)) $errores[] = 'El importe es obligatorio';
-            if (empty($recargo)) $errores[] = 'El recargo es obligatorio';
-            if (empty($total)) $errores[] = 'El total es obligatorio';
-            if (empty($usuario)) $errores[] = 'El usuario es obligatorio';
+            if (empty($deudo))              $errores[] = 'El deudo es obligatorio';
+            if (empty($parcela))            $errores[] = 'La parcela es obligatoria';
+            if (empty($fecha_pago))         $errores[] = 'La fecha es obligatoria';
+            if (empty($fecha_vencimiento))  $errores[] = 'La fecha de vencimiento es obligatoria';
+            if (empty($importe))            $errores[] = 'El importe es obligatorio';
+            if (empty($recargo))            $errores[] = 'El recargo es obligatorio';
+            if (empty($total))              $errores[] = 'El total es obligatorio';
+            if (empty($usuario))            $errores[] = 'El usuario es obligatorio';
 
             if (!empty($errores)) {
-                $deudos = $this->deudoModel->getAllDeudos();
-                $parcelas = $this->parcelaModel->getAllParcelas();
-                $usuarios = $this->usuarioModel->getAllUsuarios();
+                $deudos     = $this->deudoModel->getAllDeudos();
+                $parcelas   = $this->parcelaModel->getAllParcelas();
+                $usuarios   = $this->usuarioModel->getAllUsuarios();
 
                 $this->loadView('pagos/PagosForm', [
-                    'title' => 'Crear pago',
-                    'action' => URL . 'parcela/save',
-                    'values' => $_POST,
-                    'errores' => $errores,
-                    'deudos' => $deudos,
-                    'parcelas' => $parcelas,
-                    'usuarios' => $usuarios
+                    'title'     => 'Crear pago',
+                    'action'    => URL . 'parcela/save',
+                    'values'    => $_POST,
+                    'errores'   => $errores,
+                    'deudos'    => $deudos,
+                    'parcelas'  => $parcelas,
+                    'usuarios'  => $usuarios
                 ]);
                 return;
             }
@@ -150,29 +159,29 @@ class PagoController extends Control {
     }
 
     public function edit($id) {
-        $pago = $this->model->getPago($id);
-        $deudos = $this->deudoModel->getAllDeudos();
-        $parcelas = $this->parcelaModel->getAllParcelas();
+        $pago       = $this->model->getPago($id);
+        $deudos     = $this->deudoModel->getAllDeudos();
+        $parcelas   = $this->parcelaModel->getAllParcelas();
 
         if (!$pago) {
             die("Pago no encontrado");
         }
 
         $this->loadView("pagos/PagosForm", [
-            'title' => 'Editar pago',
-            'action' => URL . 'pago/update/' . $id,
-            'values' => [
-                'deudo' => $pago['id_deudo'],
-                'parcela' => $pago['id_parcela'],
-                'fecha_pago' => $pago['fecha_pago'],
+            'title'     => 'Editar pago',
+            'action'    => URL . 'pago/update/' . $id,
+            'values'    => [
+                'deudo'             => $pago['id_deudo'],
+                'parcela'           => $pago['id_parcela'],
+                'fecha_pago'        => $pago['fecha_pago'],
                 'fecha_vencimiento' => $pago['fecha_vencimiento'],
-                'importe' => $pago['importe'],
-                'recargo' => $pago['recargo'],
-                'total' => $pago['total'],
+                'importe'           => $pago['importe'],
+                'recargo'           => $pago['recargo'],
+                'total'             => $pago['total'],
             ],
-            'errores' => [],
-            'deudos'=> $deudos,
-            'parcelas'=> $parcelas
+            'errores'   => [],
+            'deudos'    => $deudos,
+            'parcelas'  => $parcelas
         ]);
     }
 
@@ -216,36 +225,36 @@ class PagoController extends Control {
             $usuario = $_SESSION['usuario_id'];
             $errores = [];
 
-            if (empty($deudo)) $errores[] = 'El deudo es obligatorio';
-            if (empty($parcela)) $errores[] = 'La parcela es obligatoria.';
-            if (empty($fecha_pago)) $errores[] = 'La fecha es obligatoria';
-            if (empty($fecha_vencimiento)) $errores[] = 'La fecha de vencimiento es obligatoria';
-            if (empty($importe)) $errores[] = 'El importe es obligatorio';
-            if (empty($recargo)) $errores[] = 'El recargo es obligatorio';
-            if (empty($total)) $errores[] = 'El total es obligatorio';
+            if (empty($deudo))              $errores[] = 'El deudo es obligatorio';
+            if (empty($parcela))            $errores[] = 'La parcela es obligatoria.';
+            if (empty($fecha_pago))         $errores[] = 'La fecha es obligatoria';
+            if (empty($fecha_vencimiento))  $errores[] = 'La fecha de vencimiento es obligatoria';
+            if (empty($importe))            $errores[] = 'El importe es obligatorio';
+            if (empty($recargo))            $errores[] = 'El recargo es obligatorio';
+            if (empty($total))              $errores[] = 'El total es obligatorio';
 
             if (!empty($errores)) {
                 $pago = [
-                    'id_pago' => $id,
-                    'id_deudo' => $deudo,
-                    'id_parcela'=> $parcela,
-                    'fecha_pago'=> $fecha_pago,
+                    'id_pago'           => $id,
+                    'id_deudo'          => $deudo,
+                    'id_parcela'        => $parcela,
+                    'fecha_pago'        => $fecha_pago,
                     'fecha_vencimiento' => $fecha_vencimiento,
-                    'importe' => $importe,
-                    'recargo'=> $recargo,
-                    'total'=> $total,
+                    'importe'           => $importe,
+                    'recargo'           => $recargo,
+                    'total'             => $total,
                 ];
 
                 $deudos = $this->deudoModel->getAllDeudos();
                 $parcelas = $this->parcelaModel->getAllParcelas();
 
                 $this->loadView('pagos/PagosForm', [
-                    'title' => 'Editar pago',
-                    'action' => URL . 'pago/update/' . $id,
-                    'values' => $pago,
-                    'errores' => $errores,
-                    'deudos'=> $deudos,
-                    'parcelas'=> $parcelas,
+                    'title'     => 'Editar pago',
+                    'action'    => URL . 'pago/update/' . $id,
+                    'values'    => $pago,
+                    'errores'   => $errores,
+                    'deudos'    => $deudos,
+                    'parcelas'  => $parcelas,
                 ]);
                 return;
             }
@@ -272,20 +281,51 @@ class PagoController extends Control {
     public function ajax() {
         header('Content-Type: application/json; charset=utf-8');
         
-        $draw = $_POST['draw'] ?? 1;
-        $start = intval($_POST['start'] ?? 0);
-        $length = intval($_POST['length'] ?? 10);
-        $search = $_POST['search']['value'] ?? '';
-        $orderColumnIndex = $_POST['order'][0]['column'] ?? 0;
-        $orderDir = $_POST['order'][0]['dir'] ?? 'asc';
+        // Función para obtener valores simples de $_POST sin ternarias
+        function getPost($key, $default = '') {
+            if (isset($_POST[$key])) {
+                return $_POST[$key];
+            } else {
+                return $default;
+            }
+        }
 
+        // Función para obtener valores anidados en $_POST, p.ej. $_POST['search']['value']
+        function getNestedPost($keys, $default = '') {
+            $value = $_POST;
+            foreach ($keys as $key) {
+                if (!isset($value[$key])) {
+                    return $default;
+                }
+                $value = $value[$key];
+            }
+            return $value;
+        }
+
+        // Obtener parámetros usando las funciones auxiliares
+        $draw               = getPost('draw', 1);
+        $start              = intval(getPost('start', 0));
+        $length             = intval(getPost('length', 10));
+        $search             = getNestedPost(['search', 'value'], '');
+        $orderColumnIndex   = getNestedPost(['order', 0, 'column'], 0);
+        $orderDir           = getNestedPost(['order', 0, 'dir'], 'asc');
+
+        // Definir columnas permitidas para ordenamiento
         $columns = [
             'id_pago', 'nombre_deudo', 'parcela', 'fecha_pago', 
             'fecha_vencimiento', 'importe', 'recargo', 'total', 'usuario'
         ];
-        $orderCol = $columns[$orderColumnIndex] ?? 'id_pago';
 
+        // Validar si el índice de columna existe
+        if (isset($columns[$orderColumnIndex])) {
+            $orderCol = $columns[$orderColumnIndex];
+        } else {
+            $orderCol = 'id_pago';
+        }
+
+        // Obtener total de registros desde el modelo
         $totalRecords = $this->model->countAll();
+
 
         if ($search) {
             $data = $this->model->getFiltered($search, $orderCol, $orderDir, $start, $length);
@@ -316,20 +356,13 @@ class PagoController extends Control {
         }  
 
         echo json_encode([
-            "draw" => intval($draw),
-            "recordsTotal" => $totalRecords,
-            "recordsFiltered" => $filteredRecords,
-            "data" => $data
+            "draw"              => intval($draw),
+            "recordsTotal"      => $totalRecords,
+            "recordsFiltered"   => $filteredRecords,
+            "data"              => $data
         ]);
         exit;
     }
 
-    private function generateCsrfToken()
-    {
-        if (!isset($_SESSION['csrf_token'])) {
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-        }
-        return $_SESSION['csrf_token'];
-    }
 }
 ?>

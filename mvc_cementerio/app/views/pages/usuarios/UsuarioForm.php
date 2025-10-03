@@ -16,56 +16,31 @@
                 </div>
             <?php endif; ?>
 
-            <?php                
-                if (isset($datos['values']['usuario'])) {
-                    $usuario = htmlspecialchars($datos['values']['usuario']);
-                } else {
-                    $usuario = '';
-                }
+            <?php
+            // Campos que necesitan htmlspecialchars
+            $campos_html = ['usuario', 'nombre', 'apellido', 'telefono', 'email', 'cargo', 'sector'];
 
-                if (isset($datos['values']['nombre'])) {
-                    $nombre = htmlspecialchars($datos['values']['nombre']);
-                } else {
-                    $nombre = '';
-                }
+            // Campo directo (sin htmlspecialchars)
+            $campos_directos = ['id_tipo_usuario'];
 
-                if (isset($datos['values']['apellido'])) {
-                    $apellido = htmlspecialchars($datos['values']['apellido']);
+            // Asignación de campos con htmlspecialchars
+            foreach ($campos_html as $campo) {
+                if (isset($datos['values'][$campo])) {
+                    $$campo = htmlspecialchars($datos['values'][$campo]);
                 } else {
-                    $apellido = '';
+                    $$campo = '';
                 }
+            }
 
-                if (isset($datos['values']['telefono'])) {
-                    $telefono = htmlspecialchars($datos['values']['telefono']);
+            // Asignación de campos sin htmlspecialchars
+            foreach ($campos_directos as $campo) {
+                if (isset($datos['values'][$campo])) {
+                    $$campo = $datos['values'][$campo];
                 } else {
-                    $telefono = '';
+                    $$campo = '';
                 }
-
-                if (isset($datos['values']['email'])) {
-                    $email = htmlspecialchars($datos['values']['email']);
-                } else {
-                    $email = '';
-                }
-
-                if (isset($datos['values']['cargo'])) {
-                    $cargo = htmlspecialchars($datos['values']['cargo']);
-                } else {
-                    $cargo = '';
-                }
-
-                if (isset($datos['values']['sector'])) {
-                    $sector = htmlspecialchars($datos['values']['sector']);
-                } else {
-                    $sector = '';
-                }
-
-                if (isset($datos['values']['id_tipo_usuario'])) {
-                    $id_tipo_usuario = $datos['values']['id_tipo_usuario'];
-                } else {
-                    $id_tipo_usuario = '';
-                }
+            }
             ?>
-
             
             <form action="<?= $datos['action'] ?>" method="POST" class="needs-validation" novalidate>
             <div class="row g-3">

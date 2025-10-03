@@ -34,10 +34,10 @@ class AuthController extends Control
                     session_regenerate_id(true);
                 }
 
-                $_SESSION['usuario_id'] = (int)$usuario['id_usuario'];
-                $_SESSION['usuario_nombre'] = $usuario['nombre'];
-                $_SESSION['usuario_apellido'] = $usuario['apellido'];
-                $_SESSION['usuario_tipo'] = $usuario['id_tipo_usuario'];
+                $_SESSION['usuario_id']         = (int)$usuario['id_usuario'];
+                $_SESSION['usuario_nombre']     = $usuario['nombre'];
+                $_SESSION['usuario_apellido']   = $usuario['apellido'];
+                $_SESSION['usuario_tipo']       = $usuario['id_tipo_usuario'];
 
                 $permisos = $this->permisoModel->getPermisosPorRol($usuario['id_usuario']);
 
