@@ -121,7 +121,16 @@
                             <input type="number" step="0.01" class="form-control" id="total" name="total"
                                 value="<?= htmlspecialchars($datos['values']['total'] ?? '') ?>" readonly>
                             <div class="invalid-feedback">
-                                Por favor ingrese la fracción
+                                Por favor ingrese el total
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="total" class="form-label fw-bold">Número de Recibo</label>
+                            <input type="number" step="0.01" class="form-control" id="total" name="numero_recibo"
+                                value="<?= htmlspecialchars($datos['values']['numero_recibo'] ?? '') ?>" readonly>
+                            <div class="invalid-feedback">
+                                Por favor ingrese el número de recibo
                             </div>
                         </div>
                     </div>

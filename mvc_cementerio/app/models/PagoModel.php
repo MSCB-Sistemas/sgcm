@@ -62,13 +62,14 @@ class PagoModel {
      * @param float $importe Importe del pago.
      * @param float $recargo Recargo aplicado al pago.
      * @param float $total Total del pago (importe + recargo).
+     * @param int $numero_recibo Número de recibo del pago.
      * @param int $id_usuario ID del usuario que realiza el pago.
      * @return int ID del nuevo pago insertado.
      */
-    public function insertPago($id_deudo, $id_parcela, $fecha_pago, $fecha_vencimiento, $importe, $recargo, $total, $id_usuario): int
+    public function insertPago($id_deudo, $id_parcela, $fecha_pago, $fecha_vencimiento, $importe, $recargo, $total, $numero_recibo, $id_usuario): int
     {
-        $sql = "INSERT INTO pago (id_deudo, id_parcela, fecha_pago, fecha_vencimiento, importe, recargo, total, id_usuario) 
-                VALUES (:id_deudo, :id_parcela, :fecha_pago, :fecha_vencimiento, :importe, :recargo, :total, :id_usuario)";
+        $sql = "INSERT INTO pago (id_deudo, id_parcela, fecha_pago, fecha_vencimiento, importe, recargo, total, numero_recibo, id_usuario) 
+                VALUES (:id_deudo, :id_parcela, :fecha_pago, :fecha_vencimiento, :importe, :recargo, :total, :numero_recibo, :id_usuario)";
 
         $stmt = $this->db->prepare($sql);
         $parametros = [
@@ -79,6 +80,7 @@ class PagoModel {
             "importe"           => $importe,
             "recargo"           => $recargo,
             "total"             => $total,
+            "numero_recibo"    => $numero_recibo,
             "id_usuario"        => $id_usuario
         ];
         $stmt->execute($parametros);
@@ -103,12 +105,13 @@ class PagoModel {
      * @param float $importe Importe del pago.
      * @param float $recargo Recargo aplicado al pago.
      * @param float $total Total del pago (importe + recargo).
+     * @param int $numero_recibo Número de recibo del pago.
      * @param int $id_usuario ID del usuario que realiza el pago.
      * @return bool True si se actualizó correctamente, false en caso contrario.
      */
-    public function updatePago($id_pago, $id_deudo, $id_parcela, $fecha_pago, $fecha_vencimiento, $importe, $recargo, $total, $id_usuario): bool
+    public function updatePago($id_pago, $id_deudo, $id_parcela, $fecha_pago, $fecha_vencimiento, $importe, $recargo, $total, $numero_recibo, $id_usuario): bool
     {
-        $sql = "UPDATE pago SET id_deudo = :id_deudo, id_parcela = :id_parcela, fecha_pago = :fecha_pago, fecha_vencimiento = :fecha_vencimiento, importe = :importe, recargo = :recargo, total = :total, id_usuario = :id_usuario
+        $sql = "UPDATE pago SET id_deudo = :id_deudo, id_parcela = :id_parcela, fecha_pago = :fecha_pago, fecha_vencimiento = :fecha_vencimiento, importe = :importe, recargo = :recargo, total = :total, numero_recibo = :numero_recibo, id_usuario = :id_usuario
                 WHERE id_pago = :id_pago";
         $stmt = $this->db->prepare($sql);
         
@@ -121,6 +124,7 @@ class PagoModel {
             "importe"           => $importe,
             "recargo"           => $recargo,
             "total"             => $total,
+            "numero_recibo"    => $numero_recibo,
             "id_usuario"        => $id_usuario
         ];
         $stmt->execute($parametros);
@@ -179,7 +183,8 @@ class PagoModel {
                    OR u.usuario LIKE :search 
                    OR p.fecha_pago LIKE :search 
                    OR p.importe LIKE :search 
-                   OR p.total LIKE :search";
+                   OR p.total LIKE :search
+                   OR p.numero_recibo LIKE :search";
 
         $stmt = $this->db->prepare($sql);
         $searchTerm = "%$search%";
@@ -191,7 +196,7 @@ class PagoModel {
 
     public function getPage($orderCol, $orderDir, $start, $length): array
     {
-        $allowedColumns = ['id_pago', 'nombre_deudo', 'parcela', 'fecha_pago', 'fecha_vencimiento', 'importe', 'recargo', 'total', 'usuario'];
+        $allowedColumns = ['id_pago', 'nombre_deudo', 'parcela', 'fecha_pago', 'fecha_vencimiento', 'importe', 'recargo', 'total', 'numero_recibo', 'usuario'];
         if (!in_array($orderCol, $allowedColumns)) {
             $orderCol = 'id_pago';
         }
@@ -219,7 +224,7 @@ class PagoModel {
     public function getFiltered($search, $orderCol, $orderDir, $start, $length): array
     {
         // Validar columnas para prevenir SQL injection
-        $allowedColumns = ['id_pago', 'nombre_deudo', 'parcela', 'fecha_pago', 'fecha_vencimiento', 'importe', 'recargo', 'total', 'usuario'];
+        $allowedColumns = ['id_pago', 'nombre_deudo', 'parcela', 'fecha_pago', 'fecha_vencimiento', 'importe', 'recargo', 'total', 'numero_recibo', 'usuario'];
         if (!in_array($orderCol, $allowedColumns)) {
             $orderCol = 'id_pago';
         }
@@ -243,6 +248,7 @@ class PagoModel {
                    OR p.importe LIKE :search 
                    OR p.recargo LIKE :search
                    OR p.total LIKE :search
+                   OR p.numero_recibo LIKE :search
                 ORDER BY $orderCol $orderDir 
                 LIMIT :start, :length";
         

@@ -23,7 +23,7 @@ class PagoController extends Control {
             'urlCrear'      => URL . 'pago/create',
             'ajaxUrl'       => URL . 'pago/ajax',
             'baseUrl'       => URL . 'pago/',
-            'columnas'      => ['ID', 'Deudo', 'Parcela', 'Fecha de pago', 'Fecha de vencimiento', 'Importe', 'Recargo', 'Total', 'Usuario'],
+            'columnas'      => ['ID', 'Deudo', 'Parcela', 'Fecha de pago', 'Fecha de vencimiento', 'Importe', 'Recargo', 'Total', 'Numero de Recibo', 'Usuario'],
             'columnsConfig' => [
                 ['data' => 'id_pago'],
                 ['data' => 'nombre_deudo'],
@@ -120,6 +120,11 @@ class PagoController extends Control {
             } else {
                 $total = '';
             }
+            if (isset($_POST['numero_recibo'])) {
+                $numero_recibo = trim($_POST['numero_recibo']);
+            } else {
+                $numero_recibo = '';
+            }
             $usuario = $_SESSION['usuario_id'];
             $errores = [];
 
@@ -130,6 +135,7 @@ class PagoController extends Control {
             if (empty($importe))            $errores[] = 'El importe es obligatorio';
             if (empty($recargo))            $errores[] = 'El recargo es obligatorio';
             if (empty($total))              $errores[] = 'El total es obligatorio';
+            if (empty($numero_recibo))      $errores[] = 'El numero de recibo es obligatorio';
             if (empty($usuario))            $errores[] = 'El usuario es obligatorio';
 
             if (!empty($errores)) {
@@ -149,7 +155,7 @@ class PagoController extends Control {
                 return;
             }
 
-            if ($this->model->insertPago($deudo, $parcela, $fecha_pago, $fecha_vencimiento, $importe, $recargo, $total, $usuario)) {
+            if ($this->model->insertPago($deudo, $parcela, $fecha_pago, $fecha_vencimiento, $importe, $recargo, $total, $numero_recibo, $usuario)) {
                 header("Location: " . URL . "pago");
                 exit;
             } else {
@@ -178,6 +184,7 @@ class PagoController extends Control {
                 'importe'           => $pago['importe'],
                 'recargo'           => $pago['recargo'],
                 'total'             => $pago['total'],
+                'numero_recibo'     => $pago['numero_recibo'],
             ],
             'errores'   => [],
             'deudos'    => $deudos,
@@ -222,6 +229,11 @@ class PagoController extends Control {
             } else {
                 $total = '';
             }
+            if (isset($_POST['numero_recibo'])) {
+                $numero_recibo = trim($_POST['numero_recibo']);
+            } else {
+                $numero_recibo = '';
+            }
             $usuario = $_SESSION['usuario_id'];
             $errores = [];
 
@@ -232,6 +244,7 @@ class PagoController extends Control {
             if (empty($importe))            $errores[] = 'El importe es obligatorio';
             if (empty($recargo))            $errores[] = 'El recargo es obligatorio';
             if (empty($total))              $errores[] = 'El total es obligatorio';
+            if (empty($numero_recibo))      $errores[] = 'El numero de recibo es obligatorio';
 
             if (!empty($errores)) {
                 $pago = [
@@ -243,6 +256,7 @@ class PagoController extends Control {
                     'importe'           => $importe,
                     'recargo'           => $recargo,
                     'total'             => $total,
+                    'numero_recibo'     => $numero_recibo,
                 ];
 
                 $deudos = $this->deudoModel->getAllDeudos();
@@ -259,7 +273,7 @@ class PagoController extends Control {
                 return;
             }
 
-            if ($this->model->updatePago($id, $deudo, $parcela, $fecha_pago, $fecha_vencimiento, $importe, $recargo, $total, $usuario)) {
+            if ($this->model->updatePago($id, $deudo, $parcela, $fecha_pago, $fecha_vencimiento, $importe, $recargo, $total, $numero_recibo, $usuario)) {
                 header("Location: " . URL . "pago");
                 exit;
             } else {
@@ -313,7 +327,7 @@ class PagoController extends Control {
         // Definir columnas permitidas para ordenamiento
         $columns = [
             'id_pago', 'nombre_deudo', 'parcela', 'fecha_pago', 
-            'fecha_vencimiento', 'importe', 'recargo', 'total', 'usuario'
+            'fecha_vencimiento', 'importe', 'recargo', 'total', 'numero_recibo', 'usuario'
         ];
 
         // Validar si el índice de columna existe

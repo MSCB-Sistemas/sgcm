@@ -92,6 +92,7 @@ CREATE TABLE `pago` (
   `total` int DEFAULT NULL,
   `id_usuario` int NOT NULL,
   `fecha_vencimiento` datetime NOT NULL,
+  `numero_recibo` int NOT NULL,
   PRIMARY KEY (`id_pago`),
   KEY `pago_FK` (`id_deudo`),
   KEY `pago_FK_1` (`id_parcela`),
