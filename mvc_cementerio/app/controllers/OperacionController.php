@@ -38,6 +38,8 @@ class OperacionController extends Control
             $fecha_traslado = $_POST['fecha_traslado'];
             $fecha_vencimiento = $_POST['fecha_vencimiento'];
             $id_usuario = $_SESSION['usuario_id'];
+            $importe = $_POST['importe'] ?? 0;
+            $recargo = $_POST['recargo'] ?? 0;
 
             if (empty($id_difunto))
                 $errores[] = 'Seleccione un difunto';
@@ -47,6 +49,8 @@ class OperacionController extends Control
                 $errores[] = 'Seleccione un deudo';
             if (empty($fecha_vencimiento))
                 $errores[] = 'Ingrese la fecha de vencimiento';
+            if (empty($importe))
+                $errores[] = 'Ingrese el importe del pago';
 
             if (empty($errores)) {
                 $model = $this->loadModel('OperacionModel');
@@ -60,13 +64,15 @@ class OperacionController extends Control
                         $model->actualizarVencimientoPago($ubicacion_actual['id_pago'], $fecha_traslado);
                     }
 
-                    $total = 1000; // Monto fijo para el ejemplo, deberiamos poder seleccionarlo desde el form, tarea para galo del futuro.
+                    $total = $importe + $importe * $recargo / 100;
 
                     $nuevo_pago_id = $model->crearNuevoPago(
                         $id_deudo,
                         $id_parcela,
                         $fecha_traslado,
                         $fecha_vencimiento,
+                        $importe,
+                        $recargo,
                         $total,
                         $id_usuario
                     );

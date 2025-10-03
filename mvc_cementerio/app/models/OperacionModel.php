@@ -64,16 +64,18 @@ class OperacionModel
         return $stmt->execute();
     }
 
-    public function crearNuevoPago($id_deudo, $id_parcela, $fecha_inicio, $fecha_vencimiento, $total, $id_usuario)
+    public function crearNuevoPago($id_deudo, $id_parcela, $fecha_inicio, $fecha_vencimiento, $importe, $recargo, $total, $id_usuario)
     {
-        $sql = "INSERT INTO pago (id_deudo, id_parcela, fecha_pago, fecha_vencimiento, total, id_usuario)
-                VALUES (:id_deudo, :id_parcela, :fecha_pago, :fecha_vencimiento, :total, :id_usuario)";
+        $sql = "INSERT INTO pago (id_deudo, id_parcela, fecha_pago, fecha_vencimiento, importe, recargo, total, id_usuario)
+                VALUES (:id_deudo, :id_parcela, :fecha_pago, :fecha_vencimiento, :importe, :recargo, :total, :id_usuario)";
 
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue(':id_deudo', $id_deudo, PDO::PARAM_INT);
         $stmt->bindValue(':id_parcela', $id_parcela, PDO::PARAM_INT);
         $stmt->bindValue(':fecha_pago', $fecha_inicio);
         $stmt->bindValue(':fecha_vencimiento', $fecha_vencimiento);
+        $stmt->bindValue(':importe', $importe);
+        $stmt->bindValue(':recargo', $recargo);
         $stmt->bindValue(':total', $total);
         $stmt->bindValue(':id_usuario', $id_usuario, PDO::PARAM_INT);
 
