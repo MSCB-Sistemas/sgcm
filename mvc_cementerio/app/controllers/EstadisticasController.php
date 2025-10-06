@@ -107,12 +107,12 @@ class EstadisticasController extends Control {
             return $dt && $dt->format('Y-m-d') === $d;
         };
 
-        if (!$validarFecha($fecha_inicio_defuncion_traslado)) $fecha_inicio_defuncion_traslado = '1900-01-01';
-        if (!$validarFecha($fecha_fin_defuncion_traslado))   $fecha_fin_defuncion_traslado = date('Y-m-d');
-        if (!$validarFecha($fecha_inicio_traslado)) $fecha_inicio_traslado = '1900-01-01';
-        if (!$validarFecha($fecha_fin_traslado))   $fecha_fin_traslado = date('Y-m-d');
-        if (!$validarFecha($fecha_inicio_mensual)) $fecha_inicio_mensual = '1900-01-01';
-        if (!$validarFecha($fecha_fin_mensual))   $fecha_fin_mensual = date('Y-m-d');
+        if (!$validarFecha($fecha_inicio_defuncion_traslado))   $fecha_inicio_defuncion_traslado = '1900-01-01';
+        if (!$validarFecha($fecha_fin_defuncion_traslado))      $fecha_fin_defuncion_traslado = date('Y-m-d');
+        if (!$validarFecha($fecha_inicio_traslado))             $fecha_inicio_traslado = '1900-01-01';
+        if (!$validarFecha($fecha_fin_traslado))                $fecha_fin_traslado = date('Y-m-d');
+        if (!$validarFecha($fecha_inicio_mensual))              $fecha_inicio_mensual = '1900-01-01';
+        if (!$validarFecha($fecha_fin_mensual))                 $fecha_fin_mensual = date('Y-m-d');
 
        
         $pagina = !empty($_GET['pagina']) ? max(1, (int)$_GET['pagina']) : 1;
@@ -132,22 +132,32 @@ class EstadisticasController extends Control {
 
         $deudores_morosos = $this->model->getDeudosMorosos();
  
-        $numero_ubicacion = isset($_GET['numero_ubicacion']) ? $_GET['numero_ubicacion'] : '';
-        $id_tipo_parcela = isset($_GET['id_tipo_parcela']) ? $_GET['id_tipo_parcela'] : '';
-        $seccion = isset($_GET['seccion']) ? $_GET['seccion'] : '';
-        $fraccion = isset($_GET['fraccion']) ? $_GET['fraccion'] : '';
-        $nivel = isset($_GET['nivel']) ? $_GET['nivel'] : '';
-        $id_orientacion = isset($_GET['id_orientacion']) ? $_GET['id_orientacion'] : '';
-        $hilera = isset($_GET['hilera']) ? $_GET['hilera'] : '';
+        function getParam($key) {
+            if (isset($_GET[$key])) {
+                return $_GET[$key];
+            } else {
+                return '';
+            }
+        }
+
+
+        $numero_ubicacion = getParam('numero_ubicacion');
+        $id_tipo_parcela  = getParam('id_tipo_parcela');
+        $seccion          = getParam('seccion');
+        $fraccion         = getParam('fraccion');
+        $nivel            = getParam('nivel');
+        $id_orientacion   = getParam('id_orientacion');
+        $hilera           = getParam('hilera');
+
 
         $filtros_parcela = [
-            'numero_ubicacion' => $numero_ubicacion,
-            'id_tipo_parcela' => $id_tipo_parcela,
-            'seccion' => $seccion,
-            'fraccion' => $fraccion,
-            'nivel' => $nivel,
-            'id_orientacion' => $id_orientacion,
-            'hilera' => $hilera        
+            'numero_ubicacion'  => $numero_ubicacion,
+            'id_tipo_parcela'   => $id_tipo_parcela,
+            'seccion'           => $seccion,
+            'fraccion'          => $fraccion,
+            'nivel'             => $nivel,
+            'id_orientacion'    => $id_orientacion,
+            'hilera'            => $hilera        
         ];
 
         $uso_filtro_parcela = array_filter($filtros_parcela, function($v) { return $v !== ''; });
@@ -192,34 +202,34 @@ class EstadisticasController extends Control {
         }
 
         $datos = [
-            'title' => 'Estadisticas',
-            'movimientos' => $defunciones,
-            'deudores_morosos' => $deudores_morosos,
-            'difuntos_trasladados' => $difuntos_trasladados,
-            'pagina_actual' => $pagina,            
-            'parcelas_vendidas' => $parcelas_vendidas,
-            'fecha_inicio_defuncion' => $fecha_inicio_defuncion,
-            'fecha_fin_defuncion' => $fecha_fin_defuncion,
-            'fecha_inicio_defuncion_traslado' => $fecha_inicio_defuncion_traslado,
-            'fecha_fin_defuncion_traslado' => $fecha_fin_defuncion_traslado,
-            'fecha_inicio_traslado' => $fecha_inicio_traslado,
-            'fecha_fin_traslado' => $fecha_fin_traslado, 
-            'fecha_inicio_mensual' => $fecha_inicio_mensual,
-            'fecha_fin_mensual' => $fecha_fin_mensual,  
-            'total_defunciones_mensuales' => $total_defunciones_mensuales,          
-            'total_parcelas_vendidas' => $total_parcelas_vendidas,
-            'letra_apellido_difunto' => $letra_apellido_difunto,
-            'letra_apellido_deudo' => $letra_apellido_deudo,
-            'letra_apellido_traslado' => $letra_apellido_traslado,                       
-            'total_difuntos' => $total_difuntos,            
-            'total_parcelas' => $total_parcelas,
-            'total_traslados' => $total_traslados,
-            'total_defunciones' => $total_defunciones,
-            'total_paginas' => $total_paginas,
-            'total_resultados' => $total_defunciones,
-            'total_morosos' => count($deudores_morosos),
-            'sort_col' => $sort_col,
-            'sort_dir' => $sort_dir,         
+            'title'                     => 'Estadisticas',
+            'movimientos'               => $defunciones,
+            'deudores_morosos'          => $deudores_morosos,
+            'difuntos_trasladados'      => $difuntos_trasladados,
+            'pagina_actual'             => $pagina,            
+            'parcelas_vendidas'         => $parcelas_vendidas,
+            'fecha_inicio_defuncion'    => $fecha_inicio_defuncion,
+            'fecha_fin_defuncion'       => $fecha_fin_defuncion,
+            'fecha_inicio_defuncion_traslado'   => $fecha_inicio_defuncion_traslado,
+            'fecha_fin_defuncion_traslado'      => $fecha_fin_defuncion_traslado,
+            'fecha_inicio_traslado'     => $fecha_inicio_traslado,
+            'fecha_fin_traslado'        => $fecha_fin_traslado, 
+            'fecha_inicio_mensual'      => $fecha_inicio_mensual,
+            'fecha_fin_mensual'         => $fecha_fin_mensual,  
+            'total_defunciones_mensuales'       => $total_defunciones_mensuales,          
+            'total_parcelas_vendidas'   => $total_parcelas_vendidas,
+            'letra_apellido_difunto'    => $letra_apellido_difunto,
+            'letra_apellido_deudo'      => $letra_apellido_deudo,
+            'letra_apellido_traslado'   => $letra_apellido_traslado,                       
+            'total_difuntos'            => $total_difuntos,            
+            'total_parcelas'            => $total_parcelas,
+            'total_traslados'           => $total_traslados,
+            'total_defunciones'         => $total_defunciones,
+            'total_paginas'             => $total_paginas,
+            'total_resultados'          => $total_defunciones,
+            'total_morosos'             => count($deudores_morosos),
+            'sort_col'                  => $sort_col,
+            'sort_dir'                  => $sort_dir,         
             
         ];
 

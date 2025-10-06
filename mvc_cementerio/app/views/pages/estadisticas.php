@@ -46,11 +46,26 @@ $filtrar = isset($_GET['filtrar']);
             <form method="GET" class="row g-3">
                 <div class="col-md-3">
                     <label for="fecha_inicio_defuncion" class="form-label">Desde</label>
-                    <input type="date" class="form-control" name="fecha_inicio_defuncion" value="<?= htmlspecialchars($_GET['fecha_inicio_defuncion'] ?? '') ?>">
+                    <?php
+                    if (isset($_GET['fecha_inicio_defuncion'])) {
+                        $fecha_inicio_defuncion = $_GET['fecha_inicio_defuncion'];
+                    } else {
+                        $fecha_inicio_defuncion = '';
+                    }
+                    ?>
+                    <input type="date" class="form-control" name="fecha_inicio_defuncion" value="<?= htmlspecialchars($fecha_inicio_defuncion) ?>">
                 </div>
                 <div class="col-md-3">
                     <label for="fecha_fin_defuncion" class="form-label">Hasta</label>
-                    <input type="date" class="form-control" name="fecha_fin_defuncion" value="<?= htmlspecialchars($_GET['fecha_fin_defuncion'] ?? '') ?>">
+
+                    <?php
+                    if (isset($_GET['fecha_fin_defuncion'])) {
+                        $fecha_fin_defuncion = $_GET['fecha_fin_defuncion'];
+                    } else {
+                        $fecha_fin_defuncion = '';
+                    }
+                    ?>
+                    <input type="date" class="form-control" name="fecha_fin_defuncion" value="<?= htmlspecialchars($fecha_fin_defuncion) ?>">                      
                 </div>
                 <div class="col-md-2 align-self-end">
                     <button type="submit" name="buscar" class="btn btn-primary">Buscar</button>
@@ -110,8 +125,20 @@ $filtrar = isset($_GET['filtrar']);
         <?php if (!empty($datos['total_paginas']) && ($datos['total_paginas']) > 1): ?>
             <ul class="pagination">
                 <?php for ($i = 1; $i <= $datos['total_paginas']; $i++): ?>
-                    <li class="page-item <?= ($i == $datos['pagina_actual']) ? 'active' : '' ?>">
-                        <a class="page-link" href="?<?= http_build_query(array_merge($_GET, ['pagina' => $i])) ?>">
+                    <?php
+                    // Determinar la clase
+                    $class = 'page-item';
+                    if ($i == $datos['pagina_actual']) {
+                        $class .= ' active';
+                    }
+
+                    // Construir la URL de la página actual con los parámetros existentes
+                    $queryParams = $_GET;
+                    $queryParams['pagina'] = $i;
+                    $url = '?' . http_build_query($queryParams);
+                    ?>
+                    <li class="<?= $class ?>">
+                        <a class="page-link" href="<?= $url ?>">
                             <?= $i ?>
                         </a>
                     </li>
@@ -202,11 +229,25 @@ $filtrar = isset($_GET['filtrar']);
             <form method="GET" class="row g-3">
                 <div class="col-md-3">
                     <label for="fecha_inicio_parcela" class="form-label">Desde</label>
-                    <input type="date" class="form-control" name="fecha_inicio_parcela" value="<?= htmlspecialchars($_GET['fecha_inicio_parcela'] ?? '') ?>">
+                    <?php
+                    if(isset($_GET['fecha_inicio_parcela'])){
+                           $fecha_inicio_parcela = $_GET['fecha_inicio_parcela'];
+                    }else{
+                        $fecha_inicio_parcela = '';
+                    }
+                    ?>
+                    <input type="date" class="form-control" name="fecha_inicio_parcela" value="<?= htmlspecialchars($fecha_inicio_parcela) ?>">
                 </div>
                 <div class="col-md-3">
                     <label for="fecha_fin_parcela" class="form-label">Hasta</label>
-                    <input type="date" class="form-control" name="fecha_fin_parcela" value="<?= htmlspecialchars($_GET['fecha_fin_parcela'] ?? '') ?>">
+                    <?php
+                    if(isset($_GET['fecha_fin_parcela'])){
+                           $fecha_inicio_parcela = $_GET['fecha_fin_parcela'];
+                    }else{
+                        $fecha_fin_parcela = '';
+                    }
+                    ?>
+                    <input type="date" class="form-control" name="fecha_fin_parcela" value="<?= htmlspecialchars($fecha_fin_parcela) ?>">
                 </div>
                 <div class="col-md-2 align-self-end">
                     <button type="submit" name="buscar" class="btn btn-primary">Buscar</button>
@@ -273,7 +314,13 @@ $filtrar = isset($_GET['filtrar']);
                     <select name="letra_apellido_deudo" class="form-select">
                         <option value="">Seleccionar...</option>
                         <?php foreach (range('A', 'Z') as $letra): ?>
-                            <option value="<?= $letra ?>" <?= (isset($datos['letra_apellido_deudo']) && $datos['letra_apellido_deudo'] === $letra) ? 'selected' : '' ?>><?= $letra ?></option>
+                            <?php
+                            $selected = '';
+                            if(isset($datos['letra_apellido_deudo']) && $datos['letra_apellido_deudo'] === $letra){
+                                $selected = 'selected';
+                            }
+                            ?>
+                            <option value="<?= $letra ?>" <?= $selected ?>><?= $letra ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -342,8 +389,20 @@ $filtrar = isset($_GET['filtrar']);
         <?php if (!empty($datos['total_paginas']) && !empty($datos['pagina_actual']) && $datos['total_paginas'] > 1): ?>
             <ul class="pagination">
                 <?php for ($i = 1; $i <= $datos['total_paginas']; $i++): ?>
-                    <li class="page-item <?= ($i == $datos['pagina_actual']) ? 'active' : '' ?>">
-                        <a class="page-link" href="?<?= http_build_query(array_merge($_GET, ['pagina' => $i])) ?>">
+                    <?php
+                    // Determinar la clase
+                    $class = 'page-item';
+                    if ($i == $datos['pagina_actual']) {
+                        $class .= ' active';
+                    }
+
+                    // Construir la URL de la página
+                    $params = $_GET;
+                    $params['pagina'] = $i;
+                    $url = '?' . http_build_query($params);
+                    ?>
+                    <li class="<?= $class ?>">
+                        <a class="page-link" href="<?= $url ?>">
                             <?= $i ?>
                         </a>
                     </li>
@@ -374,7 +433,13 @@ $filtrar = isset($_GET['filtrar']);
                     <select name="letra_apellido_traslado" class="form-select">
                         <option value="">Seleccionar...</option>
                         <?php foreach (range('A', 'Z') as $letra): ?>
-                            <option value="<?= $letra ?>" <?= (isset($datos['letra_apellido_traslado']) && $datos['letra_apellido_traslado'] === $letra) ? 'selected' : '' ?>><?= $letra ?></option>
+                            <?php
+                            $selected = '';
+                            if (isset($datos['letra_apellido_traslado']) && $datos['letra_apellido_traslado'] === $letra){
+                                $selected = 'selected';
+                            }
+                            ?>
+                            <option value="<?= $letra ?>" <?= $selected ?>><?= $letra ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -469,10 +534,24 @@ $filtrar = isset($_GET['filtrar']);
                         Registros Generales
                     </div>
                     <div class="card-body">
+                       <?php
+                        function obtenerValorSeguro($array, $clave, $valorPorDefecto = 0) {
+                            if (isset($array[$clave])){
+                                return $array[$clave];
+                            }else{
+                                return $valorPorDefecto;
+                            }
+                        }
+                        ?>
+                        <?php
+                        $total_difuntos  = obtenerValorSeguro($datos, 'total_difuntos');
+                        $total_parcelas  = obtenerValorSeguro($datos, 'total_parcelas');
+                        $total_traslados = obtenerValorSeguro($datos, 'total_traslados');
+                        ?>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item">Personas Fallecidas Registradas: <strong><?= $datos['total_difuntos'] ?? 0 ?></strong></li>
-                            <li class="list-group-item">Parcelas Ocupadas: <strong><?= $datos['total_parcelas'] ?? 0 ?></strong></li>
-                            <li class="list-group-item">Traslados: <strong><?= $datos['total_traslados'] ?? 0 ?></strong></li>
+                            <li class="list-group-item">Personas Fallecidas Registradas: <strong><?= $total_difuntos ?></strong></li>
+                            <li class="list-group-item">Parcelas Ocupadas: <strong><?= $total_parcelas ?></strong></li>
+                            <li class="list-group-item">Traslados: <strong><?= $total_traslados ?></strong></li>
                         </ul>
                     </div>
                 </div>
@@ -483,26 +562,47 @@ $filtrar = isset($_GET['filtrar']);
                             <div class="card-header bg-success text-white">
                                 Defunciones Mensuales 
                             </div>
+                            <?php
+                            // Obtener fechas desde $_GET con seguridad
+                            if (isset($_GET['fecha_inicio_mensual'])) {
+                                $fecha_inicio_mensual = $_GET['fecha_inicio_mensual'];
+                            } else {
+                                $fecha_inicio_mensual = '';
+                            }
+
+                            if (isset($_GET['fecha_fin_mensual'])) {
+                                $fecha_fin_mensual = $_GET['fecha_fin_mensual'];
+                            } else {
+                                $fecha_fin_mensual = '';
+                            }
+
+                            // Verificar si se debe mostrar el total
+                            $mostrar_total = false;
+                            if (isset($_GET['filtrar_defunciones']) && isset($datos['total_defunciones_mensuales'])) {
+                                $mostrar_total = true;
+                            }
+                            ?>
+
                             <div class="card-body">
                                 <form method="GET" class="row g-3">
                                     <div class="col-md-5">
                                         <label for="fecha_inicio_mensual" class="form-label">Desde</label>
-                                        <input type="date" class="form-control" name="fecha_inicio_mensual" value="<?= htmlspecialchars($_GET['fecha_inicio_mensual'] ?? '') ?>">
+                                        <input type="date" class="form-control" name="fecha_inicio_mensual" value="<?= htmlspecialchars($fecha_inicio_mensual) ?>">
                                     </div>
                                     <div class="col-md-5">
                                         <label for="fecha_fin_mensual" class="form-label">Hasta</label>
-                                        <input type="date" class="form-control" name="fecha_fin_mensual" value="<?= htmlspecialchars($_GET['fecha_fin_mensual'] ?? '') ?>">
+                                        <input type="date" class="form-control" name="fecha_fin_mensual" value="<?= htmlspecialchars($fecha_fin_mensual) ?>">
                                     </div>
                                     <div class="col-md-2 align-self-end">
                                         <button type="submit" name="filtrar_defunciones" class="btn btn-success">Filtrar</button>
                                     </div>
                                 </form>
 
-                                <?php if (isset($_GET['filtrar_defunciones']) && isset($datos['total_defunciones_mensuales'])): ?>
+                                <?php if ($mostrar_total): ?>
                                     <hr>
                                     <p class="text-center fs-5">
                                         Total de defunciones en el rango seleccionado: 
-                                        <strong><?= $datos['total_defunciones_mensuales'] ?></strong>
+                                        <strong><?= htmlspecialchars($datos['total_defunciones_mensuales']) ?></strong>
                                     </p>
                                 <?php endif; ?>
                             </div>

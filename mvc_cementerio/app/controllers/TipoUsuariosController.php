@@ -14,14 +14,14 @@ class TipoUsuariosController extends Control
         $tipos_usuarios = $this->model->getAllTiposUsuarios();
 
         $datos = [
-            'title' => 'Lista de tipos de usuarios',
-            'urlCrear' => URL . 'tipoUsuario/create',
-            'columnas' => ['ID', 'Rol'],
-            'columnas_claves' => ['id_tipo_usuario', 'rol'],
-            'data' => $tipos_usuarios,
-            'acciones' => function ($fila) {
-                $id = $fila['id_tipo_usuario'];
-                $url = URL . 'tipoUsuario';
+            'title'             => 'Lista de tipos de usuarios',
+            'urlCrear'          => URL . 'tipoUsuario/create',
+            'columnas'          => ['ID', 'Rol'],
+            'columnas_claves'   => ['id_tipo_usuario', 'rol'],
+            'data'              => $tipos_usuarios,
+            'acciones'          => function ($fila) {
+                $id     = $fila['id_tipo_usuario'];
+                $url    = URL . 'tipoUsuario';
                 return '
                 <a href="' . $url . '/edit/' . $id . '" class="btn btn-sm btn-outline-primary">Editar</a>
                 <a href="' . $url . '/delete/' . $id . '" class="btn btn-sm btn-outline-primary">Eliminar</a>
@@ -36,10 +36,10 @@ class TipoUsuariosController extends Control
     public function create()
     {
         $datos = [
-            'title' => 'Crear tipo usuario',
-            'action' => URL . 'tipoUsuario/save',
-            'values' => [],
-            'errores' => [],
+            'title'     => 'Crear tipo usuario',
+            'action'    => URL . 'tipoUsuario/save',
+            'values'    => [],
+            'errores'   => [],
         ];
 
         $this->loadView('tipos_usuarios/TipoUsuarioForm', $datos);
@@ -60,10 +60,10 @@ class TipoUsuariosController extends Control
 
             if (!empty($errores)) {
                 $this->loadView('tipos_usuarios/TipoUsuarioForm', [
-                    'title' => 'Crear tipo de usuario',
-                    'action' => URL . 'tipoUsuario/save',
-                    'values' => [],
-                    'errores' => $errores
+                    'title'     => 'Crear tipo de usuario',
+                    'action'    => URL . 'tipoUsuario/save',
+                    'values'    => [],
+                    'errores'   => $errores
                 ]);
                 return;
             }
@@ -87,12 +87,12 @@ class TipoUsuariosController extends Control
         }
 
         $this->loadView("tipos_usuarios/TipoUsuarioForm", [
-            'title' => 'Editar tipo de usuario',
-            'action' => URL . 'tipoUsuario/update/' . $id,
-            'values' => [
+            'title'     => 'Editar tipo de usuario',
+            'action'    => URL . 'tipoUsuario/update/' . $id,
+            'values'    => [
                 'rol' => $tipo_usuario['rol'],
             ],
-            'errores' => []
+            'errores'   => []
         ]);
     }
     public function update($id)
@@ -114,10 +114,10 @@ class TipoUsuariosController extends Control
                 ];
 
                 $this->loadView("tipos_usuarios/TipoUsuarioForm", [
-                    'title' => 'Editar tipo de usuario',
-                    'action' => URL . 'tipoUsuario/update/' . $id,
-                    'values' => $tipo_usuario,
-                    'errores' => $errores
+                    'title'     => 'Editar tipo de usuario',
+                    'action'    => URL . 'tipoUsuario/update/' . $id,
+                    'values'    => $tipo_usuario,
+                    'errores'   => $errores
                 ]);
                 return;
             }

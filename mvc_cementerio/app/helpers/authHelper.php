@@ -54,7 +54,9 @@ function requirePermission(string|array $permisos, ?string $redirect = null): vo
 function requireAllPermissions(array $permisos, ?string $redirect = null): void
 {
     $base     = rtrim(URL, '/');
-    $redirect = $redirect ?: ($base . '/error-permisos');
+    if (!$redirect) {
+        $redirect = $base . '/error-permisos';
+    }
 
     if (!isLoggedIn()) {
         header('Location: ' . $base . '/login', true, 303); exit;

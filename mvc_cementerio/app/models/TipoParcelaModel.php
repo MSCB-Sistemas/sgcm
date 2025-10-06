@@ -53,8 +53,8 @@ class TipoParcelaModel {
      */
     public function insertTipoParcela($nombre_parcela)
     {
-        $sql = "INSERT INTO tipo_parcela (nombre_parcela) VALUES (:nombre_parcela)";
-        $stmt = $this->db->prepare($sql);
+        $sql        = "INSERT INTO tipo_parcela (nombre_parcela) VALUES (:nombre_parcela)";
+        $stmt       = $this->db->prepare($sql);
         $parametros = ['nombre_parcela' => $nombre_parcela];
         $stmt->execute($parametros);
         
@@ -76,12 +76,12 @@ class TipoParcelaModel {
      */
     public function updateTipoParcela($id_tipo_parcela, $nombre_parcela): bool
     {
-        $sql = "UPDATE tipo_parcela SET nombre_parcela = :nombre_parcela WHERE id_tipo_parcela = :id_tipo_parcela";
-        $stmt = $this->db->prepare($sql);
+        $sql    = "UPDATE tipo_parcela SET nombre_parcela = :nombre_parcela WHERE id_tipo_parcela = :id_tipo_parcela";
+        $stmt   = $this->db->prepare($sql);
         
         $parametros = [
             'id_tipo_parcela' => $id_tipo_parcela,
-            'nombre_parcela' => $nombre_parcela
+            'nombre_parcela'  => $nombre_parcela
         ];
         $stmt->execute($parametros);
 
@@ -102,8 +102,8 @@ class TipoParcelaModel {
      */
     public function deleteTipoParcela($id_tipo_parcela): bool
     {
-        $sql = "DELETE FROM tipo_parcela WHERE id_tipo_parcela = :id_tipo_parcela";
-        $stmt = $this->db->prepare($sql);
+        $sql        = "DELETE FROM tipo_parcela WHERE id_tipo_parcela = :id_tipo_parcela";
+        $stmt       = $this->db->prepare($sql);
         $parametros = ['id_tipo_parcela' => $id_tipo_parcela];
         $stmt->execute($parametros);
         

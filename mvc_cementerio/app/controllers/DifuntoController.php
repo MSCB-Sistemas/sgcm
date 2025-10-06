@@ -45,9 +45,8 @@ class DifuntoController extends Control
                 ['data' => 'codigo_postal'],
                 ['data' => 'acciones', 'orderable' => false, 'searchable' => false]
             ],
-            'puedeCrear'      => $puedeCrear,
-            'errores'         => [],
-            'csrfToken'       => $this->generateCsrfToken()
+            'puedeCrear'    => $puedeCrear,
+            'errores'       => [],
         ];
 
         $this->loadView('partials/tablaAbmAjax', $datos);
@@ -61,14 +60,14 @@ class DifuntoController extends Control
         $estadosCiviles = $this->estadoCivilModel->getAllestadosCiviles();
 
         $datos = [
-            'title' => 'Crear difunto',
-            'action' => URL . 'difunto/save',
-            'values' => [],
-            'errores' => [],
-            'deudos' => $deudos,
-            'nacionalidades' => $nacionalidades,
-            'sexos' => $sexos,
-            'estados_civiles' => $estadosCiviles
+            'title'             => 'Crear difunto',
+            'action'            => URL . 'difunto/save',
+            'values'            => [],
+            'errores'           => [],
+            'deudos'            => $deudos,
+            'nacionalidades'    => $nacionalidades,
+            'sexos'             => $sexos,
+            'estados_civiles'   => $estadosCiviles
         ];
 
         $this->loadView('difuntos/DifuntoForm', $datos);
@@ -159,14 +158,14 @@ class DifuntoController extends Control
                 $estadosCiviles = $this->estadoCivilModel->getAllestadosCiviles();
 
                 $this->loadView('difuntos/DifuntoForm', [
-                    'title' => 'Crear difunto',
-                    'action' => URL . 'difunto/save',
-                    'values' => $_POST,
-                    'errores' => $errores,
-                    'deudos' => $deudos,
-                    'nacionalidades' => $nacionalidades,
-                    'sexos' => $sexos,
-                    'estados_civiles' => $estadosCiviles,
+                    'title'             => 'Crear difunto',
+                    'action'            => URL . 'difunto/save',
+                    'values'            => $_POST,
+                    'errores'           => $errores,
+                    'deudos'            => $deudos,
+                    'nacionalidades'    => $nacionalidades,
+                    'sexos'             => $sexos,
+                    'estados_civiles'   => $estadosCiviles,
                 ]);
                 return;
             }
@@ -196,17 +195,17 @@ class DifuntoController extends Control
             'title' => 'Editar difunto',
             'action' => URL . 'difunto/update/' . $id,
             'values' => [
-                'deudo' => $difunto['id_deudo'],
-                'nombre' => $difunto['nombre'],
-                'apellido' => $difunto['apellido'],
-                'dni' => $difunto['dni'],
-                'edad' => $difunto['edad'],
+                'deudo'         => $difunto['id_deudo'],
+                'nombre'        => $difunto['nombre'],
+                'apellido'      => $difunto['apellido'],
+                'dni'           => $difunto['dni'],
+                'edad'          => $difunto['edad'],
                 'fecha_fallecimiento' => $difunto['fecha_fallecimiento'],
-                'sexo' => $difunto['id_sexo'],
-                'nacionalidad' => $difunto['id_nacionalidad'],
-                'estado_civil' => $difunto['id_estado_civil'],
-                'domicilio' => $difunto['domicilio'],
-                'localidad' => $difunto['localidad'],
+                'sexo'          => $difunto['id_sexo'],
+                'nacionalidad'  => $difunto['id_nacionalidad'],
+                'estado_civil'  => $difunto['id_estado_civil'],
+                'domicilio'     => $difunto['domicilio'],
+                'localidad'     => $difunto['localidad'],
                 'codigo_postal' => $difunto['codigo_postal'],
             ],
             'errores' => [],
@@ -294,19 +293,19 @@ class DifuntoController extends Control
 
             if (!empty($errores)) {
                 $difunto = [
-                    'id_difunto' => $id,
-                    'id_deudo' => $deudo,
-                    'nombre' => $nombre,
-                    'apellido' => $apellido,
-                    'dni' => $dni,
-                    'edad' => $edad,
+                    'id_difunto'        => $id,
+                    'id_deudo'          => $deudo,
+                    'nombre'            => $nombre,
+                    'apellido'          => $apellido,
+                    'dni'               => $dni,
+                    'edad'              => $edad,
                     'fecha_fallecimiento' => $fechaFallecimiento,
-                    'id_sexo' => $sexo,
-                    'id_nacionalidad' => $nacionalidad,
-                    'id_estado_civil' => $estadoCivil,
-                    'domicilio' => $domicilio,
-                    'localidad' => $localidad,
-                    'codigo_postal' => $codigoPostal
+                    'id_sexo'           => $sexo,
+                    'id_nacionalidad'   => $nacionalidad,
+                    'id_estado_civil'   => $estadoCivil,
+                    'domicilio'         => $domicilio,
+                    'localidad'         => $localidad,
+                    'codigo_postal'     => $codigoPostal
                 ];
 
                 $deudos = $this->deudoModel->getAllDeudos();
@@ -315,14 +314,14 @@ class DifuntoController extends Control
                 $estadosCiviles = $this->estadoCivilModel->getAllestadosCiviles();
 
                 $this->loadView('difuntos/DifuntoForm', [
-                    'title' => 'Editar difunto',
-                    'action' => URL . 'difunto/update/' . $id,
-                    'values' => $difunto,
-                    'errores' => $errores,
-                    'deudos' => $deudos,
-                    'nacionalidades' => $nacionalidades,
-                    'sexos' => $sexos,
-                    'estados_civiles' => $estadosCiviles,
+                    'title'             => 'Editar difunto',
+                    'action'            => URL . 'difunto/update/' . $id,
+                    'values'            => $difunto,
+                    'errores'           => $errores,
+                    'deudos'            => $deudos,
+                    'nacionalidades'    => $nacionalidades,
+                    'sexos'             => $sexos,
+                    'estados_civiles'   => $estadosCiviles,
                 ]);
                 return;
             }
@@ -350,21 +349,53 @@ class DifuntoController extends Control
     {
         header('Content-Type: application/json; charset=utf-8');
         
-        $draw = $_POST['draw'] ?? 1;
-        $start = intval($_POST['start'] ?? 0);
-        $length = intval($_POST['length'] ?? 10);
-        $search = $_POST['search']['value'] ?? '';
-        $orderColumnIndex = $_POST['order'][0]['column'] ?? 0;
-        $orderDir = $_POST['order'][0]['dir'] ?? 'asc';
+        // Función auxiliar para obtener valores POST de forma segura
+        function getPost($key, $default = '') {
+            if (isset($_POST[$key])) {
+                return $_POST[$key];
+            } else {
+                return $default;
+            }
+        }
 
+
+        // Función auxiliar para obtener valores anidados en arrays (como search[value])
+        function getNestedPost($keys, $default = '') {
+            $value = $_POST;
+            foreach ($keys as $key) {
+                if (!isset($value[$key])) {
+                    return $default;
+                }
+                $value = $value[$key];
+            }
+            return $value;
+        }
+
+        // Obtener parámetros
+        $draw   = getPost('draw', 1);
+        $start  = intval(getPost('start', 0));
+        $length = intval(getPost('length', 10));
+        $search = getNestedPost(['search', 'value'], '');
+        $orderColumnIndex = getNestedPost(['order', 0, 'column'], 0);
+        $orderDir         = getNestedPost(['order', 0, 'dir'], 'asc');
+
+        // Definir columnas permitidas para ordenamiento
         $columns = [
             'id_difunto', 'nombre_deudo', 'nombre', 'apellido', 'dni', 'edad', 
             'fecha_fallecimiento', 'sexo', 'nacionalidad', 'estado_civil', 
             'domicilio', 'localidad', 'codigo_postal'
         ];
-        $orderCol = $columns[$orderColumnIndex] ?? 'id_difunto';
 
+        // Validar si el índice de columna existe
+        if (isset($columns[$orderColumnIndex])) {
+            $orderCol = $columns[$orderColumnIndex];
+        } else {
+            $orderCol = 'id_difunto';
+        }
+
+        // Obtener el total de registros desde el modelo
         $totalRecords = $this->model->countAll();
+
 
         if ($search) {
             $data = $this->model->getFiltered($search, $orderCol, $orderDir, $start, $length);
@@ -409,19 +440,12 @@ class DifuntoController extends Control
         }  
 
         echo json_encode([
-            "draw" => intval($draw),
-            "recordsTotal" => $totalRecords,
-            "recordsFiltered" => $filteredRecords,
-            "data" => $data
+            "draw"              => intval($draw),
+            "recordsTotal"      => $totalRecords,
+            "recordsFiltered"   => $filteredRecords,
+            "data"              => $data
         ]);
         exit;
-    }
-
-    private function generateCsrfToken() {
-        if (!isset($_SESSION['csrf_token'])) {
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-        }
-        return $_SESSION['csrf_token'];
     }
 
 }

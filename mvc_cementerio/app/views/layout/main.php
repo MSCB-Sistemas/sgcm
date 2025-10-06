@@ -84,9 +84,12 @@ $labelFor = [
 ];
 
 $groupFor = [
+  // ítems sueltos
   'home'           => null,
   'estadisticas'   => null,
   'operacion'      => null,
+  
+  // Todo lo demás al grupo ABM:
   'usuario'        => 'ABM',
   'deudo'          => 'ABM',
   'difunto'        => 'ABM',
@@ -104,7 +107,6 @@ $groupFor = [
 $iconFor = [
   'home'            => ['icon' => '#home'],            // sprite interno
   'estadisticas'    => ['bi'   => 'graph-up'],   // Bootstrap Icons
-  'registro_traslado' => ['bi'  => 'bar-chart-line'],
   'usuario'         => ['bi'   => 'person-plus-fill'],
   'deudo'           => ['bi'   => 'person-badge'],
   'difunto'         => ['bi'   => 'snapchat'],

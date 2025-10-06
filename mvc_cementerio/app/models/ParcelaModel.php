@@ -75,14 +75,14 @@ class ParcelaModel
         $stmt = $this->db->prepare($sql);
 
         $parametros = [
-            'id_tipo_parcela' => $id_tipo_parcela,
-            'id_deudo' => $id_deudo,
+            'id_tipo_parcela'  => $id_tipo_parcela,
+            'id_deudo'         => $id_deudo,
             'numero_ubicacion' => $numero_ubicacion,
-            'hilera' => $hilera,
-            'seccion' => $seccion,
-            'fraccion' => $fraccion,
-            'nivel' => $nivel,
-            'id_orientacion' => $id_orientacion
+            'hilera'           => $hilera,
+            'seccion'          => $seccion,
+            'fraccion'         => $fraccion,
+            'nivel'            => $nivel,
+            'id_orientacion'   => $id_orientacion
         ];
 
         $stmt->execute($parametros);
@@ -119,16 +119,16 @@ class ParcelaModel
         $stmt = $this->db->prepare($sql);
 
         $parametros = [
-            'id_parcela' => $id_parcela,
-            'id_tipo_parcela' => $id_tipo_parcela,
-            'id_deudo' => $id_deudo,
-            'numero_ubicacion' => $numero_ubicacion,
-            'hilera' => $hilera,
-            'seccion' => $seccion,
-            'fraccion' => $fraccion,
-            'nivel' => $nivel,
-            'id_orientacion' => $id_orientacion
-        ];
+            'id_parcela'        => $id_parcela,
+            'id_tipo_parcela'   => $id_tipo_parcela,
+            'id_deudo'          => $id_deudo,
+            'numero_ubicacion'  => $numero_ubicacion,
+            'hilera'            => $hilera,
+            'seccion'           => $seccion,
+            'fraccion'          => $fraccion,
+            'nivel'             => $nivel,
+            'id_orientacion'    => $id_orientacion
+        ];        
         $stmt->execute($parametros);
 
         AuditoriaHelper::log(
@@ -148,8 +148,8 @@ class ParcelaModel
      */
     public function deleteParcela($id_parcela): bool
     {
-        $sql = "DELETE FROM parcela WHERE id_parcela = :id_parcela";
-        $stmt = $this->db->prepare($sql);
+        $sql        = "DELETE FROM parcela WHERE id_parcela = :id_parcela";
+        $stmt       = $this->db->prepare($sql);
         $parametros = ['id_parcela' => $id_parcela];
 
         $stmt->execute($parametros);
