@@ -32,7 +32,15 @@
 <div class="card shadow-sm border-0">
     <div class="card-body p-4">
         <form action="<?= isset($datos['action']) ? $datos['action'] : '' ?>" method="POST" id="operacionForm">
-
+            <div class="col-md-4">
+            <label for="tipo_operacion_search" class="form-label">Tipo de operacion</label>
+                <div class="input-group">
+                    <select list="tipo_operaciones" id="tipo_operaciones_search" name="tipo_operacion_search"
+                            class="form-control" autocomplete="off" required>
+                    <select type="hidden" id="id_tipo_operacion" name="id_tipo_operacion">
+                </div>
+            </div>    
+            <hr>
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
                     <label for="parcela_search" class="form-label">Parcela</label>

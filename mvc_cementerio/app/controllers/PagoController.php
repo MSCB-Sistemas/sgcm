@@ -23,11 +23,12 @@ class PagoController extends Control {
             'urlCrear'=> URL . 'pago/create',
             'ajaxUrl' => URL . 'pago/ajax',
             'baseUrl' => URL . 'pago/',
-            'columnas' => ['ID', 'Deudo', 'Parcela', 'Fecha de pago', 'Fecha de vencimiento', 'Importe', 'Recargo', 'Total', 'Usuario'],
+            'columnas' => ['ID', 'Deudo', 'Tipo de Operacion', 'Parcela', 'Fecha de pago', 'Fecha de vencimiento', 'Importe', 'Recargo', 'Total', 'Vinculo familiar', 'Responsable de tramite', 'Usuario'],
             'columnsConfig' => [
                 ['data' => 'id_pago'],
                 ['data' => 'nombre_deudo'],
                 ['data' => 'parcela'],
+                ['data' => 'id_tipo_operacion'],
                 ['data' => 'fecha_pago', 'render' => function($data) {
                     return $data ? date('d/m/Y', strtotime($data)) : '-';
                 }],
@@ -43,6 +44,8 @@ class PagoController extends Control {
                 ['data' => 'total', 'render' => function($data) {
                     return '$ ' . number_format($data, 2);
                 }],
+                ['data' => 'vinculo_familiar'],
+                ['data' => 'responsable_tramite'],
                 ['data' => 'usuario'],
                 ['data' => 'acciones', 'orderable' => false, 'searchable' => false]
             ],
@@ -76,51 +79,29 @@ class PagoController extends Control {
 
     public function save() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            if (isset($_POST['deudo'])) {
-                $deudo = $_POST['deudo'];
-            } else {
-                $deudo = '';
-            }
-            if (isset($_POST['parcela'])) {
-                $parcela = $_POST['parcela'];
-            } else {
-                $parcela = '';
-            }
-            if (isset($_POST['fecha_pago'])) {
-                $fecha_pago = trim($_POST['fecha_pago']);
-            } else {
-                $fecha_pago = '';
-            }
-            if (isset($_POST['fecha_vencimiento'])) {
-                $fecha_vencimiento = trim($_POST['fecha_vencimiento']);
-            } else {
-                $fecha_vencimiento = '';
-            }
-            if (isset($_POST['importe'])) {
-                $importe = trim($_POST['importe']);
-            } else {
-                $importe = '';
-            }
-            if (isset($_POST['recargo'])) {
-                $recargo = trim($_POST['recargo']);
-            } else {
-                $recargo = '';
-            }
-            if (isset($_POST['total'])) {
-                $total = trim($_POST['total']);
-            } else {
-                $total = '';
-            }
+            $deudo = $_POST['deudo'];
+            $parcela = $_POST['parcela'];
+            $tipo_operacion = $_POST['tipo_operacion'];
+            $fecha_pago = trim($_POST['fecha_pago']);
+            $fecha_vencimiento = trim($_POST['fecha_vencimiento']);
+            $importe = trim($_POST['importe']);
+            $recargo = trim($_POST['recargo']);
+            $total = trim($_POST['total']);
+            $vinculo_familiar = trim($_POST['vinculo_familiar']);
+            $responsable_tramite = trim($_POST['responsable_tramite']);
             $usuario = $_SESSION['usuario_id'];
             $errores = [];
 
             if (empty($deudo)) $errores[] = 'El deudo es obligatorio';
             if (empty($parcela)) $errores[] = 'La parcela es obligatoria';
+            if (empty($tipo_operacion)) $errores[] = 'La operacion es obligatoria';
             if (empty($fecha_pago)) $errores[] = 'La fecha es obligatoria';
             if (empty($fecha_vencimiento)) $errores[] = 'La fecha de vencimiento es obligatoria';
             if (empty($importe)) $errores[] = 'El importe es obligatorio';
             if (empty($recargo)) $errores[] = 'El recargo es obligatorio';
             if (empty($total)) $errores[] = 'El total es obligatorio';
+            if (empty($vinculo_familiar)) $errores[] = 'El vinculo familiar es obligatorio';
+            if (empty($responsable_tramite)) $errores[] = 'El responsable del tramite es obligatorio';
             if (empty($usuario)) $errores[] = 'El usuario es obligatorio';
 
             if (!empty($errores)) {
@@ -140,7 +121,20 @@ class PagoController extends Control {
                 return;
             }
 
-            if ($this->model->insertPago($deudo, $parcela, $fecha_pago, $fecha_vencimiento, $importe, $recargo, $total, $usuario)) {
+            if ($this->model->insertPago(
+                $deudo,
+                $parcela,
+                $tipo_operacion,
+                $fecha_pago,
+                $fecha_vencimiento,
+                $importe,
+                $recargo,
+                $total,
+                $vinculo_familiar,
+                $responsable_tramite,
+                $usuario
+            )) 
+            {
                 header("Location: " . URL . "pago");
                 exit;
             } else {
@@ -164,11 +158,14 @@ class PagoController extends Control {
             'values' => [
                 'deudo' => $pago['id_deudo'],
                 'parcela' => $pago['id_parcela'],
+                'operacion' => $pago['id_tipo_operacion'],
                 'fecha_pago' => $pago['fecha_pago'],
                 'fecha_vencimiento' => $pago['fecha_vencimiento'],
                 'importe' => $pago['importe'],
                 'recargo' => $pago['recargo'],
                 'total' => $pago['total'],
+                'vinculo_familiar' => $pago['vinculo_familiar'],
+                'responsable_tramite' => $pago['responsable_tramite']
             ],
             'errores' => [],
             'deudos'=> $deudos,
@@ -178,62 +175,44 @@ class PagoController extends Control {
 
     public function update($id) {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            if (isset($_POST['deudo'])) {
-                $deudo = $_POST['deudo'];
-            } else {
-                $deudo = '';
-            }
-            if (isset($_POST['parcela'])) {
-                $parcela = $_POST['parcela'];
-            } else {
-                $parcela = '';
-            }
-            if (isset($_POST['fecha_pago'])) {
-                $fecha_pago = trim($_POST['fecha_pago']);
-            } else {
-                $fecha_pago = '';
-            }
-            if (isset($_POST['fecha_vencimiento'])) {
-                $fecha_vencimiento = trim($_POST['fecha_vencimiento']);
-            } else {
-                $fecha_vencimiento = '';
-            }
-            if (isset($_POST['importe'])) {
-                $importe = trim($_POST['importe']);
-            } else {
-                $importe = '';
-            }
-            if (isset($_POST['recargo'])) {
-                $recargo = trim($_POST['recargo']);
-            } else {
-                $recargo = '';
-            }
-            if (isset($_POST['total'])) {
-                $total = trim($_POST['total']);
-            } else {
-                $total = '';
-            }
+            $deudo = $_POST['deudo'];
+            $parcela = $_POST['parcela'];
+            $tipo_operacion = $_POST['tipo_operacion'];
+            $fecha_pago = trim($_POST['fecha_pago']);
+            $fecha_vencimiento = trim($_POST['fecha_vencimiento']);
+            $importe = trim($_POST['importe']);
+            $recargo = trim($_POST['recargo']);
+            $total = trim($_POST['total']);
+            $vinculo_familiar = trim($_POST['vinculo_familiar']);
+            $responsable_tramite = trim($_POST['responsable_tramite']);
             $usuario = $_SESSION['usuario_id'];
             $errores = [];
 
             if (empty($deudo)) $errores[] = 'El deudo es obligatorio';
-            if (empty($parcela)) $errores[] = 'La parcela es obligatoria.';
+            if (empty($parcela)) $errores[] = 'La parcela es obligatoria';
+            if (empty($tipo_operacion)) $errores[] = 'La operacion es obligatoria';
             if (empty($fecha_pago)) $errores[] = 'La fecha es obligatoria';
             if (empty($fecha_vencimiento)) $errores[] = 'La fecha de vencimiento es obligatoria';
             if (empty($importe)) $errores[] = 'El importe es obligatorio';
             if (empty($recargo)) $errores[] = 'El recargo es obligatorio';
             if (empty($total)) $errores[] = 'El total es obligatorio';
+            if (empty($vinculo_familiar)) $errores[] = 'El vinculo familiar es obligatorio';
+            if (empty($responsable_tramite)) $errores[] = 'El responsable del tramite es obligatorio';
+            if (empty($usuario)) $errores[] = 'El usuario es obligatorio';
 
             if (!empty($errores)) {
                 $pago = [
                     'id_pago' => $id,
                     'id_deudo' => $deudo,
                     'id_parcela'=> $parcela,
+                    'id_tipo_operacion'=> $tipo_operacion,
                     'fecha_pago'=> $fecha_pago,
                     'fecha_vencimiento' => $fecha_vencimiento,
                     'importe' => $importe,
                     'recargo'=> $recargo,
                     'total'=> $total,
+                    'vinculo_familiar'=> $vinculo_familiar,
+                    'responsable_tramite'=> $responsable_tramite,
                 ];
 
                 $deudos = $this->deudoModel->getAllDeudos();
@@ -250,7 +229,21 @@ class PagoController extends Control {
                 return;
             }
 
-            if ($this->model->updatePago($id, $deudo, $parcela, $fecha_pago, $fecha_vencimiento, $importe, $recargo, $total, $usuario)) {
+            if ($this->model->updatePago(
+                $id, 
+                $deudo,
+                $parcela,
+                $tipo_operacion,
+                $fecha_pago,
+                $fecha_vencimiento,
+                $importe,
+                $recargo,
+                $total,
+                $vinculo_familiar,
+                $responsable_tramite,
+                $usuario
+            )) 
+            {
                 header("Location: " . URL . "pago");
                 exit;
             } else {
@@ -280,8 +273,9 @@ class PagoController extends Control {
         $orderDir = $_POST['order'][0]['dir'] ?? 'asc';
 
         $columns = [
-            'id_pago', 'nombre_deudo', 'parcela', 'fecha_pago', 
-            'fecha_vencimiento', 'importe', 'recargo', 'total', 'usuario'
+            'id_pago', 'nombre_deudo', 'tipo_operacion', 'parcela', 'fecha_pago', 
+            'fecha_vencimiento', 'importe', 'recargo', 'total', 'vinculo_familiar', 
+            'responsable_tramite', 'usuario'
         ];
         $orderCol = $columns[$orderColumnIndex] ?? 'id_pago';
 

@@ -80,6 +80,7 @@ $labelFor = [
   'nacionalidades'  => 'Nacionalidades',
   'tipoParcela'     => 'Tipos de parcela',
   'tipoUsuario'     => 'Tipos de usuario',
+  'tipoOperacion'   => 'Tipos de operaciones',
   'pago'            => 'Pagos',
 ];
 
@@ -98,13 +99,14 @@ $groupFor = [
   'nacionalidades' => 'ABM',
   'tipoParcela'    => 'ABM',
   'tipoUsuario'    => 'ABM',
+  'tipoOperacion'  => 'ABM',
   'pago'           => 'ABM',
 ];
 
 $iconFor = [
-  'home'            => ['icon' => '#home'],            // sprite interno
-  'estadisticas'    => ['bi'   => 'graph-up'],   // Bootstrap Icons
-  'registro_traslado' => ['bi'  => 'bar-chart-line'],
+  'home'            => ['icon' => '#home'],  
+  'estadisticas'    => ['bi'   => 'graph-up'], 
+  'operacion'       => ['bi'   => 'bar-chart-line'],
   'usuario'         => ['bi'   => 'person-plus-fill'],
   'deudo'           => ['bi'   => 'person-badge'],
   'difunto'         => ['bi'   => 'snapchat'],
@@ -116,6 +118,7 @@ $iconFor = [
   'nacionalidades'  => ['bi'   => 'flag'],
   'tipoParcela'     => ['bi'   => 'columns-gap'],
   'tipoUsuario'     => ['bi'   => 'person-gear'],
+  'tipoOperacion'   => ['bi'   => 'person-gear'],
   'pago'            => ['bi'   => 'credit-card'],
 ];
 
@@ -127,7 +130,7 @@ $abmChildren = [];
 foreach ($indexRoutes as $path => $def) 
 {
     [$ctrl, $method, $guard] = $def;
-    $icon = $iconFor[$path] ?? [];  // puede ser ['icon'=>'#..'] o ['bi'=>'...']
+    $icon = $iconFor[$path] ?? [];
 
     $label = $labelFor[$path] ?? ucfirst($path);
     $perms = $guardToPerms($guard);

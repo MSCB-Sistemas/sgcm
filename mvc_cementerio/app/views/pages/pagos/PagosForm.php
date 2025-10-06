@@ -94,6 +94,21 @@
                                 Por favor seleccione una parcela
                             </div>
                         </div>
+
+                        <div class="mb-3">
+                            <label for="tipo_operacion" class="form-label fw-bold">Operacion</label>
+                            <select class="form-select" id="tipo_operacion" name="tipo_operacion" required>
+                                <option value="">Seleccione...</option>
+                                <?php foreach ($datos['tipo_operaciones'] as $to): ?>
+                                    <option value="<?= $p['id_tipo_operacion'] ?>">
+                                        <?= htmlspecialchars($to['id_tipo_operacion'] . ' - ' . $p['descripcion']) ?>
+                                    </option>
+                                <?php endforeach ?>
+                            </select>
+                            <div class="invalid-feedback">
+                                Por favor seleccione un tipo de operacion
+                            </div>
+                        </div>
                         
                         <div class="mb-3">
                             <label for="fecha_pago" class="form-label fw-bold">Fecha de pago</label>
@@ -126,9 +141,27 @@
                     <!-- Segunda columna -->
                     <div class="col-md-6">
                         <div class="mb-3">
-                        <label for="recargo" class="form-label fw-bold">Recargo (%)</label>
-                        <input type="number" step="0.01" class="form-control" id="recargo" name="recargo" 
-                            value="<?= htmlspecialchars($datos['values']['recargo'] ?? '') ?>" required oninput="calcularTotal()">
+                            <label for="vinculo_familiar" class="form-label fw-bold">Vinculo familiar</label>
+                            <input type="text" class="form-control" id="vinculo_familiar" name="vinculo_familiar"
+                                value="<?= htmlspecialchars($datos['values']['vinculo_familiar'] ?? '') ?>">
+                            <div class="invalid-feedback">
+                                Por favor ingrese el vincula familiar
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="responsable_tramite" class="form-label fw-bold">Responsable de tramite</label>
+                            <input type="text" class="form-control" id="responsable_tramite" name="responsable_tramite"
+                                value="<?= htmlspecialchars($datos['values']['responsable_tramite'] ?? '') ?>">
+                            <div class="invalid-feedback">
+                                Por favor ingrese el responsable del tramite
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="recargo" class="form-label fw-bold">Recargo (%)</label>
+                            <input type="number" step="0.01" class="form-control" id="recargo" name="recargo" 
+                                value="<?= htmlspecialchars($datos['values']['recargo'] ?? '') ?>" required oninput="calcularTotal()">
                             <div class="invalid-feedback">
                                 Por favor ingrese el recargo
                             </div>

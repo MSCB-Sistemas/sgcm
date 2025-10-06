@@ -57,6 +57,14 @@ return [
     'sexo/update'     => ['SexoController', 'update',             'editar_sexo'],
     'sexo/delete'     => ['SexoController', 'delete',             'eliminar_sexo'],
 
+    // Tipo Operacion
+    'tipo_operacion'            => ['TipoOperacionController', 'index',              'ver_tipo_operacion'],
+    'tipo_operacion/create'     => ['TipoOperacionController', 'create',             'crear_tipo_operacion'],
+    'tipo_operacion/save'       => ['TipoOperacionController', 'save',               'crear_tipo_operacion'],
+    'tipo_operacion/edit'       => ['TipoOperacionController', 'edit',               'editar_tipo_operacion'],
+    'tipo_operacion/update'     => ['TipoOperacionController', 'update',             'editar_tipo_operacion'],
+    'tipo_operacion/delete'     => ['TipoOperacionController', 'delete',             'eliminar_tipo_operacion'],
+
     // Pago
     'pago'            => ['PagoController', 'index',              'ver_pago'],
     'pago/create'     => ['PagoController', 'create',             'crear_pago'],
