@@ -240,8 +240,8 @@ class EstadisticasModel extends Control {
                 u2.id_parcela AS parcela_destino, 
                 u2.fecha_ingreso AS fecha_ingreso_destino
             FROM difunto d
-            INNER JOIN ubicacion_difunto u ON d.id_difunto = u.id_difunto
-            INNER JOIN ubicacion_difunto u2 ON u2.id_difunto = d.id_difunto
+            LEFT JOIN ubicacion_difunto u ON d.id_difunto = u.id_difunto
+            LEFT JOIN ubicacion_difunto u2 ON u2.id_difunto = d.id_difunto
                 AND u2.fecha_ingreso = (
                     SELECT MIN(u3.fecha_ingreso)
                     FROM ubicacion_difunto u3

@@ -36,9 +36,8 @@ $filtrar = isset($_GET['filtrar']);
                 <label for="tipo_filtro" class="form-label">Seleccionar filtro de búsqueda:</label>
                 <select id="tipo_filtro" class="form-select w-auto" onchange="mostrarFiltroDifuntos()">
                     <option value="">Seleccionar...</option>
-                    <option value="lista_completa_difuntos">Padrón general de Difuntos</option>
-                    <option value="filtro_titular_difuntos">Por Orden Alfabético</option>
                     <option value="filtro_fecha_difuntos">Por Fecha de Defunción</option>
+                    <option value="lista_completa_difuntos">Ver lista completa</option>
                 </select>
         </div>
 
@@ -57,26 +56,7 @@ $filtrar = isset($_GET['filtrar']);
                     <button type="submit" name="buscar" class="btn btn-primary">Buscar</button>
                 </div>
             </form>
-        </div>
-
-        <!-- Filtro por Apellido de Difunto -->
-        <div id="filtro_titular_difuntos" class="filtro-box mb-4" style="display: none;">
-            <form method="GET" class="row g-3">
-                <div class="col-md-2">                    
-                    <label for="letra_apellido_difunto" class="form-label">Apellido (A-Z)</label>
-                    <select name="letra_apellido_difunto" class="form-select">
-                        <option value="">Seleccionar...</option>
-                        <?php foreach (range('A', 'Z') as $letra): ?>
-                            <option value="<?= $letra ?>" <?= (isset($datos['letra_apellido_difunto']) && $datos['letra_apellido_difunto'] === $letra) ? 'selected' : '' ?>><?= $letra ?></option>
-                        <?php endforeach; ?>
-                    </select>
                 </div>
-                <div class="col-md-2 align-self-end">
-                    <button type="submit" name="buscar" class="btn btn-primary">Buscar</button>
-                </div>
-            </form>
-        </div>
-
 
         <!-- Mostrar error solo si hay -->
         <?php if ($error): ?>
@@ -211,10 +191,9 @@ $filtrar = isset($_GET['filtrar']);
                 <label for="tipo_filtro" class="form-label">Seleccionar filtro de búsqueda:</label>
                 <select id="tipo_filtro_parcelas" class="form-select w-auto" onchange="mostrarFiltroParcelas()">
                     <option value="">Seleccionar...</option>
-                    <option value="lista_completa_parcelas">Lista de Parcelas</option>
                     <option value="filtro_fecha_parcelas">Por Fecha de Venta</option>
                     <option value="filtro_parcela_parcelas">Por Datos de Parcela</option>
-                    <option value="filtro_titular_parcelas">Por Titular</option>
+                    <option value="lista_completa_parcelas">Ver lista completa</option>
                 </select>
         </div>
 
@@ -381,10 +360,9 @@ $filtrar = isset($_GET['filtrar']);
             <label for="tipo_filtro_traslados" class="form-label">Seleccionar filtro de búsqueda:</label>
             <select id="tipo_filtro_traslados" class="form-select w-auto" onchange="mostrarFiltroTraslados()">
                 <option value="">Seleccionar...</option>
-                <option value="lista_completa_traslados">Lista de Traslados</option>
-                <option value="filtro_alfabetico_traslados">Por Orden Alfabético</option>
                 <option value="filtro_defuncion_traslados">Por Fecha de Defunción</option>
                 <option value="filtro_traslado_traslados">Por Fecha de Traslado</option>
+                <option value="lista_completa_traslados">Ver lista completa</option>
             </select>
         </div>
 
@@ -467,8 +445,8 @@ $filtrar = isset($_GET['filtrar']);
                             <td><?= htmlspecialchars($difunto_trasladado['fecha_fallecimiento']) ?></td>
                             <td><?= htmlspecialchars($difunto_trasladado['fecha_retiro']) ?></td>
                             <td><?= htmlspecialchars($difunto_trasladado['parcela_origen']?? '') ?></td>
-                            <td><?= htmlspecialchars($difunto_trasladado['parcela_destino']?? '') ?></td>
-                            <td><?= htmlspecialchars($difunto_trasladado['fecha_ingreso_destino']?? '') ?></td>
+                            <td><?= htmlspecialchars($difunto_trasladado['parcela_destino']?? 'No corresponde') ?></td>
+                            <td><?= htmlspecialchars($difunto_trasladado['fecha_ingreso_destino']?? 'No corresponde') ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -532,43 +510,6 @@ $filtrar = isset($_GET['filtrar']);
                     </div>
                 </div>
             </div>
-
-
-<?php
-// Función para generar links con ordenamiento (orden asc/desc)
-    /* function generarOrdenLink($columna, $etiqueta, $datos) {
-        $direccion_actual = 'asc';
-        if (!empty($datos['sort_dir'])) {
-            $direccion_actual = strtolower($datos['sort_dir']);
-        }
-
-        $columna_actual = '';
-        if (!empty($datos['sort_col'])) {
-            $columna_actual = strtolower($datos['sort_col']);
-        }
-
-        // Cambia la dirección si la columna es la misma, sino por defecto asc
-        $direccion_siguiente = 'asc';
-        if ($columna_actual === $columna && $direccion_actual === 'asc') {
-            $direccion_siguiente = 'desc';
-        }
-
-        $query_params = $_GET;
-        $query_params['sort_col'] = $columna;
-        $query_params['sort_dir'] = $direccion_siguiente;
-
-        $link = '?' . http_build_query($query_params);
-
-        $flecha = '';
-        if ($columna_actual === $columna) {
-            $flecha = strtoupper($direccion_actual) === 'ASC' ? ' ▲' : ' ▼';
-        }
-
-        return "<p style=\"color: white; text-decoration: none;\">$etiqueta</p>";
-        
-    } */
-    ?>
-
     <script>
         
     document.addEventListener('DOMContentLoaded', inicializarTablas);
