@@ -46,7 +46,6 @@ class DeudoModel {
      * @param $dni DNI del deudo
      * @param $nombre Nombre del deudo
      * @param $apellido Apellido del deudo
-     * @param $vinculo_familiar Vínculo familiar con el difunto
      * @param $telefono Teléfono del deudo
      * @param $email Correo electrónico del deudo
      * @param $domicilio Domicilio del deudo
@@ -54,16 +53,15 @@ class DeudoModel {
      * @param $codigo_postal Código postal del deudo
      * @return int ID del nuevo deudo insertado o false si falla
      */
-    public function insertDeudo($dni, $nombre, $apellido, $vinculo_familiar, $telefono, $email, $domicilio, $localidad, $codigo_postal){
-        $sql = "INSERT INTO deudo (dni, nombre, apellido, vinculo_familiar, telefono, email, domicilio, localidad, codigo_postal)
-                VALUES (:dni, :nombre, :apellido, :vinculo_familiar, :telefono, :email, :domicilio, :localidad, :codigo_postal)";
+    public function insertDeudo($dni, $nombre, $apellido, $telefono, $email, $domicilio, $localidad, $codigo_postal){
+        $sql = "INSERT INTO deudo (dni, nombre, apellido, telefono, email, domicilio, localidad, codigo_postal)
+                VALUES (:dni, :nombre, :apellido, :telefono, :email, :domicilio, :localidad, :codigo_postal)";
         $stmt = $this->db->prepare($sql);
 
         $parametros = [
             'dni' => $dni,
             'nombre' => $nombre,
             'apellido' => $apellido,
-            'vinculo_familiar' => $vinculo_familiar,
             'telefono' => $telefono,
             'email' => $email,
             'domicilio' => $domicilio,
@@ -89,7 +87,6 @@ class DeudoModel {
      * @param mixed $dni El DNI (Documento Nacional de Identidad) del deudo.
      * @param mixed $nombre El nombre del deudo.
      * @param mixed $apellido El apellido del deudo.
-     * @param mixed $vinculo_familiar El vínculo familiar con el difunto.     
      * @param mixed $telefono El número de teléfono del deudo.
      * @param mixed $email La dirección de correo electrónico del deudo.
      * @param mixed $domicilio El domicilio del deudo.
@@ -97,9 +94,9 @@ class DeudoModel {
      * @param mixed $codigo_postal El código postal del domicilio del deudo.
      * @return bool Devuelve true si la actualización fue exitosa, false en caso contrario.
      */
-    public function updateDeudo($id_deudo, $dni, $nombre, $apellido, $vinculo_familiar, $telefono, $email, $domicilio, $localidad, $codigo_postal): bool
+    public function updateDeudo($id_deudo, $dni, $nombre, $apellido, $telefono, $email, $domicilio, $localidad, $codigo_postal): bool
     {
-        $sql = "UPDATE deudo SET dni = :dni, nombre = :nombre, apellido = :apellido, vinculo_familiar = :vinculo_familiar, telefono = :telefono, email = :email, domicilio = :domicilio, localidad = :localidad, codigo_postal = :codigo_postal
+        $sql = "UPDATE deudo SET dni = :dni, nombre = :nombre, apellido = :apellido, telefono = :telefono, email = :email, domicilio = :domicilio, localidad = :localidad, codigo_postal = :codigo_postal
                 WHERE id_deudo = :id_deudo";
         $stmt = $this->db->prepare($sql);
         $parametros = [
@@ -107,7 +104,6 @@ class DeudoModel {
             'dni' => $dni,
             'nombre' => $nombre,
             'apellido' => $apellido,
-            'vinculo_familiar' => $vinculo_familiar,
             'telefono' => $telefono,
             'email' => $email,
             'domicilio' => $domicilio,

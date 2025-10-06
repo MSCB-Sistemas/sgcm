@@ -42,12 +42,6 @@
                     $apellido = '';
                 }
 
-                if (isset($datos['values']['vinculo_familiar'])) {
-                    $vinculo_familiar = htmlspecialchars($datos['values']['vinculo_familiar']);
-                } else {
-                    $vinculo_familiar = '';
-                }         
-
                 if (isset($datos['values']['telefono'])) {
                     $telefono = htmlspecialchars($datos['values']['telefono']);
                 } else {
@@ -101,12 +95,6 @@
                             <label for="apellido" class="form-label fw-bold">Apellido</label>
                             <input type="text" class="form-control" id="apellido" name="apellido" value="<?= $apellido ?>" required>
                             <div class="invalid-feedback">Por favor ingrese el apellido</div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="apellido" class="form-label fw-bold">Vínculo Familiar</label>
-                            <input type="text" class="form-control" id="vinculo_familiar" name="vinculo_familiar" value="<?= $vinculo_familiar ?>" required>
-                            <div class="invalid-feedback">Por favor ingrese el vínculo familiar con el difunto</div>
                         </div>
                         
                         <div class="mb-3">
