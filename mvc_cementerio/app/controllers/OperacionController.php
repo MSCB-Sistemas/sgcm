@@ -17,12 +17,12 @@ class OperacionController extends Control
 
         $datos = [
             'title' => 'Operacion',
-            'data' => $operaciones,
             'action' => URL . 'operacion/save',
             'parcelas' => $parcelas,
             'deudos' => $deudos,
             'difuntos' => $difuntos,
-            'errores' => $errores
+            'errores' => $errores,
+            'tipo_operaciones' => $operaciones
         ];
 
         $this->loadView('operacion/OperacionForm', $datos);

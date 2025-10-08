@@ -18,14 +18,27 @@
 <div class="card shadow-sm border-0">
     <div class="card-body p-4">
         <form action="<?= isset($datos['action']) ? $datos['action'] : '' ?>" method="POST" id="operacionForm">
-            <div class="col-md-4">
-            <label for="tipo_operacion_search" class="form-label">Tipo de operacion</label>
-                <div class="input-group">
-                    <select list="tipo_operaciones" id="tipo_operaciones_search" name="tipo_operacion_search"
-                            class="form-control" autocomplete="off" required>
-                    <select type="hidden" id="id_tipo_operacion" name="id_tipo_operacion">
+            <div class="mb-3">
+                <label for="tipo_operacion" class="form-label fw-bold">Tipo de operacion</label>
+                <select class="form-select" id="tipo_operacion" name="tipo_operacion" required>
+                    <option value="">Seleccione...</option>
+                    <?php foreach ($datos['tipo_operaciones'] as $n): ?>
+                        <?php
+                        if ($id_tipo_operacion_selected == $n['id_tipo_operacion']) {
+                            $selected_tipo_operacion = 'selected';
+                        } else {
+                            $selected_tipo_operacion = '';
+                        }
+                        ?>
+                        <option value="<?= $n['id_tipo_operacion'] ?>" <?= $selected_tipo_operacion ?>>
+                            <?= htmlspecialchars($n['descripcion']) ?>
+                        </option>
+                    <?php endforeach ?>
+                </select>
+                <div class="invalid-feedback">
+                    Por favor seleccione un tipo de parcela
                 </div>
-            </div>    
+            </div> 
             <hr>
             <div class="row g-3 mb-3">
                 <div class="col-md-6">

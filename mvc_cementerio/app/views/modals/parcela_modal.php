@@ -32,22 +32,18 @@
                             </div>
                             
                             <div class="mb-3">
-                                <label for="deudo" class="form-label fw-bold">Deudo</label>
-                                <select class="form-select" id="deudo" name="deudo">
-                                    <option value="">Seleccione...</option>
-                                    <?php foreach ($datos['deudos'] as $n): ?>
-                                        <?php
-                                        if ($id_deudo_selected == $n['id_deudo']) {
-                                            $selected_deudo = 'selected';
-                                        } else {
-                                            $selected_deudo = '';
-                                        }
-                                        ?>
-                                        <option value="<?= $n['id_deudo'] ?>" <?= $selected_deudo ?>>
-                                            <?= htmlspecialchars($n['nombre']) ?>
-                                        </option>
-                                    <?php endforeach ?>
-                                </select>
+                                <label for="deudo_search" class="form-label fw-bold">Deudo</label>
+                                <div class="input-group">
+                                    <input list="deudos" id="deudo_search" name="deudo_search"
+                                        class="form-control" placeholder="Ingrese un deudo" autocomplete="off" required>
+                                    <input type="hidden" id="id_deudo" name="id_deudo">
+                                </div>
+                                <datalist id="deudos">
+                                    <?php foreach ($datos['deudos'] as $d): ?>
+                                        <option value="<?= htmlspecialchars($d['dni'] . ' - ' . $d['nombre'] . ' ' . $d['apellido']) ?>"
+                                        data-id="<?= $d['id_deudo'] ?>">
+                                    <?php endforeach; ?>
+                                </datalist>
                             </div>
                             
                             <div class="mb-3">
@@ -146,5 +142,33 @@
             setupModalAJAX('formParcela', 'ajax_guardar_parcela.php','parcelas','parcela_search',
                 data => `${data.parcela.id_parcela} - Tipo - ${data.parcela.tipo}`);
         }
+    });
+
+    function configurarAutocompletado(inputId, hiddenId, datalistId) {
+        const input = document.getElementById(inputId);
+        const hidden = document.getElementById(hiddenId);
+
+        input.addEventListener('input', () => {
+            hidden.value = '';
+            const val = input.value;
+            const options = document.querySelectorAll(`#${datalistId} option`);
+            const match = Array.from(options).find(opt => opt.value === val);
+            if (match) {
+                hidden.value = match.dataset.id;
+                input.setCustomValidity("");
+            }
+        });
+
+        input.addEventListener('blur', () => {
+            if (!hidden.value) { 
+                input.setCustomValidity("Debe seleccionar un elemento de la lista");
+            } else {
+                input.setCustomValidity("");
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        configurarAutocompletado('deudo_search', 'id_deudo', 'deudos');
     });
 </script>
