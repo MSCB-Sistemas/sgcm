@@ -54,21 +54,9 @@ class EstadisticasModel extends Control
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getDefuncionesEntreFechas($fecha_inicio_defuncion, $fecha_fin_defuncion, $letra_apellido_difunto, $sort_col, $sort_dir)
+    public function getDefuncionesEntreFechas($fecha_inicio_defuncion, $fecha_fin_defuncion)
     {
         $this->establecerFechasPorDefecto($fecha_inicio, $fecha_fin);
-
-        $columnas_permitidas = ['fecha_fallecimiento', 'nombre', 'apellido'];
-
-        if (!in_array($sort_col, $columnas_permitidas)) {
-            $sort_col = 'fecha_fallecimiento';
-        }
-
-        if (strtoupper($sort_dir) === 'DESC') {
-            $sort_dir = 'DESC';
-        } else {
-            $sort_dir = 'ASC';
-        }
 
         $sql = "SELECT d.*, 
                s.descripcion AS sexo, 
@@ -82,25 +70,17 @@ class EstadisticasModel extends Control
         LEFT JOIN deudo deu ON d.id_deudo = deu.id_deudo
         WHERE DATE(d.fecha_fallecimiento) BETWEEN :inicio AND :fin";
 
-        if (!empty($letra_apellido_difunto)) {
-            $sql .= " AND d.apellido LIKE :letra_apellido_difunto";
-        }
-
-        $sql .= " ORDER BY $sort_col $sort_dir";
-
         $stmt = $this->db->prepare($sql);
 
         $stmt->bindValue(':inicio', $fecha_inicio_defuncion);
         $stmt->bindValue(':fin', $fecha_fin_defuncion);
-        if (!empty($letra_apellido_difunto)) {
-            $stmt->bindValue(':letra_apellido_difunto', $letra_apellido_difunto . '%');
-        }
+
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getTotalDefuncionesEntreFechas($fecha_inicio_defuncion, $fecha_fin_defuncion, $letra_apellido_difunto = '')
+    public function getTotalDefuncionesEntreFechas($fecha_inicio_defuncion, $fecha_fin_defuncion)
     {
         try {
             $this->establecerFechasPorDefecto($fecha_inicio_defuncion, $fecha_fin_defuncion);
@@ -108,17 +88,9 @@ class EstadisticasModel extends Control
             $sql = "SELECT COUNT(*) as total FROM difunto 
                     WHERE DATE(fecha_fallecimiento) BETWEEN :inicio AND :fin";
 
-            if (!empty($letra_apellido_difunto)) {
-                $sql .= " AND apellido LIKE :letra_apellido_difunto";
-            }
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':inicio', $fecha_inicio_defuncion);
             $stmt->bindValue(':fin', $fecha_fin_defuncion);
-
-            if (!empty($letra_apellido_difunto)) {
-                $stmt->bindValue(':letra_apellido_difunto', $letra_apellido_difunto . '%');
-            }
 
             $stmt->execute();
             $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -135,7 +107,7 @@ class EstadisticasModel extends Control
         }
     }
 
-    public function getParcelasVendidas($fecha_inicio_parcela, $fecha_fin_parcela, $letra_apellido_deudo = '')
+    public function getParcelasVendidas($fecha_inicio_parcela, $fecha_fin_parcela)
     {
         $this->establecerFechasPorDefecto($fecha_inicio_parcela, $fecha_fin_parcela);
 
@@ -148,20 +120,10 @@ class EstadisticasModel extends Control
                 WHERE DATE(pgo.fecha_pago) BETWEEN :inicio AND :fin
             ";
 
-            if (!empty($letra_apellido_deudo)) {
-                $sql .= " AND d.apellido LIKE :letra_apellido_deudo";
-            }
-
-            $sql .= "ORDER BY p.id_parcela ASC";
-
             $stmt = $this->db->prepare($sql);
 
             $stmt->bindValue(':inicio', $fecha_inicio_parcela);
             $stmt->bindValue(':fin', $fecha_fin_parcela);
-
-            if (!empty($letra_apellido_deudo)) {
-                $stmt->bindValue(':letra_apellido_deudo', $letra_apellido_deudo . '%');
-            }
 
             $stmt->execute();
 
@@ -233,57 +195,34 @@ class EstadisticasModel extends Control
         }
     }
 
-    public function getDifuntosTrasladados(
-        $fecha_inicio_defuncion_traslado,
-        $fecha_fin_defuncion_traslado,
-        $fecha_inicio_traslado,
-        $fecha_fin_traslado,
-        $letra_apellido_traslado = '',
-        $sort_col = 'fecha_retiro',
-        $sort_dir = 'ASC'
-    ) {
-        $this->establecerFechasPorDefecto($fecha_inicio_defuncion_traslado, $fecha_fin_defuncion_traslado);
+    public function getDifuntosTrasladados($fecha_inicio_traslado, $fecha_fin_traslado,)
+    {
         $this->establecerFechasPorDefecto($fecha_inicio_traslado, $fecha_fin_traslado);
 
-        $columnas_permitidas = ['nombre', 'apellido', 'fecha_fallecimiento', 'fecha_retiro'];
-        $sort_col = in_array($sort_col, $columnas_permitidas) ? $sort_col : 'fecha_retiro';
-        $sort_dir = strtoupper($sort_dir) === 'DESC' ? 'DESC' : 'ASC';
-
         $sql = "SELECT 
-                    d.*, d.dni, d.nombre, d.apellido, d.fecha_fallecimiento, 
-                    u.fecha_retiro,
-                    u.id_parcela AS parcela_origen, 
-                    u2.id_parcela AS parcela_destino, 
-                    u2.fecha_ingreso AS fecha_ingreso_destino
-                FROM difunto d
-                INNER JOIN ubicacion_difunto u ON d.id_difunto = u.id_difunto
-                INNER JOIN ubicacion_difunto u2 ON u2.id_difunto = d.id_difunto
-                    AND u2.fecha_ingreso = (
-                        SELECT MIN(u3.fecha_ingreso)
-                        FROM ubicacion_difunto u3
-                        WHERE u3.id_difunto = d.id_difunto
-                        AND u3.fecha_ingreso > u.fecha_retiro
-                        AND u3.fecha_ingreso != '0000-00-00'
-                    )
-                WHERE u.fecha_retiro != '0000-00-00'
-                AND DATE(d.fecha_fallecimiento) BETWEEN :inicio_defuncion AND :fin_defuncion
-                AND DATE(u.fecha_retiro) BETWEEN :inicio_traslado AND :fin_traslado";
-
-        if (!empty($letra_apellido_traslado)) {
-            $sql .= " AND d.apellido LIKE :letra_apellido_traslado";
-        }
-
-        $sql .= " ORDER BY $sort_col $sort_dir";
+                d.nombre, d.apellido, d.dni, d.fecha_fallecimiento, 
+                u.fecha_retiro,
+                u.id_parcela AS parcela_origen, 
+                u2.id_parcela AS parcela_destino, 
+                u2.fecha_ingreso AS fecha_ingreso_destino
+            FROM difunto d
+            INNER JOIN ubicacion_difunto u ON d.id_difunto = u.id_difunto
+            INNER JOIN ubicacion_difunto u2 ON u2.id_difunto = d.id_difunto
+                AND u2.fecha_ingreso = (
+                    SELECT MIN(u3.fecha_ingreso)
+                    FROM ubicacion_difunto u3
+                    WHERE u3.id_difunto = d.id_difunto
+                    AND u3.fecha_ingreso > u.fecha_retiro
+                    AND u3.fecha_ingreso != '0000-00-00'
+                )
+            WHERE u.fecha_retiro != '0000-00-00'
+            AND DATE(u.fecha_retiro) BETWEEN :inicio_traslado AND :fin_traslado";
 
         $stmt = $this->db->prepare($sql);
-        $stmt->bindValue(':inicio_defuncion', $fecha_inicio_defuncion_traslado);
-        $stmt->bindValue(':fin_defuncion', $fecha_fin_defuncion_traslado);
+
         $stmt->bindValue(':inicio_traslado', $fecha_inicio_traslado);
         $stmt->bindValue(':fin_traslado', $fecha_fin_traslado);
-        if (!empty($letra_apellido_traslado)) {
-            $stmt->bindValue(':letra_apellido_traslado', $letra_apellido_traslado . '%');
-        }
-
+        
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -322,11 +261,6 @@ class EstadisticasModel extends Control
             error_log("Error en getTotalTraslados: " . $e->getMessage());
             return 0;
         }
-    }
-
-    public function getTotalDefuncionesMensuales($fecha_inicio_mensual, $fecha_fin_mensual)
-    {
-        return $this->getTotalDefuncionesEntreFechas($fecha_inicio_mensual, $fecha_fin_mensual);
     }
 }
 ?>
