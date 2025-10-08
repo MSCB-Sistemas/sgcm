@@ -100,8 +100,8 @@
                             <select class="form-select" id="tipo_operacion" name="tipo_operacion" required>
                                 <option value="">Seleccione...</option>
                                 <?php foreach ($datos['tipo_operaciones'] as $to): ?>
-                                    <option value="<?= $p['id_tipo_operacion'] ?>">
-                                        <?= htmlspecialchars($to['id_tipo_operacion'] . ' - ' . $p['descripcion']) ?>
+                                    <option value="<?= $to['id_tipo_operacion'] ?>">
+                                        <?= htmlspecialchars($to['id_tipo_operacion'] . ' - ' . $to['descripcion']) ?>
                                     </option>
                                 <?php endforeach ?>
                             </select>

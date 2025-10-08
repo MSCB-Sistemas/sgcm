@@ -224,7 +224,7 @@ class PagoModel {
         $sql = "SELECT p.*,
                        CONCAT(de.nombre, ' ', de.apellido) as nombre_deudo,
                        pa.id_parcela as parcela,
-                       op.tipo_operacion as tipo_operacion,
+                       op.descripcion as tipo_operacion,
                        u.usuario as usuario
                 FROM pago p
                 LEFT JOIN deudo de ON p.id_deudo = de.id_deudo
@@ -267,7 +267,7 @@ class PagoModel {
         $sql = "SELECT p.*,
                        CONCAT(de.nombre, ' ', de.apellido) as nombre_deudo,
                        pa.id_parcela as parcela,
-                       op.tipo_operacion as tipo_operacion,
+                       op.descripcion as tipo_operacion,
                        u.usuario as usuario
                 FROM pago p
                 LEFT JOIN deudo de ON p.id_deudo = de.id_deudo

@@ -4,6 +4,7 @@ class PagoController extends Control {
     private DeudoModel $deudoModel;
     private ParcelaModel $parcelaModel;
     private UsuarioModel $usuarioModel;
+    private TipoOperacionModel $tipoOperacionModel;
 
     public function __construct() {
         $this->requireLogin();
@@ -11,6 +12,7 @@ class PagoController extends Control {
         $this->deudoModel = $this->loadModel("DeudoModel");
         $this->parcelaModel = $this->loadModel("ParcelaModel");
         $this->usuarioModel = $this->loadModel("UsuarioModel");
+        $this->tipoOperacionModel = $this->loadModel("TipoOperacionModel");
     }
 
     public function index() {
@@ -61,6 +63,8 @@ class PagoController extends Control {
         $deudos = $this->deudoModel->getAllDeudos();
         $parcelas = $this->parcelaModel->getAllParcelas();
         $usuarios = $this->usuarioModel->getAllUsuarios();
+        $tipo_operaciones = $this->tipoOperacionModel->getAllTipoOperaciones();
+
         $values['id_usuario'] = $_SESSION['usuario_id'];
 
         $datos = [
@@ -70,7 +74,8 @@ class PagoController extends Control {
             'errores' => [],
             'deudos' => $deudos,
             'parcelas' => $parcelas,
-            'usuarios' => $usuarios
+            'usuarios' => $usuarios,
+            'tipo_operaciones' => $tipo_operaciones
         ];
 
         $this->loadView('pagos/PagosForm', $datos);
@@ -108,6 +113,7 @@ class PagoController extends Control {
                 $deudos = $this->deudoModel->getAllDeudos();
                 $parcelas = $this->parcelaModel->getAllParcelas();
                 $usuarios = $this->usuarioModel->getAllUsuarios();
+                $tipo_operaciones = $this->tipoOperacionModel->getAllTipoOperaciones();
 
                 $this->loadView('pagos/PagosForm', [
                     'title' => 'Crear pago',
@@ -116,7 +122,8 @@ class PagoController extends Control {
                     'errores' => $errores,
                     'deudos' => $deudos,
                     'parcelas' => $parcelas,
-                    'usuarios' => $usuarios
+                    'usuarios' => $usuarios,
+                    'tipo_operaciones' => $tipo_operaciones
                 ]);
                 return;
             }
@@ -147,6 +154,7 @@ class PagoController extends Control {
         $pago = $this->model->getPago($id);
         $deudos = $this->deudoModel->getAllDeudos();
         $parcelas = $this->parcelaModel->getAllParcelas();
+        $tipo_operaciones = $this->tipoOperacionModel->getAllTipoOperaciones();
 
         if (!$pago) {
             die("Pago no encontrado");
@@ -169,7 +177,8 @@ class PagoController extends Control {
             ],
             'errores' => [],
             'deudos'=> $deudos,
-            'parcelas'=> $parcelas
+            'parcelas'=> $parcelas,
+            'tipo_operaciones'=> $tipo_operaciones
         ]);
     }
 
@@ -217,6 +226,7 @@ class PagoController extends Control {
 
                 $deudos = $this->deudoModel->getAllDeudos();
                 $parcelas = $this->parcelaModel->getAllParcelas();
+                $tipo_operaciones = $this->tipoOperacionModel->getAllTipoOperaciones();
 
                 $this->loadView('pagos/PagosForm', [
                     'title' => 'Editar pago',
@@ -225,6 +235,7 @@ class PagoController extends Control {
                     'errores' => $errores,
                     'deudos'=> $deudos,
                     'parcelas'=> $parcelas,
+                    'tipo_operaciones'=> $tipo_operaciones
                 ]);
                 return;
             }

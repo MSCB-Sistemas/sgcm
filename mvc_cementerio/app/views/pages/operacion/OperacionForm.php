@@ -13,20 +13,6 @@
     </div>
 <?php endif; ?>
 
-<?php if (!empty($advertencias)): ?>
-    <div class="alert alert-warning alert-dismissible fade show shadow-sm" role="alert">
-        <h6 class="alert-heading"><i class="bi bi-exclamation-triangle-fill me-2"></i> Advertencia</h6>
-        <ul class="mb-0">
-            <?php foreach ($advertencias as $a): ?>
-                <li><?= htmlspecialchars($a) ?></li>
-            <?php endforeach ?>
-        </ul>
-        <hr class="my-2">
-        <p class="mb-0"><small>La operación se realizó igualmente.</small></p>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-<?php endif; ?>
-
 <div id="alertas-form"></div>
 
 <div class="card shadow-sm border-0">
@@ -177,13 +163,6 @@
         configurarAutocompletado('difunto_search', 'id_difunto', 'difuntos');
     });
 
-
-    document.addEventListener('DOMContentLoaded', function() {
-        configurarAutocompletado('deudo_search', 'id_deudo', 'deudos');
-        configurarAutocompletado('parcela_search', 'id_parcela', 'parcelas');
-        configurarAutocompletado('difunto_search', 'id_difunto', 'difuntos');
-    });
-
     document.getElementById('parcela_search').addEventListener('change', function() {
         const idParcela = this.value;
 
@@ -305,29 +284,6 @@
             });
     });
 
-    function mostrarAdvertencia(mensajes) {
-        const contenedor = document.getElementById("alertas-form");
-        contenedor.innerHTML = "";
-
-        if (mensajes.length > 0) {
-            let html = `
-            <div class="alert alert-warning alert-dismissible fade show shadow-sm" role="alert">
-                <h6 class="alert-heading">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i> Advertencia
-                </h6>
-                <ul class="mb-0">
-            `;
-            mensajes.forEach(msg => {
-                html += `<li>${msg}</li>`;
-            });
-            html += `
-                </ul>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>`;
-            contenedor.innerHTML = html;
-        }
-    }
-
     document.getElementById("deudo_search").addEventListener("change", function () {
         const idDeudo = document.getElementById("id_deudo").value;
         if (idDeudo) {
@@ -365,5 +321,4 @@
         monto.addEventListener("input", calcularTotal);
         recargo.addEventListener("input", calcularTotal);
     });
-
 </script>
