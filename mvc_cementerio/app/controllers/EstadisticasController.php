@@ -113,21 +113,13 @@ class EstadisticasController extends Control {
         if (!$validarFecha($fecha_fin_traslado))                $fecha_fin_traslado = date('Y-m-d');
         if (!$validarFecha($fecha_inicio_mensual))              $fecha_inicio_mensual = '1900-01-01';
         if (!$validarFecha($fecha_fin_mensual))                 $fecha_fin_mensual = date('Y-m-d');
-
-       
-        $pagina = !empty($_GET['pagina']) ? max(1, (int)$_GET['pagina']) : 1;
-        $limite = 14;
-        $offset = ($pagina - 1) * $limite;
-
         
         $defunciones = $this->model->getDefuncionesEntreFechas(
             $fecha_inicio_defuncion,
             $fecha_fin_defuncion,
             $letra_apellido_difunto,
             $sort_col,
-            $sort_dir,
-            $limite,
-            $offset
+            $sort_dir
         );
 
         $deudores_morosos = $this->model->getDeudosMorosos();
@@ -178,9 +170,7 @@ class EstadisticasController extends Control {
             $fecha_fin_traslado,
             $letra_apellido_traslado,
             $sort_col,
-            $sort_dir,
-            $limite,
-            $offset
+            $sort_dir
         );
 
         $total_difuntos = $this->model->getTotalDifuntos();
@@ -191,7 +181,6 @@ class EstadisticasController extends Control {
         );
         $total_parcelas = $this->model->getTotalParcelasOcupadas();
         $total_traslados = $this->model->getTotalTraslados();
-        $total_paginas = max(1, ceil($total_defunciones / $limite));
 
         $total_defunciones_mensuales = null;
         if (isset($_GET['filtrar_defunciones'])) {
@@ -205,8 +194,7 @@ class EstadisticasController extends Control {
             'title'                     => 'Estadisticas',
             'movimientos'               => $defunciones,
             'deudores_morosos'          => $deudores_morosos,
-            'difuntos_trasladados'      => $difuntos_trasladados,
-            'pagina_actual'             => $pagina,            
+            'difuntos_trasladados'      => $difuntos_trasladados,   
             'parcelas_vendidas'         => $parcelas_vendidas,
             'fecha_inicio_defuncion'    => $fecha_inicio_defuncion,
             'fecha_fin_defuncion'       => $fecha_fin_defuncion,
@@ -225,7 +213,6 @@ class EstadisticasController extends Control {
             'total_parcelas'            => $total_parcelas,
             'total_traslados'           => $total_traslados,
             'total_defunciones'         => $total_defunciones,
-            'total_paginas'             => $total_paginas,
             'total_resultados'          => $total_defunciones,
             'total_morosos'             => count($deudores_morosos),
             'sort_col'                  => $sort_col,

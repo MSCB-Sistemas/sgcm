@@ -121,30 +121,7 @@ $filtrar = isset($_GET['filtrar']);
                 <i class="fas fa-check-circle text-success fa-3x mb-3"></i>
                 <p class="text-muted">No hay difuntos registrados</p>
             </div>
-                <?php endif; ?>               
-        <?php if (!empty($datos['total_paginas']) && ($datos['total_paginas']) > 1): ?>
-            <ul class="pagination">
-                <?php for ($i = 1; $i <= $datos['total_paginas']; $i++): ?>
-                    <?php
-                    // Determinar la clase
-                    $class = 'page-item';
-                    if ($i == $datos['pagina_actual']) {
-                        $class .= ' active';
-                    }
-
-                    // Construir la URL de la página actual con los parámetros existentes
-                    $queryParams = $_GET;
-                    $queryParams['pagina'] = $i;
-                    $url = '?' . http_build_query($queryParams);
-                    ?>
-                    <li class="<?= $class ?>">
-                        <a class="page-link" href="<?= $url ?>">
-                            <?= $i ?>
-                        </a>
-                    </li>
-                <?php endfor; ?>
-            </ul>
-        <?php endif; ?>
+                <?php endif; ?>
     </div>
 
     <!-- Pestaña para deudores morosos-->
