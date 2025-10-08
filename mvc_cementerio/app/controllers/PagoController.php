@@ -25,7 +25,7 @@ class PagoController extends Control {
             'urlCrear'=> URL . 'pago/create',
             'ajaxUrl' => URL . 'pago/ajax',
             'baseUrl' => URL . 'pago/',
-            'columnas' => ['ID', 'Deudo', 'Tipo de Operacion', 'Parcela', 'Fecha de pago', 'Fecha de vencimiento', 'Importe', 'Recargo', 'Total', 'Vinculo familiar', 'Responsable de tramite', 'Usuario'],
+            'columnas' => ['ID', 'Deudo', 'Parcela', 'Operacion', 'Fecha de pago', 'Fecha de vencimiento', 'Importe', 'Recargo', 'Total', 'Vinculo familiar', 'Responsable de tramite', 'Usuario'],
             'columnsConfig' => [
                 ['data' => 'id_pago'],
                 ['data' => 'nombre_deudo'],
@@ -84,7 +84,7 @@ class PagoController extends Control {
 
     public function save() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $deudo = $_POST['deudo'];
+            $deudo = $_POST['id_deudo'];
             $parcela = $_POST['parcela'];
             $tipo_operacion = $_POST['tipo_operacion'];
             $fecha_pago = trim($_POST['fecha_pago']);
@@ -184,7 +184,7 @@ class PagoController extends Control {
 
     public function update($id) {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $deudo = $_POST['deudo'];
+            $deudo = $_POST['id_deudo'];
             $parcela = $_POST['parcela'];
             $tipo_operacion = $_POST['tipo_operacion'];
             $fecha_pago = trim($_POST['fecha_pago']);
