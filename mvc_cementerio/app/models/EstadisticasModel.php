@@ -11,17 +11,6 @@ class EstadisticasModel extends Control
         $this->db = Database::connect();
     }
 
-    private function establecerFechasPorDefecto(&$fecha_inicio, &$fecha_fin)
-    {
-        if (!$fecha_fin) {
-            $fecha_fin = date('Y-m-d');
-        }
-
-        if (!$fecha_inicio) {
-            $fecha_inicio = date('Y-m-d', strtotime('-30 days', strtotime($fecha_fin)));
-        }
-    }
-
     public function getTotalDifuntos()
     {
         try {
@@ -99,7 +88,6 @@ class EstadisticasModel extends Control
         ];
 
         $sql_base = "
-            -- 1. Empezamos con la lista de los últimos traslados (garantiza una fila por difunto)
             FROM (
                 SELECT u_origen.id_difunto, u_origen.id_parcela, u_origen.fecha_retiro
                 FROM ubicacion_difunto u_origen
@@ -111,10 +99,8 @@ class EstadisticasModel extends Control
                 ) AS ultimos ON u_origen.id_difunto = ultimos.id_difunto AND u_origen.fecha_retiro = ultimos.max_fecha
             ) AS origen_final
 
-            -- 2. Unimos para obtener los datos del difunto
             INNER JOIN difunto d ON origen_final.id_difunto = d.id_difunto
 
-            -- 3. Unimos para encontrar la ubicación actual (la que no tiene fecha de retiro)
             LEFT JOIN ubicacion_difunto AS destino_final 
                 ON origen_final.id_difunto = destino_final.id_difunto 
                 AND (destino_final.fecha_retiro IS NULL OR destino_final.fecha_retiro = '0000-00-00')
@@ -168,38 +154,59 @@ class EstadisticasModel extends Control
     }
 
     public function getParcelasVendidasAjax($params) {
-        $columnas = [
-            'pgo.id_parcela', 'tp.descripcion', 'd.nombre', 'd.apellido', 'd.dni', 
-            'pgo.total', 'pgo.fecha_pago', 'pgo.fecha_vencimiento'
+        $columnas_ordenables = [
+            'p.id_parcela', 
+            'tp.nombre_parcela',
+            'd.nombre', 
+            'd.apellido', 
+            'd.dni', 
+            'pgo.total', 
+            'pgo.fecha_pago', 
+            'pgo.fecha_vencimiento'
         ];
 
-        $sql_base = "FROM pago pgo
-                    INNER JOIN parcela p ON pgo.id_parcela = p.id_parcela
-                    INNER JOIN deudo d ON pgo.id_deudo = d.id_deudo
-                    LEFT JOIN tipo_parcela tp ON p.id_tipo_parcela = tp.id_tipo_parcela
-                    WHERE pgo.fecha_pago IS NOT NULL AND pgo.fecha_pago != '0000-00-00'";
+        $sql_base = "
+            FROM pago pgo
+            INNER JOIN parcela p ON pgo.id_parcela = p.id_parcela
+            INNER JOIN deudo d ON pgo.id_deudo = d.id_deudo
+            LEFT JOIN tipo_parcela tp ON p.id_tipo_parcela = tp.id_tipo_parcela
+            WHERE pgo.fecha_pago IS NOT NULL AND pgo.fecha_pago != '0000-00-00'
+        ";
 
         $sql_where = "";
+        $where_conditions = [];
+        $pdo_params = [];
+
         if (!empty($params['search']['value'])) {
-            $searchValue = $params['search']['value'];
-            $sql_where .= " AND (d.nombre LIKE '%$searchValue%' OR d.apellido LIKE '%$searchValue%' OR d.dni LIKE '%$searchValue%' OR p.id_parcela LIKE '%$searchValue%')";
+            $searchValue = '%' . $params['search']['value'] . '%';
+            $where_conditions[] = "(d.nombre LIKE ? OR d.apellido LIKE ? OR d.dni LIKE ? OR p.id_parcela LIKE ?)";
+            array_push($pdo_params, $searchValue, $searchValue, $searchValue, $searchValue);
         }
-
+        
         if (!empty($params['fecha_inicio']) && !empty($params['fecha_fin'])) {
-            $sql_where .= " AND DATE(pgo.fecha_pago) BETWEEN '" . $params['fecha_inicio'] . "' AND '" . $params['fecha_fin'] . "'";
+            $where_conditions[] = "DATE(pgo.fecha_pago) BETWEEN ? AND ?";
+            array_push($pdo_params, $params['fecha_inicio'], $params['fecha_fin']);
         }
 
-        $sql_order = " ORDER BY " . $columnas[$params['order'][0]['column']] . " " . $params['order'][0]['dir'];
+        if (!empty($where_conditions)) {
+            $sql_where = " WHERE " . implode(" AND ", $where_conditions);
+        }
+
+        $sql_order = " ORDER BY " . $columnas_ordenables[intval($params['order'][0]['column'])] . " " . $params['order'][0]['dir'];
         $sql_limit = " LIMIT " . intval($params['start']) . ", " . intval($params['length']);
 
-        $stmt_total_filtrado = $this->db->query("SELECT COUNT(pgo.id_pago) as total " . $sql_base . $sql_where);
+        $stmt_total_filtrado = $this->db->prepare("SELECT COUNT(pgo.id_pago) as total " . $sql_base . $sql_where);
+        $stmt_total_filtrado->execute($pdo_params);
         $total_filtrado = $stmt_total_filtrado->fetch(PDO::FETCH_ASSOC)['total'];
 
-        $query = "SELECT p.id_parcela, tp.descripcion as tipo_parcela, d.nombre as nombre_titular, d.apellido as apellido_titular, d.dni, 
+        $query = "SELECT p.id_parcela, 
+                        tp.nombre_parcela as tipo_parcela,
+                        d.nombre as nombre_titular, d.apellido as apellido_titular, d.dni, 
                         pgo.total as monto, pgo.fecha_pago as fecha_venta, pgo.fecha_vencimiento "
                 . $sql_base . $sql_where . $sql_order . $sql_limit;
         
-        $stmt_datos = $this->db->query($query);
+        $stmt_datos = $this->db->prepare($query);
+        $stmt_datos->execute($pdo_params);
         $datos = $stmt_datos->fetchAll(PDO::FETCH_ASSOC);
 
         $stmt_total_general = $this->db->query("SELECT COUNT(pgo.id_pago) as total " . $sql_base);

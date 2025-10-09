@@ -281,7 +281,6 @@ class PagoController extends Control {
     public function ajax() {
         header('Content-Type: application/json; charset=utf-8');
         
-        // Función para obtener valores simples de $_POST sin ternarias
         function getPost($key, $default = '') {
             if (isset($_POST[$key])) {
                 return $_POST[$key];
@@ -290,7 +289,6 @@ class PagoController extends Control {
             }
         }
 
-        // Función para obtener valores anidados en $_POST, p.ej. $_POST['search']['value']
         function getNestedPost($keys, $default = '') {
             $value = $_POST;
             foreach ($keys as $key) {
@@ -302,7 +300,6 @@ class PagoController extends Control {
             return $value;
         }
 
-        // Obtener parámetros usando las funciones auxiliares
         $draw               = getPost('draw', 1);
         $start              = intval(getPost('start', 0));
         $length             = intval(getPost('length', 10));
@@ -310,20 +307,17 @@ class PagoController extends Control {
         $orderColumnIndex   = getNestedPost(['order', 0, 'column'], 0);
         $orderDir           = getNestedPost(['order', 0, 'dir'], 'asc');
 
-        // Definir columnas permitidas para ordenamiento
         $columns = [
             'id_pago', 'nombre_deudo', 'parcela', 'fecha_pago', 
             'fecha_vencimiento', 'importe', 'recargo', 'total', 'usuario'
         ];
 
-        // Validar si el índice de columna existe
         if (isset($columns[$orderColumnIndex])) {
             $orderCol = $columns[$orderColumnIndex];
         } else {
             $orderCol = 'id_pago';
         }
 
-        // Obtener total de registros desde el modelo
         $totalRecords = $this->model->countAll();
 
 
@@ -364,5 +358,43 @@ class PagoController extends Control {
         exit;
     }
 
+    public function registrarPagoMantenimiento()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . URL . '/estadisticas');
+            exit;
+        }
+
+        $deudo_id          = $_POST['deudo_id'] ?? null;
+        $parcela_id        = $_POST['parcela_id'] ?? null;
+        $monto             = $_POST['monto'] ?? 0;
+        $fecha_pago        = $_POST['fecha_pago'] ?? date('Y-m-d');
+        
+        $fecha_vencimiento_nueva = $_POST['fecha_vencimiento'] ?? null;
+        
+        $usuario_id        = $_SESSION['usuario_id'];
+        $tipo_operacion_id = 1;
+
+        if (!$deudo_id || !$parcela_id || !$fecha_vencimiento_nueva || !is_numeric($monto)) {
+            die("Error: Faltan datos esenciales o el monto no es válido.");
+        }
+
+        $pagoExitoso = $this->model->insertarPagoMantenimiento(
+            $deudo_id,
+            $parcela_id,
+            $tipo_operacion_id,
+            $fecha_pago,
+            $fecha_vencimiento_nueva,
+            $monto,
+            $usuario_id
+        );
+
+        if ($pagoExitoso) {
+            header('Location: ' . URL . '/estadisticas#morosos');
+            exit;
+        } else {
+            die("Error al guardar el pago en la base de datos.");
+        }
+    }
 }
 ?>

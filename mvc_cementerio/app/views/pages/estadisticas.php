@@ -49,22 +49,40 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($datos['deudores_morosos'] as $index => $moroso): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($moroso['id_parcela']) ?></td>
-                            <td><?= htmlspecialchars($moroso['dni']) ?></td>
-                            <td><?= htmlspecialchars($moroso['nombre']) ?></td>
-                            <td><?= htmlspecialchars($moroso['apellido']) ?></td>
-                            <td class="text-danger fw-bold"><?= date('d/m/Y', strtotime($moroso['fecha_vencimiento'])) ?></td>
-                            <td>$<?= number_format($moroso['total'], 2) ?></td>
-                            <td>
-                                <?php $dias_mora = floor((time() - strtotime($moroso['fecha_vencimiento'])) / (60 * 60 * 24));
-                                echo '<span class="badge bg-danger">' . $dias_mora . ' dia/s</span>'; ?>
+                    <?php foreach ($datos['deudores_morosos'] as $index => $moroso) : ?>
+                        <tr class="fila-moroso" data-estado="activo">
+                            
+                            <td><?= htmlspecialchars($moroso['id_parcela'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($moroso['dni'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($moroso['nombre'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($moroso['apellido'] ?? '') ?></td>
+                            
+                            <td class="text-danger fw-bold">
+                                <?= date('d/m/Y', strtotime($moroso['fecha_vencimiento'])) ?>
                             </td>
+
+                            <td>
+                                $<?= number_format($moroso['total'], 2) ?>
+                            </td>
+
+                            <td>
+                                <?php 
+                                    $fechaVencimiento = new DateTime($moroso['fecha_vencimiento']);
+                                    $hoy = new DateTime();
+                                    $dias_mora = $hoy->diff($fechaVencimiento)->days;
+                                    echo '<span class="badge bg-danger">' . $dias_mora . ' día/s</span>'; 
+                                ?>
+                            </td>
+                            
                             <td class="text-center">
-                                <button class="btn btn-sm btn-warning btn-toggle-estado" data-id="<?= $index ?>"
-                                    data-estado-actual="activo">
-                                    <i class="fas fa-toggle-off"></i> Pagar
+                                <button type="button" class="btn btn-sm btn-success registrar-pago-btn" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#pagoModal"
+                                        data-deudor-id="<?= $moroso['id_deudo'] ?>"
+                                        data-parcela-id="<?= $moroso['id_parcela'] ?>"
+                                        data-deudor-nombre="<?= htmlspecialchars(($moroso['apellido'] ?? '') . ', ' . ($moroso['nombre'] ?? '')) ?>"
+                                        data-vencimiento-anterior="<?= $moroso['fecha_vencimiento'] ?>">
+                                    <i class="bi bi-cash-coin"></i> Registrar Pago
                                 </button>
                             </td>
                         </tr>
@@ -97,6 +115,43 @@
     </div>
 </div>
 
+<div class="modal fade" id="pagoModal" tabindex="-1" aria-labelledby="pagoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pagoModalLabel">Registrar Pago para...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="<?= URL ?>/pago/registrarPagoMantenimiento" method="POST">
+                <div class="modal-body">
+                    <p>Deudor: <strong id="modalDeudorNombre"></strong></p>
+                    <p>Parcela: <strong id="modalParcelaId"></strong></p>
+                    
+                    <input type="hidden" name="deudo_id" id="modalDeudoId">
+                    <input type="hidden" name="parcela_id" id="modalParcelaIdInput">
+
+                    <div class="mb-3">
+                        <label for="monto" class="form-label">Monto a Pagar</label>
+                        <input type="number" step="0.01" class="form-control" name="monto" id="monto" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fecha_pago" class="form-label">Fecha del Pago</label>
+                        <input type="date" class="form-control" name="fecha_pago" id="fecha_pago" value="<?= date('Y-m-d') ?>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fecha_vencimiento" class="form-label">Nuevo Vencimiento</label>
+                        <input type="date" class="form-control" name="fecha_vencimiento" id="fecha_vencimiento" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Pago</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const dataTablesConfigs = {
@@ -107,14 +162,10 @@
                 { data: 'domicilio' }, { data: 'localidad' }, { data: 'codigo_postal' }
             ],
             'traslados': [
-                { data: 'nombre' }, 
-                { data: 'apellido' }, 
-                { data: 'dni' },
-                { data: 'fecha_fallecimiento' }, 
-                { data: 'fecha_retiro' },
+                { data: 'nombre' }, { data: 'apellido' }, { data: 'dni' },
+                { data: 'fecha_fallecimiento' }, { data: 'fecha_retiro' },
                 { 
-                    data: null, 
-                    orderable: false,
+                    data: null, orderable: false,
                     render: function(data, type, row) {
                         const origen = row.parcela_origen;
                         const destino = row.parcela_destino || 'Externo';
@@ -129,33 +180,22 @@
             ]
         };
 
-        function inicializarDataTable(tabla) {
-            if ($.fn.DataTable.isDataTable(tabla)) {
-                return;
-            }
-
+        function inicializarDataTableAjax(tabla) {
+            if (!tabla || $.fn.DataTable.isDataTable(tabla)) return;
+            
             const tablaJQ = $(tabla);
             const ajaxUrl = tablaJQ.data('ajax-url');
             const configKey = tablaJQ.data('config-key');
             const filterIds = tablaJQ.data('filter-ids').split(',');
 
-            if (!ajaxUrl || !dataTablesConfigs[configKey]) {
-                console.error("Falta configuración para la tabla: ", tabla.id);
-                return;
-            }
+            if (!ajaxUrl || !dataTablesConfigs[configKey]) return;
 
             const dt = tablaJQ.DataTable({
-                retrieve: true,
-                dom: 'Bfrtip',
-                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                retrieve: true, dom: 'Bfrtip', buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
                 language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' },
-                pageLength: 10,
-                lengthMenu: [10, 25, 50, 100],
-                processing: true,
-                serverSide: true,
+                pageLength: 10, processing: true, serverSide: true,
                 ajax: {
-                    url: ajaxUrl,
-                    type: 'POST',
+                    url: ajaxUrl, type: 'POST',
                     data: function(d) {
                         d.fecha_inicio = $(filterIds[0].trim()).val();
                         d.fecha_fin = $(filterIds[1].trim()).val();
@@ -163,125 +203,52 @@
                 },
                 columns: dataTablesConfigs[configKey]
             });
+            $(filterIds.join(', ')).on('change', () => dt.ajax.reload());
+        }
 
-            $(filterIds.join(', ')).on('change', function() {
-                dt.ajax.reload();
+        $('#tabla-morosos').DataTable({ dom: 'Bfrtip', buttons: ['copy', 'csv', 'excel', 'pdf', 'print'], language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' }, pageLength: 8 });
+
+        const pagoModal = document.getElementById('pagoModal');
+        if (pagoModal) {
+            pagoModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const deudorId = button.getAttribute('data-deudor-id');
+                const parcelaId = button.getAttribute('data-parcela-id');
+                const deudorNombre = button.getAttribute('data-deudor-nombre');
+                const vencimientoAnterior = button.getAttribute('data-vencimiento-anterior');
+
+                let nuevoVencimiento = '';
+                if (vencimientoAnterior) {
+                    const fechaAnterior = new Date(vencimientoAnterior);
+                    fechaAnterior.setFullYear(fechaAnterior.getFullYear() + 1);
+                    nuevoVencimiento = fechaAnterior.toISOString().split('T')[0];
+                }
+                
+                pagoModal.querySelector('#modalDeudorNombre').textContent = deudorNombre;
+                pagoModal.querySelector('#modalParcelaId').textContent = parcelaId;
+                pagoModal.querySelector('#modalDeudoId').value = deudorId;
+                pagoModal.querySelector('#modalParcelaIdInput').value = parcelaId;
+                pagoModal.querySelector('#fecha_vencimiento').value = nuevoVencimiento;
             });
         }
 
-        const tablaActiva = document.querySelector('.tab-pane.active .datatable-ajax');
-        if (tablaActiva) {
-            inicializarDataTable(tablaActiva);
+        const lastTab = localStorage.getItem('activeTab');
+        if (lastTab) {
+            const tabElement = document.querySelector(`[data-bs-target="${lastTab}"]`);
+            if (tabElement) new bootstrap.Tab(tabElement).show();
+        } else {
+            const tablaActiva = document.querySelector('.tab-pane.active .datatable-ajax');
+            inicializarDataTableAjax(tablaActiva);
         }
 
         document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tabEl => {
             tabEl.addEventListener('shown.bs.tab', event => {
                 const panelId = event.target.getAttribute('data-bs-target');
+                localStorage.setItem('activeTab', panelId);
                 const tablaEnPanel = document.querySelector(panelId + ' .datatable-ajax');
-                if (tablaEnPanel) {
-                    inicializarDataTable(tablaEnPanel);
-                }
+                if (tablaEnPanel) inicializarDataTableAjax(tablaEnPanel);
             });
         });
-    });
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const lastTab = localStorage.getItem('activeTab');
-        if (lastTab) {
-            const tabElement = document.querySelector(`[data-bs-target="${lastTab}"]`);
-            if (tabElement) {
-                new bootstrap.Tab(tabElement).show();
-            }
-        }
-
-        const tabLinks = document.querySelectorAll('[data-bs-toggle="tab"]');
-        tabLinks.forEach(tab => {
-            tab.addEventListener('shown.bs.tab', function(e) {
-                const activeTab = e.target.getAttribute('data-bs-target');
-                localStorage.setItem('activeTab', activeTab);
-            });
-        });
-    });
-
-    const botonesEstado = document.querySelectorAll('.btn-toggle-estado');
-    botonesEstado.forEach(boton => {
-        boton.addEventListener('click', function() {
-            const idDeuda = this.getAttribute('data-id');
-            const estadoActual = this.getAttribute('data-estado-actual');
-            const nuevoEstado = estadoActual === 'activo' ? 'inactivo' : 'activo';
-
-            console.log('Cambiando estado de deuda ' + idDeuda + ' de ' + estadoActual + ' a ' + nuevoEstado);
-            
-            setTimeout(() => {
-                this.setAttribute('data-estado-actual', nuevoEstado);
-
-                const fila = this.closest('.fila-moroso');
-
-                if (nuevoEstado === 'activo') {
-                    this.classList.remove('btn-success');
-                    this.classList.add('btn-warning');
-                    this.innerHTML = '<i class="fas fa-toggle-off"></i> Desactivar';
-
-                    const badge = fila.querySelector('.estado-badge');
-                    if (badge) {
-                        badge.classList.remove('bg-secondary');
-                        badge.classList.add('bg-success');
-                        badge.textContent = 'Activo';
-                    }
-
-                    fila.setAttribute('data-estado', 'activo');
-
-                    if (document.getElementById('ver-activos').classList.contains('active')) {
-                        fila.style.display = '';
-                    }
-
-                } else {
-                    this.classList.remove('btn-warning');
-                    this.classList.add('btn-success');
-                    this.innerHTML = '<i class="fas fa-toggle-off"></i> Activar';
-
-                    const badge = fila.querySelector('.estado-badge');
-                    if (badge) {
-                        badge.classList.remove('bg-success');
-                        badge.classList.add('bg-secondary');
-                        badge.textContent = 'Inactivo';
-                    }
-
-                    fila.setAttribute('data-estado', 'inactivo');
-
-                    if (document.getElementById('ver-activos').classList.contains('active')) {
-                        fila.style.display = 'none';
-                    }
-                }
-
-                alert("Deuda " + (nuevoEstado === 'activo' ? 'activada' : 'desactivada') + " correctamente");
-            }, 300);
-        });
-    });
-
-    document.getElementById('ver-activos').addEventListener('click', function() {
-        this.classList.add('active');
-        document.getElementById('ver-inactivos').classList.remove('active');
-
-        document.querySelectorAll('.fila-moroso').forEach(fila => {
-            if (fila.getAttribute('data-estado') === 'activo') {
-                fila.style.display = '';
-            } else {
-                fila.style.display = 'none';
-            }
-        });
-    });
-
-    document.getElementById('ver-inactivos').addEventListener('click', function() {
-        this.classList.add('active');
-        document.getElementById('ver-activos').classList.remove('active');
-
-        document.querySelectorAll('.fila-moroso').forEach(fila => {
-            if (fila.getAttribute('data-estado') === 'inactivo') {
-                fila.style.display = '';
-            } else {
-                fila.style.display = 'none';
-            }
-        });
     });
 </script>
