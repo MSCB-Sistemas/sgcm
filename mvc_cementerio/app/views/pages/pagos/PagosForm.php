@@ -51,13 +51,16 @@
                     <!-- Primera columna -->
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="deudo_search" class="form-label">Deudo</label>
-                            <input list="deudos" id="deudo_search" name="deudo_search" class="form-control" placholder="Ingrese DNI o Nombre" autocomplete="off" >
-                            <input type="hidden" id="id_deudo" name="id_deudo">
-
+                            <label for="deudo_search" class="form-label fw-bold">Deudo</label>
+                            <div class="input-group">
+                                <input list="deudos" id="deudo_search" name="deudo_search"
+                                    class="form-control" placeholder="Ingrese un deudo" autocomplete="off" required>
+                                <input type="hidden" id="id_deudo" name="id_deudo">
+                            </div>
                             <datalist id="deudos">
                                 <?php foreach ($datos['deudos'] as $d): ?>
-                                    <option value="<?= htmlspecialchars($d['dni'] . ' - ' . $d['nombre'] . ' ' . $d['apellido']) ?>">
+                                    <option value="<?= htmlspecialchars($d['dni'] . ' - ' . $d['nombre'] . ' ' . $d['apellido']) ?>"
+                                    data-id="<?= $d['id_deudo'] ?>">
                                 <?php endforeach; ?>
                             </datalist>
                         </div>
@@ -74,6 +77,21 @@
                             </select>
                             <div class="invalid-feedback">
                                 Por favor seleccione una parcela
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="tipo_operacion" class="form-label fw-bold">Operacion</label>
+                            <select class="form-select" id="tipo_operacion" name="tipo_operacion" required>
+                                <option value="">Seleccione...</option>
+                                <?php foreach ($datos['tipo_operaciones'] as $to): ?>
+                                    <option value="<?= $to['id_tipo_operacion'] ?>">
+                                        <?= htmlspecialchars($to['id_tipo_operacion'] . ' - ' . $to['descripcion']) ?>
+                                    </option>
+                                <?php endforeach ?>
+                            </select>
+                            <div class="invalid-feedback">
+                                Por favor seleccione un tipo de operacion
                             </div>
                         </div>
                         
@@ -108,9 +126,27 @@
                     <!-- Segunda columna -->
                     <div class="col-md-6">
                         <div class="mb-3">
-                        <label for="recargo" class="form-label fw-bold">Recargo (%)</label>
-                        <input type="number" step="0.01" class="form-control" id="recargo" name="recargo" 
-                            value="<?= htmlspecialchars($datos['values']['recargo'] ?? '') ?>" required oninput="calcularTotal()">
+                            <label for="vinculo_familiar" class="form-label fw-bold">Vinculo familiar</label>
+                            <input type="text" class="form-control" id="vinculo_familiar" name="vinculo_familiar"
+                                value="<?= htmlspecialchars($datos['values']['vinculo_familiar'] ?? '') ?>">
+                            <div class="invalid-feedback">
+                                Por favor ingrese el vincula familiar
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="responsable_tramite" class="form-label fw-bold">Responsable de tramite</label>
+                            <input type="text" class="form-control" id="responsable_tramite" name="responsable_tramite"
+                                value="<?= htmlspecialchars($datos['values']['responsable_tramite'] ?? '') ?>">
+                            <div class="invalid-feedback">
+                                Por favor ingrese el responsable del tramite
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="recargo" class="form-label fw-bold">Recargo (%)</label>
+                            <input type="number" step="0.01" class="form-control" id="recargo" name="recargo" 
+                                value="<?= htmlspecialchars($datos['values']['recargo'] ?? '') ?>" required oninput="calcularTotal()">
                             <div class="invalid-feedback">
                                 Por favor ingrese el recargo
                             </div>
@@ -140,6 +176,34 @@
     </div>
 </div>
 <script>
+    function configurarAutocompletado(inputId, hiddenId, datalistId) {
+        const input = document.getElementById(inputId);
+        const hidden = document.getElementById(hiddenId);
+
+        input.addEventListener('input', () => {
+            hidden.value = '';
+            const val = input.value;
+            const options = document.querySelectorAll(`#${datalistId} option`);
+            const match = Array.from(options).find(opt => opt.value === val);
+            if (match) {
+                hidden.value = match.dataset.id;
+                input.setCustomValidity("");
+            }
+        });
+
+        input.addEventListener('blur', () => {
+            if (!hidden.value) { 
+                input.setCustomValidity("Debe seleccionar un elemento de la lista");
+            } else {
+                input.setCustomValidity("");
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        configurarAutocompletado('deudo_search', 'id_deudo', 'deudos');
+    });
+
 function calcularTotal()
 {
     const importe = parseFloat(document.getElementById('importe').value) || 0;

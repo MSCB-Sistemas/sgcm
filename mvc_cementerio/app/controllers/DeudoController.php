@@ -1,5 +1,6 @@
 <?php
-class DeudoController extends Control {
+class DeudoController extends Control
+{
     private DeudoModel $model;
 
     public function __construct()
@@ -13,7 +14,7 @@ class DeudoController extends Control {
         $puedeCrear    = $this->can('crear_deudo');
         $puedeEditar   = $this->can('editar_deudo');
         $puedeEliminar = $this->can('eliminar_deudo');
-        
+
         $datos = [
             "title"             => "Lista de Deudos",
             'urlCrear'          => URL . 'deudo/create',
@@ -228,44 +229,16 @@ class DeudoController extends Control {
     public function ajax()
     {
         header('Content-Type: application/json; charset=utf-8');
-        
-        // Función auxiliar para obtener valores simples de $_POST
-        function getPost($key, $default = '') {
-            if (isset($_POST[$key])) {
-                return $_POST[$key];
-            } else {
-                return $default;
-            }
-        }
+      
+        $draw   = $_POST['draw'] ?? 1;
+        $start  = intval($_POST['start'] ?? 0);
+        $length = intval($_POST['length'] ?? 10);
+        $search = $_POST['search']['value'] ?? '';
+        $orderColumnIndex = $_POST['order'][0]['column'] ?? 0;
+        $orderDir = $_POST['order'][0]['dir'] ?? 'asc';
 
-        // Función auxiliar para obtener valores anidados (por ejemplo: $_POST['order'][0]['dir'])
-        function getNestedPost($keys, $default = '') {
-            $value = $_POST;
-            foreach ($keys as $key) {
-                if (!isset($value[$key])) {
-                    return $default;
-                }
-                $value = $value[$key];
-            }
-            return $value;
-        }
-
-        // Obtener parámetros de DataTables sin estructuras ternarias
-        $draw = getPost('draw', 1);
-
-        $startRaw = getPost('start', 0);
-        $start = intval($startRaw);
-
-        $lengthRaw = getPost('length', 10);
-        $length = intval($lengthRaw);
-
-        $search = getNestedPost(['search', 'value'], '');
-
-        $orderColumnIndex = getNestedPost(['order', 0, 'column'], 0);
-        $orderDir = getNestedPost(['order', 0, 'dir'], 'asc');
-
-        // Columnas permitidas para ordenamiento
-        $columns = ['id_deudo','dni','nombre','apellido','telefono','email','domicilio','localidad','codigo_postal'];
+        $columns = ['id_deudo', 'dni', 'nombre', 'apellido', 'telefono', 'email', 'domicilio', 'localidad', 'codigo_postal'];
+        $orderCol = $columns[$orderColumnIndex] ?? 'id_deudo';
 
         // Validar si el índice de columna existe
         if (isset($columns[$orderColumnIndex])) {
@@ -287,24 +260,24 @@ class DeudoController extends Control {
 
         foreach ($data as &$fila) {
             $id  = $fila['id_deudo'];
-            $url = rtrim(URL,'/') . '/deudo';
-    
+            $url = rtrim(URL, '/') . '/deudo';
+
             $acciones = '';
-    
+
             if ($this->can('editar_deudo')) {
-                $acciones .= '<a href="'.$url.'/edit/'.$id.'" class="btn btn-sm btn-primary">Editar</a> ';
-                $acciones .= '<form action="'.$url.'/activate/'.$id.'" method="post" style="display:inline">'
-                           . '</form> ';
+                $acciones .= '<a href="' . $url . '/edit/' . $id . '" class="btn btn-sm btn-primary">Editar</a> ';
+                $acciones .= '<form action="' . $url . '/activate/' . $id . '" method="post" style="display:inline">'
+                    . '</form> ';
             }
-    
+
             if ($this->can('eliminar_deudo')) {
-                $acciones .= '<form action="'.$url.'/delete/'.$id.'" method="post" style="display:inline" onsubmit="return confirm(\'¿Eliminar este deudo?\');">'
-                           . '<button class="btn btn-sm btn-danger">Eliminar</button>'
-                           . '</form>';
+                $acciones .= '<form action="' . $url . '/delete/' . $id . '" method="post" style="display:inline" onsubmit="return confirm(\'¿Eliminar este deudo?\');">'
+                    . '<button class="btn btn-sm btn-danger">Eliminar</button>'
+                    . '</form>';
             }
-    
+
             $fila['acciones'] = $acciones; // Esta es la clave que espera DataTables
-        }  
+        }
 
         echo json_encode([
             "draw"              => intval($draw),
@@ -315,4 +288,3 @@ class DeudoController extends Control {
         exit;
     }
 }
-?>

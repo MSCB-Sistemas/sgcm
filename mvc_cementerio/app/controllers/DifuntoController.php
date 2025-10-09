@@ -75,7 +75,7 @@ class DifuntoController extends Control
 
     public function save()
     {
-        
+
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (isset($_POST["deudo"])) {
                 $deudo = $_POST["deudo"];
@@ -216,7 +216,8 @@ class DifuntoController extends Control
         ]);
     }
 
-    public function update($id) {    
+    public function update($id)
+    {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (isset($_POST["deudo"])) {
                 $deudo = $_POST["deudo"];
@@ -348,42 +349,29 @@ class DifuntoController extends Control
     public function ajax()
     {
         header('Content-Type: application/json; charset=utf-8');
-        
-        // Función auxiliar para obtener valores POST de forma segura
-        function getPost($key, $default = '') {
-            if (isset($_POST[$key])) {
-                return $_POST[$key];
-            } else {
-                return $default;
-            }
-        }
 
-
-        // Función auxiliar para obtener valores anidados en arrays (como search[value])
-        function getNestedPost($keys, $default = '') {
-            $value = $_POST;
-            foreach ($keys as $key) {
-                if (!isset($value[$key])) {
-                    return $default;
-                }
-                $value = $value[$key];
-            }
-            return $value;
-        }
-
-        // Obtener parámetros
-        $draw   = getPost('draw', 1);
-        $start  = intval(getPost('start', 0));
-        $length = intval(getPost('length', 10));
-        $search = getNestedPost(['search', 'value'], '');
-        $orderColumnIndex = getNestedPost(['order', 0, 'column'], 0);
-        $orderDir         = getNestedPost(['order', 0, 'dir'], 'asc');
+        $draw = $_POST['draw'] ?? 1;
+        $start = intval($_POST['start'] ?? 0);
+        $length = intval($_POST['length'] ?? 10);
+        $search = $_POST['search']['value'] ?? '';
+        $orderColumnIndex = $_POST['order'][0]['column'] ?? 0;
+        $orderDir = $_POST['order'][0]['dir'] ?? 'asc';
 
         // Definir columnas permitidas para ordenamiento
         $columns = [
-            'id_difunto', 'nombre_deudo', 'nombre', 'apellido', 'dni', 'edad', 
-            'fecha_fallecimiento', 'sexo', 'nacionalidad', 'estado_civil', 
-            'domicilio', 'localidad', 'codigo_postal'
+            'id_difunto',
+            'nombre_deudo',
+            'nombre',
+            'apellido',
+            'dni',
+            'edad',
+            'fecha_fallecimiento',
+            'sexo',
+            'nacionalidad',
+            'estado_civil',
+            'domicilio',
+            'localidad',
+            'codigo_postal'
         ];
 
         // Validar si el índice de columna existe
@@ -421,23 +409,23 @@ class DifuntoController extends Control
 
         foreach ($data as &$fila) {
             $id  = $fila['id_difunto'];
-            $url = rtrim(URL,'/') . '/difunto';
-    
+            $url = rtrim(URL, '/') . '/difunto';
+
             $acciones = '';
-    
+
             if ($this->can('editar_difunto')) {
-                $acciones .= '<a href="'.$url.'/edit/'.$id.'" class="btn btn-sm btn-primary">Editar</a> '
-                           . '</form> ';
+                $acciones .= '<a href="' . $url . '/edit/' . $id . '" class="btn btn-sm btn-primary">Editar</a> '
+                    . '</form> ';
             }
-    
+
             if ($this->can('eliminar_difunto')) {
-                $acciones .= '<form action="'.$url.'/delete/'.$id.'" method="post" style="display:inline" onsubmit="return confirm(\'¿Eliminar este difunto?\');">'
-                           . '<button class="btn btn-sm btn-danger">Eliminar</button>'
-                           . '</form>';
+                $acciones .= '<form action="' . $url . '/delete/' . $id . '" method="post" style="display:inline" onsubmit="return confirm(\'¿Eliminar este difunto?\');">'
+                    . '<button class="btn btn-sm btn-danger">Eliminar</button>'
+                    . '</form>';
             }
-    
+
             $fila['acciones'] = $acciones;
-        }  
+        }
 
         echo json_encode([
             "draw"              => intval($draw),
@@ -447,6 +435,4 @@ class DifuntoController extends Control
         ]);
         exit;
     }
-
 }
-?>

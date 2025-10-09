@@ -1,6 +1,11 @@
+<?php include __DIR__ . "/../../modals/deudo_modal.php"; ?>
+<?php include __DIR__ . "/../../modals/difunto_modal.php"; ?>
+<?php include __DIR__ . "/../../modals/parcela_modal.php"; ?>
+
 <?php if (!empty($datos['errores'])): ?>
-    <div class="alert alert-danger">
-        <ul>
+    <div class="alert alert-danger shadow-sm">
+        <h6 class="alert-heading"><i class="bi bi-x-circle-fill me-2"></i>Errores encontrados</h6>
+        <ul class="mb-0">
             <?php foreach ($datos['errores'] as $e): ?>
                 <li><?= htmlspecialchars($e) ?></li>
             <?php endforeach ?>
@@ -8,104 +13,156 @@
     </div>
 <?php endif; ?>
 
-<form action="<?= isset($datos['action']) ? $datos['action'] : '' ?>" method="POST" id="operacionForm">
-    <div class="row mb-3">
-        <!-- Parcela -->
-        <div class="col-md-6 d-flex align-items-end">
-            <div class="flex-grow-1">
-                <label for="parcela_search" class="form-label">Parcela</label>
-                <input list="parcelas" id="parcela_search" name="parcela_search" class="form-control" placeholder="Ingrese una parcela" autocomplete="off" required>
-                <input type="hidden" id="id_parcela" name="id_parcela">
+<div id="alertas-form"></div>
 
-                <datalist id="parcelas">
-                    <?php foreach ($datos['parcelas'] as $p): ?>
-                        <option value="<?= htmlspecialchars($p['id_parcela'] . ' - ' . $p['id_tipo_parcela'] . ' - ' . $p['numero_ubicacion'] . ' - ' . $p['hilera'] . '/' . $p['seccion'] . '/' . $p['fraccion'] . '/' . $p['nivel']) ?>">
-                    <?php endforeach; ?>
-                </datalist>
+<div class="card shadow-sm border-0">
+    <div class="card-body p-4">
+        <form action="<?= isset($datos['action']) ? $datos['action'] : '' ?>" method="POST" id="operacionForm">
+            <div class="mb-3">
+                <label for="tipo_operacion" class="form-label fw-bold">Tipo de operacion</label>
+                <select class="form-select" id="tipo_operacion" name="tipo_operacion" required>
+                    <option value="">Seleccione...</option>
+                    <?php foreach ($datos['tipo_operaciones'] as $n): ?>
+                        <?php
+                        if ($id_tipo_operacion_selected == $n['id_tipo_operacion']) {
+                            $selected_tipo_operacion = 'selected';
+                        } else {
+                            $selected_tipo_operacion = '';
+                        }
+                        ?>
+                        <option value="<?= $n['id_tipo_operacion'] ?>" <?= $selected_tipo_operacion ?>>
+                            <?= htmlspecialchars($n['descripcion']) ?>
+                        </option>
+                    <?php endforeach ?>
+                </select>
+                <div class="invalid-feedback">
+                    Por favor seleccione un tipo de parcela
+                </div>
+            </div> 
+            <hr>
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label for="parcela_search" class="form-label">Parcela</label>
+                    <div class="input-group">
+                        <input list="parcelas" id="parcela_search" name="parcela_search"
+                               class="form-control" placeholder="Ingrese una parcela" autocomplete="off" required>
+                        <input type="hidden" id="id_parcela" name="id_parcela">
+                        <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modalParcela">
+                            <i class="bi bi-plus"></i>
+                        </button>
+                    </div>
+                    <datalist id="parcelas">
+                        <?php foreach ($datos['parcelas'] as $p): ?>
+                            <option value="<?= htmlspecialchars($p['id_parcela'] . ' - Tipo - ' . $p['id_tipo_parcela'] . ' - Ubicacion - ' . $p['numero_ubicacion'] . ' - Hilera - ' . $p['hilera'] . ' - Seccion - ' . $p['seccion'] . ' - Fraccion - ' . $p['fraccion'] . ' - Nivel - ' . $p['nivel']) ?>"
+                            data-id="<?= $p['id_parcela'] ?>">
+                        <?php endforeach; ?>
+                    </datalist>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="deudo_search" class="form-label">Deudo</label>
+                    <div class="input-group">
+                        <input list="deudos" id="deudo_search" name="deudo_search"
+                               class="form-control" placeholder="Ingrese un deudo" autocomplete="off" required>
+                        <input type="hidden" id="id_deudo" name="id_deudo">
+                        <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modalDeudo">
+                            <i class="bi bi-plus"></i>
+                        </button>
+                    </div>
+                    <datalist id="deudos">
+                        <?php foreach ($datos['deudos'] as $d): ?>
+                            <option value="<?= htmlspecialchars($d['dni'] . ' - ' . $d['nombre'] . ' ' . $d['apellido']) ?>"
+                            data-id="<?= $d['id_deudo'] ?>">
+                        <?php endforeach; ?>
+                    </datalist>
+                </div>
             </div>
-            <button type="button" class="btn btn-success ms-2" data-bs-toggle="modal"
-                data-bs-target="#modalParcela">+</button>
-        </div>
 
-        <!-- Deudo -->
-        <div class="col-md-6 d-flex align-items-end">
-            <div class="flex-grow-1">
-                <label for="deudo_search" class="form-label">Deudo</label>
-                <input list="deudos" id="deudo_search" name="deudo_search" class="form-control" placholder="Ingrese DNI o Nombre" autocomplete="off" required>
-                <input type="hidden" id="id_deudo" name="id_deudo">
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label for="difunto_search" class="form-label">Difunto</label>
+                    <div class="input-group">
+                        <input list="difuntos" id="difunto_search" name="difunto_search"
+                               class="form-control" placeholder="Ingrese un difunto" autocomplete="off" required>
+                        <input type="hidden" id="id_difunto" name="id_difunto">
+                        <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modalDifunto">
+                            <i class="bi bi-plus"></i>
+                        </button>
+                    </div>
+                    <datalist id="difuntos">
+                        <?php foreach ($datos['difuntos'] as $di): ?>
+                            <option value="<?= htmlspecialchars($di['dni'] . ' - ' . $di['nombre'] . ' ' . $di['apellido']) ?>"
+                            data-id="<?= $di['id_difunto'] ?>">
+                        <?php endforeach; ?>
+                    </datalist>
+                </div>
 
-                <datalist id="deudos">
-                    <?php foreach ($datos['deudos'] as $d): ?>
-                        <option value="<?= htmlspecialchars($d['dni'] . ' - ' . $d['nombre'] . ' ' . $d['apellido']) ?>">
-                    <?php endforeach; ?>
-                </datalist>
+                <div class="col-md-3">
+                    <label for="fecha_traslado" class="form-label">Fecha traslado</label>
+                    <input type="date" class="form-control" id="fecha_traslado" name="fecha_traslado"
+                           value="<?= date('Y-m-d'); ?>" required>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="fecha_vencimiento" class="form-label">Fecha Vencimiento</label>
+                    <input type="date" class="form-control" id="fecha_vencimiento" name="fecha_vencimiento" required>
+                </div>
             </div>
-            <button type="button" class="btn btn-success ms-2" data-bs-toggle="modal"
-                data-bs-target="#modalDeudo">+</button>
-        </div>
-    </div>
 
-    <div class="row mb-3">
-        <!-- Difunto -->
-        <div class="col-md-6 d-flex align-items-end">
-            <div class="flex-grow-1">
-                <label for="difunto_search" class="form-label">Difunto</label>
-                <input list="difuntos" id="difunto_search" name="difunto_search" class="form-control" placholder="Ingrese un difunto" autocomplete="off" required>
-                <input type="hidden" id="id_difunto" name="id_difunto">
-
-                <datalist id="difuntos">
-                    <?php foreach ($datos['difuntos'] as $di): ?>
-                        <option value="<?= htmlspecialchars($di['dni'] . ' - ' . $di['nombre'] . ' ' . $di['apellido']) ?>">
-                    <?php endforeach; ?>
-                </datalist>
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <label for="importe" class="form-label">Importe</label>
+                    <input type="number" step="0.01" class="form-control" id="importe" name="importe" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="recargo" class="form-label">Recargo (%)</label>
+                    <input type="number" step="0.01" class="form-control" id="recargo" name="recargo" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="total" class="form-label">Total</label>
+                    <input type="text" class="form-control fw-bold" id="total" name="total" readonly>
+                </div>
             </div>
-            <button type="button" class="btn btn-success ms-2" data-bs-toggle="modal"
-                data-bs-target="#modalDifunto">+</button>
-        </div>
-
-        <!-- Fecha -->
-        <div class="col-md-3">
-            <label for="fecha_traslado" class="form-label">Fecha traslado</label>
-            <input type="date" class="form-control" id="fecha_traslado" name="fecha_traslado" required
-                value="<?php echo date('Y-m-d'); ?>">
-        </div>
-
-        <div class="col-md-3">
-            <label for="fecha_vencimiento" class="form-label">Fecha Vencimiento</label>
-            <input type="date" class="form-control" id="fecha_vencimiento" name="fecha_vencimiento" required>
-        </div>
-
-        <div class="col-12 mt-2">
-                <div class="accordion" id="accordionParcelaInfo"></div>
-        </div>
+        </form>
     </div>
-
-    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-        <button type="submit" class="btn btn-success"> <i class="bi bi-save"></i> Guardar</button>
-        <a href="<?= URL ?>home" class="btn btn-secondary"> <i class="bi bi-x-circle"></i> Cancelar</a>
+</div>
+<div class="my-4"></div>
+<div class="card shadow-sm border-0">
+    <div class="card-body p-4">
+        <!-- Info Parcela -->
+        <div class="accordion mb-3" id="accordionParcelaInfo"></div>
     </div>
-</form>
+</div>
+<!-- Botones -->
+<div class="d-flex justify-content-end gap-2 mt-4">
+    <button type="submit" class="btn btn-success">
+        <i class="bi bi-save"></i> Guardar
+    </button>
+    <a href="<?= URL ?>home" class="btn btn-outline-secondary">
+        <i class="bi bi-x-circle"></i> Cancelar
+    </a>
+</div>
+
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     function configurarAutocompletado(inputId, hiddenId, datalistId) {
         const input = document.getElementById(inputId);
         const hidden = document.getElementById(hiddenId);
-        const options = document.querySelectorAll(`#${datalistId} option`);
 
         input.addEventListener('input', () => {
-            const val = input.value.trim();
             hidden.value = '';
-            let valid = false;
+            const val = input.value;
+            const options = document.querySelectorAll(`#${datalistId} option`);
+            const match = Array.from(options).find(opt => opt.value === val);
+            if (match) {
+                hidden.value = match.dataset.id;
+                input.setCustomValidity("");
+            }
+        });
 
-            options.forEach(opt => {
-                if (opt.value === val) {
-                    hidden.value = opt.dataset.id;
-                    valid = true;
-                }
-            });
-
-            if (!valid) {
+        input.addEventListener('blur', () => {
+            if (!hidden.value) { 
                 input.setCustomValidity("Debe seleccionar un elemento de la lista");
             } else {
                 input.setCustomValidity("");
@@ -118,8 +175,7 @@
         configurarAutocompletado('parcela_search', 'id_parcela', 'parcelas');
         configurarAutocompletado('difunto_search', 'id_difunto', 'difuntos');
     });
-</script>
-<script>
+
     document.getElementById('parcela_search').addEventListener('change', function() {
         const idParcela = this.value;
 
@@ -240,5 +296,42 @@
                     </div>`;
             });
     });
-</script>
+
+    document.getElementById("deudo_search").addEventListener("change", function () {
+        const idDeudo = document.getElementById("id_deudo").value;
+        if (idDeudo) {
+            fetch(`/deudo/verificar/${idDeudo}`)
+                .then(res => res.json())
+                .then(data => {
+                    mostrarAdvertencia(data.advertencias);
+                });
+        }
+    });
+
+    document.getElementById("difunto_search").addEventListener("change", function () {
+        const idDifunto = document.getElementById("id_difunto").value;
+        if (idDifunto) {
+            fetch(`/difunto/verificar/${idDifunto}`)
+                .then(res => res.json())
+                .then(data => {
+                    mostrarAdvertencia(data.advertencias);
+                });
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const monto = document.getElementById("importe");
+        const recargo = document.getElementById("recargo");
+        const total = document.getElementById("total");
+
+        function calcularTotal() {
+            const montoVal = parseFloat(monto.value) || 0;
+            const recargoVal = parseFloat(recargo.value) || 0;
+            const totalVal = montoVal + (montoVal * recargoVal / 100);
+            total.value = totalVal.toFixed(2);
+        }
+
+        monto.addEventListener("input", calcularTotal);
+        recargo.addEventListener("input", calcularTotal);
+    });
 </script>

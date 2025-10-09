@@ -1,7 +1,10 @@
 <?php
 class Control
 {
-    public function __construct() {}
+    public function __construct()
+    {
+        session_start();
+    }
 
     protected function loadModel($model)
     {

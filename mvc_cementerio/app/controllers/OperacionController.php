@@ -10,19 +10,19 @@ class OperacionController extends Control
 
     public function index($errores = [])
     {
-        $traslados = $this->loadModel('OperacionModel')->getAllTraslados();
+        $operaciones = $this->loadModel('OperacionModel')->getAllTraslados();
         $parcelas = $this->loadModel('ParcelaModel')->getAllParcelas();
         $deudos = $this->loadModel('DeudoModel')->getAllDeudos();
         $difuntos = $this->loadModel('DifuntoModel')->getAllDifuntos();
 
         $datos = [
             'title' => 'Operacion',
-            'data' => $traslados,
             'action' => URL . 'operacion/save',
             'parcelas' => $parcelas,
             'deudos' => $deudos,
             'difuntos' => $difuntos,
-            'errores' => $errores
+            'errores' => $errores,
+            'tipo_operaciones' => $operaciones
         ];
 
         $this->loadView('operacion/OperacionForm', $datos);
@@ -32,11 +32,14 @@ class OperacionController extends Control
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errores = [];
-            $id_difunto = $_POST['id_difunto'] ?? '';
-            $id_parcela = $_POST['id_parcela'] ?? '';
-            $id_deudo = $_POST['id_deudo'] ?? '';
-            $fecha_traslado = $_POST['fecha_traslado'] ?? '';
-            $fecha_vencimiento = $_POST['fecha_vencimiento'] ?? '';
+            $id_difunto = $_POST['id_difunto'];
+            $id_parcela = $_POST['id_parcela'];
+            $id_deudo = $_POST['id_deudo'];
+            $fecha_traslado = $_POST['fecha_traslado'];
+            $fecha_vencimiento = $_POST['fecha_vencimiento'];
+            $id_usuario = $_SESSION['usuario_id'];
+            $importe = $_POST['importe'] ?? 0;
+            $recargo = $_POST['recargo'] ?? 0;
 
             if (empty($id_difunto))
                 $errores[] = 'Seleccione un difunto';
@@ -46,9 +49,11 @@ class OperacionController extends Control
                 $errores[] = 'Seleccione un deudo';
             if (empty($fecha_vencimiento))
                 $errores[] = 'Ingrese la fecha de vencimiento';
+            if (empty($importe))
+                $errores[] = 'Ingrese el importe del pago';
 
             if (empty($errores)) {
-                $model = $this->loadModel('TrasladoModel');
+                $model = $this->loadModel('OperacionModel');
 
                 if ($model->verificarParcelaOcupada($id_parcela)) {
                     $errores[] = 'La parcela seleccionada ya está ocupada';
@@ -59,14 +64,17 @@ class OperacionController extends Control
                         $model->actualizarVencimientoPago($ubicacion_actual['id_pago'], $fecha_traslado);
                     }
 
-                    $total = 1000; // Monto fijo para el ejemplo, deberiamos poder seleccionarlo desde el form, tarea para galo del futuro.
+                    $total = $importe + $importe * $recargo / 100;
 
                     $nuevo_pago_id = $model->crearNuevoPago(
                         $id_deudo,
                         $id_parcela,
                         $fecha_traslado,
                         $fecha_vencimiento,
-                        $total
+                        $importe,
+                        $recargo,
+                        $total,
+                        $id_usuario
                     );
 
                     if ($nuevo_pago_id) {

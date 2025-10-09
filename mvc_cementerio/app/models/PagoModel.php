@@ -35,7 +35,8 @@ class PagoModel {
                                     FROM pago p
                                     LEFT JOIN deudo de ON p.id_deudo = de.id_deudo
                                     LEFT JOIN parcela pa ON p.id_parcela = pa.id_parcela
-                                    LEFT JOIN usuarios u ON p.id_usuario = u.id_usuario");
+                                    LEFT JOIN usuarios u ON p.id_usuario = u.id_usuario
+                                    LEFT JOIN tipo_operacion op ON p.id_tipo_operacion = op.id_tipo_operacion");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -65,21 +66,24 @@ class PagoModel {
      * @param int $id_usuario ID del usuario que realiza el pago.
      * @return int ID del nuevo pago insertado.
      */
-    public function insertPago($id_deudo, $id_parcela, $fecha_pago, $fecha_vencimiento, $importe, $recargo, $total, $id_usuario): int
+    public function insertPago($id_deudo, $id_parcela, $id_tipo_operacion, $fecha_pago, $fecha_vencimiento, $importe, $recargo, $total, $vinculo_familiar, $responsable_tramite, $id_usuario): int
     {
-        $sql = "INSERT INTO pago (id_deudo, id_parcela, fecha_pago, fecha_vencimiento, importe, recargo, total, id_usuario) 
-                VALUES (:id_deudo, :id_parcela, :fecha_pago, :fecha_vencimiento, :importe, :recargo, :total, :id_usuario)";
+        $sql = "INSERT INTO pago (id_deudo, id_parcela, id_tipo_operacion, fecha_pago, fecha_vencimiento, importe, recargo, total, vinculo_familiar, responsable_tramite, id_usuario) 
+                VALUES (:id_deudo, :id_parcela, :id_tipo_operacion, :fecha_pago, :fecha_vencimiento, :importe, :recargo, :total, :vinculo_familiar, :responsable_tramite, :id_usuario)";
 
         $stmt = $this->db->prepare($sql);
         $parametros = [
-            "id_deudo"          => $id_deudo,
-            "id_parcela"        => $id_parcela,
-            "fecha_pago"        => $fecha_pago,
+            "id_deudo" => $id_deudo,
+            "id_parcela" => $id_parcela,
+            "id_tipo_operacion" => $id_tipo_operacion,
+            "fecha_pago" => $fecha_pago,
             "fecha_vencimiento" => $fecha_vencimiento,
-            "importe"           => $importe,
-            "recargo"           => $recargo,
-            "total"             => $total,
-            "id_usuario"        => $id_usuario
+            "importe" => $importe,
+            "recargo" => $recargo,
+            "total" => $total,
+            "vinculo_familiar" => $vinculo_familiar,
+            "responsable_tramite" => $responsable_tramite,
+            "id_usuario" => $id_usuario
         ];
         $stmt->execute($parametros);
 
@@ -90,6 +94,7 @@ class PagoModel {
             "Pago Model",      
             "Insert"     
         );
+
         return $this->db->lastInsertId();
     }
 
@@ -106,22 +111,25 @@ class PagoModel {
      * @param int $id_usuario ID del usuario que realiza el pago.
      * @return bool True si se actualizó correctamente, false en caso contrario.
      */
-    public function updatePago($id_pago, $id_deudo, $id_parcela, $fecha_pago, $fecha_vencimiento, $importe, $recargo, $total, $id_usuario): bool
+    public function updatePago($id_pago, $id_deudo, $id_parcela, $id_tipo_operacion, $fecha_pago, $fecha_vencimiento, $importe, $recargo, $total, $vinculo_familiar, $responsable_tramite, $id_usuario): bool
     {
-        $sql = "UPDATE pago SET id_deudo = :id_deudo, id_parcela = :id_parcela, fecha_pago = :fecha_pago, fecha_vencimiento = :fecha_vencimiento, importe = :importe, recargo = :recargo, total = :total, id_usuario = :id_usuario
+        $sql = "UPDATE pago SET id_deudo = :id_deudo, id_parcela = :id_parcela, id_tipo_operacion = :id_tipo_operacion, fecha_pago = :fecha_pago, fecha_vencimiento = :fecha_vencimiento, importe = :importe, recargo = :recargo, total = :total, vinculo_familiar = :vinculo_familiar, responsable_tramite = :responsable_tramite, id_usuario = :id_usuario
                 WHERE id_pago = :id_pago";
         $stmt = $this->db->prepare($sql);
         
         $parametros = [
-            "id_pago"           => $id_pago,
-            "id_deudo"          => $id_deudo,
-            "id_parcela"        => $id_parcela,
-            "fecha_pago"        => $fecha_pago,
+            "id_pago" => $id_pago,
+            "id_deudo" => $id_deudo,
+            "id_parcela" => $id_parcela,
+            "id_tipo_operacion" => $id_tipo_operacion,
+            "fecha_pago" => $fecha_pago,
             "fecha_vencimiento" => $fecha_vencimiento,
-            "importe"           => $importe,
-            "recargo"           => $recargo,
-            "total"             => $total,
-            "id_usuario"        => $id_usuario
+            "importe" => $importe,
+            "recargo" => $recargo,
+            "total" => $total,
+            "vinculo_familiar" => $vinculo_familiar,
+            "responsable_tramite" => $responsable_tramite,
+            "id_usuario" => $id_usuario
         ];
         $stmt->execute($parametros);
 
@@ -173,6 +181,7 @@ class PagoModel {
                 LEFT JOIN deudo de ON p.id_deudo = de.id_deudo
                 LEFT JOIN parcela pa ON p.id_parcela = pa.id_parcela
                 LEFT JOIN usuarios u ON p.id_usuario = u.id_usuario
+                LEFT JOIN tipo_operacion op ON p.id_tipo_operacion = op.id_tipo_operacion
                 WHERE de.nombre LIKE :search 
                    OR de.apellido LIKE :search 
                    OR pa.id_parcela LIKE :search 
@@ -191,7 +200,21 @@ class PagoModel {
 
     public function getPage($orderCol, $orderDir, $start, $length): array
     {
-        $allowedColumns = ['id_pago', 'nombre_deudo', 'parcela', 'fecha_pago', 'fecha_vencimiento', 'importe', 'recargo', 'total', 'usuario'];
+        $allowedColumns = [
+            'id_pago', 
+            'nombre_deudo', 
+            'parcela', 
+            'tipo_operacion', 
+            'fecha_pago', 
+            'fecha_vencimiento', 
+            'importe', 
+            'recargo', 
+            'total', 
+            'vinculo_familiar', 
+            'responsable_tramite',
+            'usuario'
+        ];
+
         if (!in_array($orderCol, $allowedColumns)) {
             $orderCol = 'id_pago';
         }
@@ -201,11 +224,13 @@ class PagoModel {
         $sql = "SELECT p.*,
                        CONCAT(de.nombre, ' ', de.apellido) as nombre_deudo,
                        pa.id_parcela as parcela,
+                       op.descripcion as tipo_operacion,
                        u.usuario as usuario
                 FROM pago p
                 LEFT JOIN deudo de ON p.id_deudo = de.id_deudo
                 LEFT JOIN parcela pa ON p.id_parcela = pa.id_parcela
                 LEFT JOIN usuarios u ON p.id_usuario = u.id_usuario
+                LEFT JOIN tipo_operacion op ON p.id_tipo_operacion = op.id_tipo_operacion
                 ORDER BY $orderCol $orderDir 
                 LIMIT :start, :length";
         
@@ -218,7 +243,21 @@ class PagoModel {
 
     public function getFiltered($search, $orderCol, $orderDir, $start, $length): array
     {
-        $allowedColumns = ['id_pago', 'nombre_deudo', 'parcela', 'fecha_pago', 'fecha_vencimiento', 'importe', 'recargo', 'total', 'usuario'];
+        $allowedColumns = [
+            'id_pago', 
+            'nombre_deudo', 
+            'parcela', 
+            'tipo_operacion', 
+            'fecha_pago', 
+            'fecha_vencimiento', 
+            'importe', 
+            'recargo', 
+            'total', 
+            'vinculo_familiar', 
+            'responsable_tramite',
+            'usuario'
+        ];
+      
         if (!in_array($orderCol, $allowedColumns)) {
             $orderCol = 'id_pago';
         }
@@ -228,11 +267,13 @@ class PagoModel {
         $sql = "SELECT p.*,
                        CONCAT(de.nombre, ' ', de.apellido) as nombre_deudo,
                        pa.id_parcela as parcela,
+                       op.descripcion as tipo_operacion,
                        u.usuario as usuario
                 FROM pago p
                 LEFT JOIN deudo de ON p.id_deudo = de.id_deudo
                 LEFT JOIN parcela pa ON p.id_parcela = pa.id_parcela
                 LEFT JOIN usuarios u ON p.id_usuario = u.id_usuario
+                LEFT JOIN tipo_operacion op ON p.id_tipo_operacion = op.id_tipo_operacion
                 WHERE de.nombre LIKE :search 
                    OR de.apellido LIKE :search 
                    OR pa.id_parcela LIKE :search 

@@ -31,7 +31,8 @@ return [
     'difunto/edit'    => ['DifuntoController',    'edit',         'editar_difunto'],
     'difunto/update'  => ['DifuntoController',    'update',       'editar_difunto'],
     'difunto/delete'  => ['DifuntoController',    'delete',       'eliminar_difunto'],
-    'difunto/ajax'      => [DifuntoController::class, 'ajax',          '__login__'],
+    'difunto/verificar' => ['DifuntoController',    'verificar',    '__login__'],
+    'difunto/ajax'    => [DifuntoController::class, 'ajax',          '__login__'],
 
     // Estado civil
     'estadoCivil'         => ['EstadoCivilController', 'index',   'ver_estado_civil'],
@@ -57,6 +58,14 @@ return [
     'sexo/edit'       => ['SexoController', 'edit',               'editar_sexo'],
     'sexo/update'     => ['SexoController', 'update',             'editar_sexo'],
     'sexo/delete'     => ['SexoController', 'delete',             'eliminar_sexo'],
+
+    // Tipo Operacion
+    'tipo_operacion'            => ['TipoOperacionController', 'index',              'ver_tipo_operacion'],
+    'tipo_operacion/create'     => ['TipoOperacionController', 'create',             'crear_tipo_operacion'],
+    'tipo_operacion/save'       => ['TipoOperacionController', 'save',               'crear_tipo_operacion'],
+    'tipo_operacion/edit'       => ['TipoOperacionController', 'edit',               'editar_tipo_operacion'],
+    'tipo_operacion/update'     => ['TipoOperacionController', 'update',             'editar_tipo_operacion'],
+    'tipo_operacion/delete'     => ['TipoOperacionController', 'delete',             'eliminar_tipo_operacion'],
 
     // Pago
     'pago'            => ['PagoController', 'index',              'ver_pago'],
@@ -91,6 +100,7 @@ return [
     'deudo/edit'      => ['DeudoController', 'edit',              'editar_deudo'],
     'deudo/update'    => ['DeudoController', 'update',            'editar_deudo'],
     'deudo/delete'    => ['DeudoController', 'delete',            'eliminar_deudo'],
+    'deudo/verificar' => ['DeudoController',    'verificar',    '__login__'],
     'deudo/ajax'      => [DeudoController::class, 'ajax', '__login__'],
 
     // Nacionalidades

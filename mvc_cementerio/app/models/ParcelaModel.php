@@ -70,10 +70,6 @@ class ParcelaModel
      */
     public function insertParcela($id_tipo_parcela, $id_deudo, $numero_ubicacion, $hilera, $seccion, $fraccion, $nivel, $id_orientacion): int
     {
-        $sql = "INSERT INTO parcela (id_tipo_parcela, id_deudo, numero_ubicacion, hilera, seccion, fraccion, nivel, id_orientacion) 
-                VALUES (:id_tipo_parcela, :id_deudo, :numero_ubicacion, :hilera, :seccion, :fraccion, :nivel, :id_orientacion)";
-        $stmt = $this->db->prepare($sql);
-
         $parametros = [
             'id_tipo_parcela'  => $id_tipo_parcela,
             'id_deudo'         => $id_deudo,
@@ -85,6 +81,28 @@ class ParcelaModel
             'id_orientacion'   => $id_orientacion
         ];
 
+        $sql = "INSERT INTO parcela (id_tipo_parcela, id_deudo, numero_ubicacion, hilera, seccion, fraccion, nivel, id_orientacion) 
+                VALUES (:id_tipo_parcela,";
+                
+        if (!empty($id_deudo)) {
+            $sql .= " :id_deudo,";
+            $parametros['id_deudo'] = $id_deudo;
+        } else {
+            $sql .= " NULL,";
+        }
+        $sql .= " :numero_ubicacion, :hilera, :seccion, :fraccion, :nivel, :id_orientacion)";
+
+        $stmt = $this->db->prepare($sql);
+
+        // para debugear
+        AuditoriaHelper::log(
+            $_SESSION['usuario_id'],   
+            $sql,                 
+            $parametros,           
+            "Parcela Model",            
+            "Insert"                
+        );
+
         $stmt->execute($parametros);
 
         AuditoriaHelper::log(
@@ -94,6 +112,7 @@ class ParcelaModel
             "Parcela Model",            
             "Insert"                
         );
+
         return (int) $this->db->lastInsertId();
 
     }

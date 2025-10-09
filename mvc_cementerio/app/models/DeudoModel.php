@@ -3,7 +3,8 @@ require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/AuditoriaHelper.php';
 require_once 'Database.php';
 
-class DeudoModel {
+class DeudoModel
+{
     /**
      * @var PDO $db
      * Conexión a la base de datos
@@ -14,7 +15,8 @@ class DeudoModel {
      * Constructor
      * Inicializa la conexión a la base de datos
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->db = Database::connect();
     }
 
@@ -53,7 +55,8 @@ class DeudoModel {
      * @param $codigo_postal Código postal del deudo
      * @return int ID del nuevo deudo insertado o false si falla
      */
-    public function insertDeudo($dni, $nombre, $apellido, $telefono, $email, $domicilio, $localidad, $codigo_postal){
+    public function insertDeudo($dni, $nombre, $apellido, $telefono, $email, $domicilio, $localidad, $codigo_postal)
+    {
         $sql = "INSERT INTO deudo (dni, nombre, apellido, telefono, email, domicilio, localidad, codigo_postal)
                 VALUES (:dni, :nombre, :apellido, :telefono, :email, :domicilio, :localidad, :codigo_postal)";
         $stmt = $this->db->prepare($sql);
@@ -71,11 +74,11 @@ class DeudoModel {
         $stmt->execute($parametros);
 
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],  
-            $sql,                      
-            $parametros,               
-            "Deudo Model",             
-            "Insert"                  
+            $_SESSION['usuario_id'],
+            $sql,
+            $parametros,
+            "Deudo Model",
+            "Insert"
         );
         return (int) $this->db->lastInsertId();
     }
@@ -113,11 +116,11 @@ class DeudoModel {
         $stmt->execute($parametros);
 
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],  
-            $sql,                      
-            $parametros,      
-            "Deudo Model",        
-            "Update"                
+            $_SESSION['usuario_id'],
+            $sql,
+            $parametros,
+            "Deudo Model",
+            "Update"
         );
         return $stmt->rowCount() > 0;
     }
@@ -131,9 +134,9 @@ class DeudoModel {
 
         AuditoriaHelper::log(
             $_SESSION['usuario_id'],
-            $sql,                      
-            $parametros,       
-            "Deudo Model",    
+            $sql,
+            $parametros,
+            "Deudo Model",
             "Delete"
         );
         return $stmt->rowCount() > 0;
@@ -175,5 +178,12 @@ class DeudoModel {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function tienePagos(int $id_deudo): bool
+    {
+        $sql = "SELECT COUNT(*) FROM pagos WHERE id_deudo = :id_deudo";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id_deudo' => $id_deudo]);
+        return (int)$stmt->fetchColumn() > 0;
+    }
 }
-?>
