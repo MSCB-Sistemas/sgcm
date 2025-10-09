@@ -44,7 +44,8 @@ class TipoOperacionModel {
 
     public function updateTipoOperacion($id_tipo_operacion, $descripcion): bool
     {
-        $sql = "UPDATE tipo_operacion SET id_tipo_operacion = :id_tipo_operacion, descripcion = :descripcion WHERE id_tipo_operacion = :id_tipo_operacion";
+        $sql = "UPDATE tipo_operacion SET descripcion = :descripcion WHERE id_tipo_operacion = :id_tipo_operacion";
+        
         $stmt = $this->db->prepare($sql);
         
         $parametros = [
@@ -55,11 +56,12 @@ class TipoOperacionModel {
 
         AuditoriaHelper::log(
             $_SESSION['usuario_id'],    
-            $sql,                     
-            $parametros,              
-            "Tipo Operacion Model",       
-            "Update"             
+            $sql,                      
+            $parametros,                 
+            "Tipo Operacion Model",     
+            "Update"          
         );
+
         return $stmt->rowCount() > 0;
     }
 

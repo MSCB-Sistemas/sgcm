@@ -17,135 +17,94 @@
 
 <div class="card shadow-sm border-0">
     <div class="card-body p-4">
-        <form action="<?= isset($datos['action']) ? $datos['action'] : '' ?>" method="POST" id="operacionForm">
-            <div class="mb-3">
-                <label for="tipo_operacion" class="form-label fw-bold">Tipo de operacion</label>
-                <select class="form-select" id="tipo_operacion" name="tipo_operacion" required>
-                    <option value="">Seleccione...</option>
-                    <?php foreach ($datos['tipo_operaciones'] as $n): ?>
-                        <?php
-                        if ($id_tipo_operacion_selected == $n['id_tipo_operacion']) {
-                            $selected_tipo_operacion = 'selected';
-                        } else {
-                            $selected_tipo_operacion = '';
-                        }
-                        ?>
-                        <option value="<?= $n['id_tipo_operacion'] ?>" <?= $selected_tipo_operacion ?>>
-                            <?= htmlspecialchars($n['descripcion']) ?>
-                        </option>
-                    <?php endforeach ?>
-                </select>
-                <div class="invalid-feedback">
-                    Por favor seleccione un tipo de parcela
-                </div>
-            </div> 
-            <hr>
-            <div class="row g-3 mb-3">
-                <div class="col-md-6">
-                    <label for="parcela_search" class="form-label">Parcela</label>
-                    <div class="input-group">
-                        <input list="parcelas" id="parcela_search" name="parcela_search"
-                               class="form-control" placeholder="Ingrese una parcela" autocomplete="off" required>
-                        <input type="hidden" id="id_parcela" name="id_parcela">
-                        <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modalParcela">
-                            <i class="bi bi-plus"></i>
-                        </button>
-                    </div>
-                    <datalist id="parcelas">
-                        <?php foreach ($datos['parcelas'] as $p): ?>
-                            <option value="<?= htmlspecialchars($p['id_parcela'] . ' - Tipo - ' . $p['id_tipo_parcela'] . ' - Ubicacion - ' . $p['numero_ubicacion'] . ' - Hilera - ' . $p['hilera'] . ' - Seccion - ' . $p['seccion'] . ' - Fraccion - ' . $p['fraccion'] . ' - Nivel - ' . $p['nivel']) ?>"
-                            data-id="<?= $p['id_parcela'] ?>">
-                        <?php endforeach; ?>
-                    </datalist>
-                </div>
+        <div class="mb-3">
+            <label for="tipo_operacion" class="form-label fw-bold">Tipo de Operación</label>
+            <select class="form-select" id="tipo_operacion" name="tipo_operacion_selector" required>
+                <option value="">Seleccione una operación...</option>
+                <?php foreach ($datos['tipo_operaciones'] as $op): ?>
+                    <option value="<?= $op['id_tipo_operacion'] ?>">
+                        <?= htmlspecialchars($op['descripcion']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div> 
+        <hr>
 
-                <div class="col-md-6">
-                    <label for="deudo_search" class="form-label">Deudo</label>
-                    <div class="input-group">
-                        <input list="deudos" id="deudo_search" name="deudo_search"
-                               class="form-control" placeholder="Ingrese un deudo" autocomplete="off" required>
-                        <input type="hidden" id="id_deudo" name="id_deudo">
-                        <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modalDeudo">
-                            <i class="bi bi-plus"></i>
-                        </button>
+        <form action="<?= $datos['action'] ?>" method="POST" id="operacionForm">
+            <input type="hidden" id="tipo_operacion_id" name="tipo_operacion_id" value="">
+
+            <div id="seccion-1" class="seccion-operacion" style="display:none;">
+                <h5 class="mb-3">Traslado Interno</h5>
+                <p class="text-muted small">Move un difunto de su parcela actual a una nueva parcela vacía.</p>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label for="difunto_search_traslado" class="form-label">Difunto a trasladar</label>
+                        <input list="difuntos" id="difunto_search_traslado" name="id_difunto" class="form-control" placeholder="Buscar difunto...">
                     </div>
-                    <datalist id="deudos">
-                        <?php foreach ($datos['deudos'] as $d): ?>
-                            <option value="<?= htmlspecialchars($d['dni'] . ' - ' . $d['nombre'] . ' ' . $d['apellido']) ?>"
-                            data-id="<?= $d['id_deudo'] ?>">
-                        <?php endforeach; ?>
-                    </datalist>
+                    <div class="col-md-6">
+                        <label for="parcela_search_destino" class="form-label">Parcela de Destino (tiene que estar vacía)</label>
+                        <input list="parcelas" id="parcela_search_destino" name="id_parcela_destino" class="form-control" placeholder="Buscar parcela de destino...">
+                    </div>
+                </div>
+                <div class="row g-3 mb-3">
+                     <div class="col-md-4">
+                        <label for="fecha_traslado" class="form-label">Fecha del Traslado</label>
+                        <input type="date" class="form-control" name="fecha_traslado" value="<?= date('Y-m-d'); ?>">
+                    </div>
                 </div>
             </div>
 
-            <div class="row g-3 mb-3">
-                <div class="col-md-6">
-                    <label for="difunto_search" class="form-label">Difunto</label>
-                    <div class="input-group">
-                        <input list="difuntos" id="difunto_search" name="difunto_search"
-                               class="form-control" placeholder="Ingrese un difunto" autocomplete="off" required>
-                        <input type="hidden" id="id_difunto" name="id_difunto">
-                        <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modalDifunto">
-                            <i class="bi bi-plus"></i>
-                        </button>
+            <div id="seccion-4" class="seccion-operacion" style="display:none;">
+                <h5 class="mb-3"><i class="bi bi-file-earmark-check"></i> Certificado Libre de Deuda</h5>
+                <p class="text-muted small">Verifica el estado de cuenta y genera un certificado para un deudo y su parcela.</p>
+                 <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label for="deudo_search_libredeuda" class="form-label">Deudo</label>
+                        <input list="deudos" id="deudo_search_libredeuda" name="id_deudo" class="form-control" placeholder="Buscar deudo...">
                     </div>
-                    <datalist id="difuntos">
-                        <?php foreach ($datos['difuntos'] as $di): ?>
-                            <option value="<?= htmlspecialchars($di['dni'] . ' - ' . $di['nombre'] . ' ' . $di['apellido']) ?>"
-                            data-id="<?= $di['id_difunto'] ?>">
-                        <?php endforeach; ?>
-                    </datalist>
-                </div>
-
-                <div class="col-md-3">
-                    <label for="fecha_traslado" class="form-label">Fecha traslado</label>
-                    <input type="date" class="form-control" id="fecha_traslado" name="fecha_traslado"
-                           value="<?= date('Y-m-d'); ?>" required>
-                </div>
-
-                <div class="col-md-3">
-                    <label for="fecha_vencimiento" class="form-label">Fecha Vencimiento</label>
-                    <input type="date" class="form-control" id="fecha_vencimiento" name="fecha_vencimiento" required>
-                </div>
-            </div>
-
-            <div class="row g-3 mb-3">
-                <div class="col-md-4">
-                    <label for="importe" class="form-label">Importe</label>
-                    <input type="number" step="0.01" class="form-control" id="importe" name="importe" required>
-                </div>
-                <div class="col-md-4">
-                    <label for="recargo" class="form-label">Recargo (%)</label>
-                    <input type="number" step="0.01" class="form-control" id="recargo" name="recargo" required>
-                </div>
-                <div class="col-md-4">
-                    <label for="total" class="form-label">Total</label>
-                    <input type="text" class="form-control fw-bold" id="total" name="total" readonly>
+                     <div class="col-md-6">
+                        <label for="parcela_search_libredeuda" class="form-label">Parcela a verificar</label>
+                        <input list="parcelas" id="parcela_search_libredeuda" name="id_parcela" class="form-control" placeholder="Buscar parcela...">
+                    </div>
                 </div>
             </div>
         </form>
     </div>
 </div>
-<div class="my-4"></div>
-<div class="card shadow-sm border-0">
-    <div class="card-body p-4">
-        <!-- Info Parcela -->
-        <div class="accordion mb-3" id="accordionParcelaInfo"></div>
-    </div>
-</div>
-<!-- Botones -->
+
 <div class="d-flex justify-content-end gap-2 mt-4">
-    <button type="submit" class="btn btn-success">
-        <i class="bi bi-save"></i> Guardar
+    <button type="submit" form="operacionForm" class="btn btn-success">
+        <i class="bi bi-save"></i> Procesar Operación
     </button>
-    <a href="<?= URL ?>home" class="btn btn-outline-secondary">
+    <a href="<?= URL ?>/home" class="btn btn-outline-secondary">
         <i class="bi bi-x-circle"></i> Cancelar
     </a>
 </div>
 
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const selectorOperacion = document.getElementById('tipo_operacion');
+    const inputHiddenOperacion = document.getElementById('tipo_operacion_id');
+
+    selectorOperacion.addEventListener('change', function() {
+        const seleccion = this.value;
+
+        document.querySelectorAll('.seccion-operacion').forEach(seccion => {
+            seccion.style.display = 'none';
+        });
+
+        if (seleccion) {
+            const seccionVisible = document.getElementById('seccion-' + seleccion);
+            if (seccionVisible) {
+                seccionVisible.style.display = 'block';
+            }
+            inputHiddenOperacion.value = seleccion;
+        } else {
+            inputHiddenOperacion.value = '';
+        }
+    });
+
     function configurarAutocompletado(inputId, hiddenId, datalistId) {
         const input = document.getElementById(inputId);
         const hidden = document.getElementById(hiddenId);
@@ -334,4 +293,5 @@
         monto.addEventListener("input", calcularTotal);
         recargo.addEventListener("input", calcularTotal);
     });
+});
 </script>
