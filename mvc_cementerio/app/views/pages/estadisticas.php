@@ -232,23 +232,36 @@
             });
         }
 
-        const lastTab = localStorage.getItem('activeTab');
-        if (lastTab) {
-            const tabElement = document.querySelector(`[data-bs-target="${lastTab}"]`);
-            if (tabElement) new bootstrap.Tab(tabElement).show();
-        } else {
-            const tablaActiva = document.querySelector('.tab-pane.active .datatable-ajax');
-            inicializarDataTableAjax(tablaActiva);
+        $('#tabla-morosos').DataTable({ dom: 'Bfrtip', buttons: ['copy', 'csv', 'excel', 'pdf', 'print'], language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' }, pageLength: 8 });
+
+        const tablaDifuntos = document.getElementById('tabla-difuntos');
+        if (tablaDifuntos) {
+            inicializarDataTableAjax(tablaDifuntos);
         }
 
         document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tabEl => {
             tabEl.addEventListener('shown.bs.tab', event => {
+                // Guardamos la pestaña para la próxima visita
+                localStorage.setItem('activeTab', event.target.getAttribute('data-bs-target'));
+                
+                // Buscamos e inicializamos la tabla DENTRO de la pestaña que se acaba de mostrar
                 const panelId = event.target.getAttribute('data-bs-target');
-                localStorage.setItem('activeTab', panelId);
                 const tablaEnPanel = document.querySelector(panelId + ' .datatable-ajax');
-                if (tablaEnPanel) inicializarDataTableAjax(tablaEnPanel);
+                if (tablaEnPanel) {
+                    inicializarDataTableAjax(tablaEnPanel);
+                }
             });
         });
 
+        // Lógica para RESTAURAR la pestaña al recargar la página
+        const lastTab = localStorage.getItem('activeTab');
+        if (lastTab) {
+            const tabElement = document.querySelector(`[data-bs-target="${lastTab}"]`);
+            // Si la pestaña guardada existe Y NO es la primera (que ya se cargó), la mostramos.
+            // El evento 'shown.bs.tab' de arriba se encargará de inicializar su tabla.
+            if (tabElement && lastTab !== '#difuntos') {
+                new bootstrap.Tab(tabElement).show();
+            }
+        }
     });
 </script>
