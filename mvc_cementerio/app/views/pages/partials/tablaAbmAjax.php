@@ -16,7 +16,7 @@
         <?php endif; ?>
     </div>
 
-    <div class="table-responsive-lg shadow-rounded">
+    <div class="shadow-rounded">
         <table class="table table-hover align-middle mb-0" id="tablaABM" style="min-width: 400px;">
             <thead class="table-light">
                 <tr>
@@ -75,6 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
         language: {
             url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
         },
+        scrollCollapse: true,
         pageLength: 8,  
         lengthMenu: [5, 10, 25, 50, 100],
         order: [],

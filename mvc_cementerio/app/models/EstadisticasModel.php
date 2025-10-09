@@ -54,179 +54,6 @@ class EstadisticasModel extends Control
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getDefuncionesEntreFechas($fecha_inicio_defuncion, $fecha_fin_defuncion)
-    {
-        $this->establecerFechasPorDefecto($fecha_inicio, $fecha_fin);
-
-        $sql = "SELECT d.*, 
-               s.descripcion AS sexo, 
-               n.nacionalidad AS nacionalidad,
-               ec.descripcion AS estado_civil,
-               CONCAT(deu.nombre, ' ', deu.apellido) AS deudo
-        FROM difunto d
-        INNER JOIN sexo s ON d.id_sexo = s.id_sexo
-        LEFT JOIN nacionalidades n ON d.id_nacionalidad = n.id_nacionalidad
-        LEFT JOIN estado_civil ec ON d.id_estado_civil = ec.id_estado_civil
-        LEFT JOIN deudo deu ON d.id_deudo = deu.id_deudo
-        WHERE DATE(d.fecha_fallecimiento) BETWEEN :inicio AND :fin";
-
-        $stmt = $this->db->prepare($sql);
-
-        $stmt->bindValue(':inicio', $fecha_inicio_defuncion);
-        $stmt->bindValue(':fin', $fecha_fin_defuncion);
-
-        $stmt->execute();
-
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function getTotalDefuncionesEntreFechas($fecha_inicio_defuncion, $fecha_fin_defuncion)
-    {
-        try {
-            $this->establecerFechasPorDefecto($fecha_inicio_defuncion, $fecha_fin_defuncion);
-
-            $sql = "SELECT COUNT(*) as total FROM difunto 
-                    WHERE DATE(fecha_fallecimiento) BETWEEN :inicio AND :fin";
-
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindValue(':inicio', $fecha_inicio_defuncion);
-            $stmt->bindValue(':fin', $fecha_fin_defuncion);
-
-            $stmt->execute();
-            $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if (isset($resultado['total'])) {
-                return (int) $resultado['total'];
-            } else {
-                return 0;
-            }
-
-        } catch (PDOException $e) {
-            error_log("Error en getTotalDefuncionesEntreFechas: " . $e->getMessage());
-            return 0;
-        }
-    }
-
-    public function getParcelasVendidas($fecha_inicio_parcela, $fecha_fin_parcela)
-    {
-        $this->establecerFechasPorDefecto($fecha_inicio_parcela, $fecha_fin_parcela);
-
-        try {
-            $sql = "
-                SELECT p.id_parcela, p.id_tipo_parcela, d.nombre, d.apellido, d.dni, pgo.total as monto, pgo.fecha_pago as fecha_venta, pgo.fecha_vencimiento
-                FROM pago pgo
-                INNER JOIN parcela p ON pgo.id_parcela = p.id_parcela
-                INNER JOIN deudo d ON pgo.id_deudo = d.id_deudo
-                WHERE DATE(pgo.fecha_pago) BETWEEN :inicio AND :fin
-            ";
-
-            $stmt = $this->db->prepare($sql);
-
-            $stmt->bindValue(':inicio', $fecha_inicio_parcela);
-            $stmt->bindValue(':fin', $fecha_fin_parcela);
-
-            $stmt->execute();
-
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        } catch (PDOException $e) {
-            error_log("Error en getParcelasVendidas: " . $e->getMessage());
-            return [];
-        }
-    }
-
-    public function getParcelasVendidasPorDatosParcela($filtros = [])
-    {
-        try {
-            $sql = "
-                SELECT p.id_parcela, p.id_tipo_parcela, d.nombre, d.apellido, d.dni, pgo.total as monto, pgo.fecha_pago as fecha_venta, pgo.fecha_vencimiento
-                FROM pago pgo
-                INNER JOIN parcela p ON pgo.id_parcela = p.id_parcela
-                INNER JOIN deudo d ON pgo.id_deudo = d.id_deudo
-                WHERE 1=1
-            ";
-
-            $params = [];
-
-            if (!empty($filtros['numero_ubicacion'])) {
-                $sql .= " AND p.numero_ubicacion = :numero_ubicacion";
-                $params[':numero_ubicacion'] = $filtros['numero_ubicacion'];
-            }
-
-            if (!empty($filtros['id_tipo_parcela'])) {
-                $sql .= " AND p.id_tipo_parcela = :id_tipo_parcela";
-                $params[':id_tipo_parcela'] = $filtros['id_tipo_parcela'];
-            }
-
-            if (!empty($filtros['seccion'])) {
-                $sql .= " AND p.seccion = :seccion";
-                $params[':seccion'] = $filtros['seccion'];
-            }
-
-            if (!empty($filtros['fraccion'])) {
-                $sql .= " AND p.fraccion = :fraccion";
-                $params[':fraccion'] = $filtros['fraccion'];
-            }
-
-            if (!empty($filtros['nivel'])) {
-                $sql .= " AND p.nivel = :nivel";
-                $params[':nivel'] = $filtros['nivel'];
-            }
-
-            if (!empty($filtros['id_orientacion'])) {
-                $sql .= " AND p.id_orientacion = :id_orientacion";
-                $params[':id_orientacion'] = $filtros['id_orientacion'];
-            }
-
-            if (!empty($filtros['hilera'])) {
-                $sql .= " AND p.hilera = :hilera";
-                $params[':hilera'] = $filtros['hilera'];
-            }
-
-            $sql .= " ORDER BY pgo.fecha_pago DESC";
-
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute($params);
-
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log("Error en getParcelasVendidasPorDatosParcela: " . $e->getMessage());
-            return [];
-        }
-    }
-
-    public function getDifuntosTrasladados($fecha_inicio_traslado, $fecha_fin_traslado,)
-    {
-        $this->establecerFechasPorDefecto($fecha_inicio_traslado, $fecha_fin_traslado);
-
-        $sql = "SELECT 
-                d.nombre, d.apellido, d.dni, d.fecha_fallecimiento, 
-                u.fecha_retiro,
-                u.id_parcela AS parcela_origen, 
-                u2.id_parcela AS parcela_destino, 
-                u2.fecha_ingreso AS fecha_ingreso_destino
-            FROM difunto d
-            INNER JOIN ubicacion_difunto u ON d.id_difunto = u.id_difunto
-            INNER JOIN ubicacion_difunto u2 ON u2.id_difunto = d.id_difunto
-                AND u2.fecha_ingreso = (
-                    SELECT MIN(u3.fecha_ingreso)
-                    FROM ubicacion_difunto u3
-                    WHERE u3.id_difunto = d.id_difunto
-                    AND u3.fecha_ingreso > u.fecha_retiro
-                    AND u3.fecha_ingreso != '0000-00-00'
-                )
-            WHERE u.fecha_retiro != '0000-00-00'
-            AND DATE(u.fecha_retiro) BETWEEN :inicio_traslado AND :fin_traslado";
-
-        $stmt = $this->db->prepare($sql);
-
-        $stmt->bindValue(':inicio_traslado', $fecha_inicio_traslado);
-        $stmt->bindValue(':fin_traslado', $fecha_fin_traslado);
-        
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
     public function getTotalParcelasOcupadas()
     {
         try {
@@ -261,6 +88,129 @@ class EstadisticasModel extends Control
             error_log("Error en getTotalTraslados: " . $e->getMessage());
             return 0;
         }
+    }
+
+    public function getTrasladosAjax($params) {
+        $columnas_ordenables = [
+            'd.nombre', 'd.apellido', 'd.dni', 'd.fecha_fallecimiento', 
+            'origen_final.fecha_retiro', 
+            'origen_final.id_parcela',
+            'destino_final.id_parcela'
+        ];
+
+        $sql_base = "
+            -- 1. Empezamos con la lista de los últimos traslados (garantiza una fila por difunto)
+            FROM (
+                SELECT u_origen.id_difunto, u_origen.id_parcela, u_origen.fecha_retiro
+                FROM ubicacion_difunto u_origen
+                INNER JOIN (
+                    SELECT id_difunto, MAX(fecha_retiro) as max_fecha
+                    FROM ubicacion_difunto
+                    WHERE fecha_retiro IS NOT NULL AND fecha_retiro != '0000-00-00'
+                    GROUP BY id_difunto
+                ) AS ultimos ON u_origen.id_difunto = ultimos.id_difunto AND u_origen.fecha_retiro = ultimos.max_fecha
+            ) AS origen_final
+
+            -- 2. Unimos para obtener los datos del difunto
+            INNER JOIN difunto d ON origen_final.id_difunto = d.id_difunto
+
+            -- 3. Unimos para encontrar la ubicación actual (la que no tiene fecha de retiro)
+            LEFT JOIN ubicacion_difunto AS destino_final 
+                ON origen_final.id_difunto = destino_final.id_difunto 
+                AND (destino_final.fecha_retiro IS NULL OR destino_final.fecha_retiro = '0000-00-00')
+        ";
+
+        $sql_where = "";
+        $where_conditions = [];
+        $pdo_params = [];
+
+        if (!empty($params['search']['value'])) {
+            $searchValue = '%' . $params['search']['value'] . '%';
+            $where_conditions[] = "(d.nombre LIKE ? OR d.apellido LIKE ? OR d.dni LIKE ?)";
+            array_push($pdo_params, $searchValue, $searchValue, $searchValue);
+        }
+        
+        if (!empty($params['fecha_inicio']) && !empty($params['fecha_fin'])) {
+            $where_conditions[] = "DATE(origen_final.fecha_retiro) BETWEEN ? AND ?";
+            array_push($pdo_params, $params['fecha_inicio'], $params['fecha_fin']);
+        }
+
+        if (!empty($where_conditions)) {
+            $sql_where = " WHERE " . implode(" AND ", $where_conditions);
+        }
+
+        $sql_order = " ORDER BY " . $columnas_ordenables[$params['order'][0]['column']] . " " . $params['order'][0]['dir'];
+        $sql_limit = " LIMIT " . intval($params['start']) . ", " . intval($params['length']);
+
+        $stmt_total_filtrado = $this->db->prepare("SELECT COUNT(DISTINCT d.id_difunto) as total " . $sql_base . $sql_where);
+        $stmt_total_filtrado->execute($pdo_params);
+        $total_filtrado = $stmt_total_filtrado->fetch(PDO::FETCH_ASSOC)['total'];
+
+        $query = "SELECT d.nombre, d.apellido, d.dni, d.fecha_fallecimiento, 
+                        origen_final.fecha_retiro, 
+                        origen_final.id_parcela AS parcela_origen, 
+                        destino_final.id_parcela AS parcela_destino "
+                . $sql_base . $sql_where . $sql_order . $sql_limit;
+        
+        $stmt_datos = $this->db->prepare($query);
+        $stmt_datos->execute($pdo_params);
+        $datos = $stmt_datos->fetchAll(PDO::FETCH_ASSOC);
+
+        $stmt_total_general = $this->db->query("SELECT COUNT(DISTINCT id_difunto) as total FROM ubicacion_difunto WHERE fecha_retiro IS NOT NULL AND fecha_retiro != '0000-00-00'");
+        $total_general = $stmt_total_general->fetch(PDO::FETCH_ASSOC)['total'];
+
+        return [
+            "draw"            => intval($params['draw']),
+            "recordsTotal"    => intval($total_general),
+            "recordsFiltered" => intval($total_filtrado),
+            "data"            => $datos
+        ];
+    }
+
+    public function getParcelasVendidasAjax($params) {
+        $columnas = [
+            'pgo.id_parcela', 'tp.descripcion', 'd.nombre', 'd.apellido', 'd.dni', 
+            'pgo.total', 'pgo.fecha_pago', 'pgo.fecha_vencimiento'
+        ];
+
+        $sql_base = "FROM pago pgo
+                    INNER JOIN parcela p ON pgo.id_parcela = p.id_parcela
+                    INNER JOIN deudo d ON pgo.id_deudo = d.id_deudo
+                    LEFT JOIN tipo_parcela tp ON p.id_tipo_parcela = tp.id_tipo_parcela
+                    WHERE pgo.fecha_pago IS NOT NULL AND pgo.fecha_pago != '0000-00-00'";
+
+        $sql_where = "";
+        if (!empty($params['search']['value'])) {
+            $searchValue = $params['search']['value'];
+            $sql_where .= " AND (d.nombre LIKE '%$searchValue%' OR d.apellido LIKE '%$searchValue%' OR d.dni LIKE '%$searchValue%' OR p.id_parcela LIKE '%$searchValue%')";
+        }
+
+        if (!empty($params['fecha_inicio']) && !empty($params['fecha_fin'])) {
+            $sql_where .= " AND DATE(pgo.fecha_pago) BETWEEN '" . $params['fecha_inicio'] . "' AND '" . $params['fecha_fin'] . "'";
+        }
+
+        $sql_order = " ORDER BY " . $columnas[$params['order'][0]['column']] . " " . $params['order'][0]['dir'];
+        $sql_limit = " LIMIT " . intval($params['start']) . ", " . intval($params['length']);
+
+        $stmt_total_filtrado = $this->db->query("SELECT COUNT(pgo.id_pago) as total " . $sql_base . $sql_where);
+        $total_filtrado = $stmt_total_filtrado->fetch(PDO::FETCH_ASSOC)['total'];
+
+        $query = "SELECT p.id_parcela, tp.descripcion as tipo_parcela, d.nombre as nombre_titular, d.apellido as apellido_titular, d.dni, 
+                        pgo.total as monto, pgo.fecha_pago as fecha_venta, pgo.fecha_vencimiento "
+                . $sql_base . $sql_where . $sql_order . $sql_limit;
+        
+        $stmt_datos = $this->db->query($query);
+        $datos = $stmt_datos->fetchAll(PDO::FETCH_ASSOC);
+
+        $stmt_total_general = $this->db->query("SELECT COUNT(pgo.id_pago) as total " . $sql_base);
+        $total_general = $stmt_total_general->fetch(PDO::FETCH_ASSOC)['total'];
+
+        return [
+            "draw"            => intval($params['draw']),
+            "recordsTotal"    => intval($total_general),
+            "recordsFiltered" => intval($total_filtrado),
+            "data"            => $datos
+        ];
     }
 }
 ?>

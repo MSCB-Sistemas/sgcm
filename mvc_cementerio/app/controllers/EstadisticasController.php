@@ -21,14 +21,14 @@ class EstadisticasController extends Control {
         $configTraslados = [
             'tabId' => 'traslados',
             'configKey' => 'traslados',
-            'ajaxUrl' => URL . '/traslado/ajax', // Hay que crear el metodo, tarea para galo del futuro.
-            'columnHeaders' => ['Nombre', 'Apellido', 'DNI', 'Fecha Fall.', 'Fecha Traslado', 'Origen', 'Destino', 'Fecha Ingreso Destino'],
+            'ajaxUrl' => URL . '/estadisticas/ajaxTraslados', 
+            'columnHeaders' => ['Nombre', 'Apellido', 'DNI', 'Fecha Fall.', 'Fecha Traslado', 'Movimiento']
         ];
 
         $configVendidas = [
             'tabId' => 'vendidas',
             'configKey' => 'vendidas',
-            'ajaxUrl' => URL . '/parcela/ajaxVentas', // Hay que crear el metodo, tarea para galo del futuro.
+            'ajaxUrl' => URL . '/estadisticas/ajaxParcelasVendidas',
             'columnHeaders' => ['Parcela', 'Tipo', 'Titular', 'Apellido', 'DNI', 'Monto', 'Fecha Venta', 'Fecha Vencimiento'],
         ];
 
@@ -47,6 +47,27 @@ class EstadisticasController extends Control {
         ];
 
         $this->loadView("estadisticas", $datos);
+    }
+
+    public function ajaxTraslados()
+    {
+        $params = $_POST;
+
+        $datos = $this->model->getTrasladosAjax($params);
+
+        header('Content-Type: application/json');
+        echo json_encode($datos);
+        exit;
+    }
+
+    public function ajaxParcelasVendidas()
+    {
+        $params = $_POST;
+        $datos = $this->model->getParcelasVendidasAjax($params);
+        
+        header('Content-Type: application/json');
+        echo json_encode($datos);
+        exit;
     }
 }
 ?>

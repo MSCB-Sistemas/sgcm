@@ -107,16 +107,26 @@
                 { data: 'domicilio' }, { data: 'localidad' }, { data: 'codigo_postal' }
             ],
             'traslados': [
-                { data: 'nombre' }, { data: 'apellido' }, { data: 'dni' },
-                { data: 'fecha_fallecimiento' }, { data: 'fecha_retiro' }, { data: 'parcela_origen' },
-                { data: 'parcela_destino' }, { data: 'fecha_ingreso_destino' }
+                { data: 'nombre' }, 
+                { data: 'apellido' }, 
+                { data: 'dni' },
+                { data: 'fecha_fallecimiento' }, 
+                { data: 'fecha_retiro' },
+                { 
+                    data: null, 
+                    orderable: false,
+                    render: function(data, type, row) {
+                        const origen = row.parcela_origen;
+                        const destino = row.parcela_destino || 'Externo';
+                        return `<strong>${origen}</strong> → <strong>${destino}</strong>`;
+                    }
+                }
             ],
             'vendidas': [
                 { data: 'id_parcela' }, { data: 'tipo_parcela' }, { data: 'nombre_titular' },
                 { data: 'apellido_titular' }, { data: 'dni' }, { data: 'monto' },
                 { data: 'fecha_venta' }, { data: 'fecha_vencimiento' }
             ]
-            // Agrega aquí la configuración para otras tablas...
         };
 
         function inicializarDataTable(tabla) {

@@ -9,6 +9,8 @@ return [
     
 // Listados / estadísticas
     'estadisticas'    => ['EstadisticasController','index',       'ver_estadisticas'],
+    'estadisticas/ajaxTraslados'    => ['EstadisticasController','ajaxTraslados',       'ver_estadisticas'],
+    'estadisticas/ajaxParcelasVendidas'    => ['EstadisticasController','ajaxParcelasVendidas',       'ver_estadisticas'],
 
 // ABM (rutas “index” con sus permisos)
     // Usuario 
