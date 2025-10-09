@@ -85,9 +85,12 @@ $labelFor = [
 ];
 
 $groupFor = [
+  // ítems sueltos
   'home'           => null,
   'estadisticas'   => null,
   'operacion'      => null,
+  
+  // Todo lo demás al grupo ABM:
   'usuario'        => 'ABM',
   'deudo'          => 'ABM',
   'difunto'        => 'ABM',

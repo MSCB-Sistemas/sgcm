@@ -14,14 +14,14 @@ class TipoParcelaController extends Control
         $tipos_parcelas = $this->model->getAllTiposParcelas();
 
         $datos = [
-            'title' => 'Lista de tipos de parcelas',
-            'urlCrear' => URL . 'tipoParcela/create',
-            'columnas' => ['ID', 'Descripcion'],
-            'columnas_claves' => ['id_tipo_parcela', 'nombre_parcela'],
-            'data' => $tipos_parcelas,
-            'acciones' => function ($fila) {
-                $id = $fila['id_tipo_parcela'];
-                $url = URL . 'tipoParcela';
+            'title'             => 'Lista de tipos de parcelas',
+            'urlCrear'          => URL . 'tipoParcela/create',
+            'columnas'          => ['ID', 'Descripcion'],
+            'columnas_claves'   => ['id_tipo_parcela', 'nombre_parcela'],
+            'data'              => $tipos_parcelas,
+            'acciones'          => function ($fila) {
+                $id     = $fila['id_tipo_parcela'];
+                $url    = URL . 'tipoParcela';
                 return '
                 <a href="' . $url . '/edit/' . $id . '" class="btn btn-sm btn-outline-primary">Editar</a>
                 <a href="' . $url . '/delete/' . $id . '" class="btn btn-sm btn-outline-primary">Eliminar</a>
@@ -36,10 +36,10 @@ class TipoParcelaController extends Control
     public function create()
     {
         $datos = [
-            'title' => 'Crear tipo parcela',
-            'action' => URL . 'tipoParcela/save',
-            'values' => [],
-            'errores' => [],
+            'title'     => 'Crear tipo parcela',
+            'action'    => URL . 'tipoParcela/save',
+            'values'    => [],
+            'errores'   => [],
         ];
 
         $this->loadView('tipos_parcelas/TipoParcelaForm', $datos);
@@ -60,10 +60,10 @@ class TipoParcelaController extends Control
 
             if (!empty($errores)) {
                 $this->loadView('tipos_parcelas/TipoParcelaForm', [
-                    'title' => 'Crear tipo de parcela',
-                    'action' => URL . 'tipoParcela/save',
-                    'values' => [],
-                    'errores' => $errores
+                    'title'     => 'Crear tipo de parcela',
+                    'action'    => URL . 'tipoParcela/save',
+                    'values'    => [],
+                    'errores'   => $errores
                 ]);
                 return;
             }
@@ -87,12 +87,12 @@ class TipoParcelaController extends Control
         }
 
         $this->loadView("tipos_parcelas/TipoParcelaForm", [
-            'title' => 'Editar tipo de parcela',
-            'action' => URL . 'tipoParcela/update/' . $id,
-            'values' => [
+            'title'     => 'Editar tipo de parcela',
+            'action'    => URL . 'tipoParcela/update/' . $id,
+            'values'    => [
                 'descripcion' => $tipo_parcela['nombre_parcela'],
             ],
-            'errores' => []
+            'errores'   => []
         ]);
     }
     public function update($id)
@@ -114,10 +114,10 @@ class TipoParcelaController extends Control
                 ];
 
                 $this->loadView("tipos_parcelas/TipoParcelaForm", [
-                    'title' => 'Editar tipo de parcela',
-                    'action' => URL . 'tipoParcela/update/' . $id,
-                    'values' => $tipo_parcela,
-                    'errores' => $errores
+                    'title'     => 'Editar tipo de parcela',
+                    'action'    => URL . 'tipoParcela/update/' . $id,
+                    'values'    => $tipo_parcela,
+                    'errores'   => $errores
                 ]);
                 return;
             }

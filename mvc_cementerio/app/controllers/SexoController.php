@@ -14,14 +14,14 @@ class SexoController extends Control
         $sexos = $this->model->getAllSexos();
 
         $datos = [
-            'title' => 'Lista de sexos',
-            'urlCrear' => URL . 'sexo/create',
-            'columnas' => ['ID', 'Descripcion'],
-            'columnas_claves' => ['id_sexo', 'descripcion'],
-            'data' => $sexos,
-            'acciones' => function ($fila) {
-                $id = $fila['id_sexo'];
-                $url = URL . 'sexo';
+            'title'             => 'Lista de sexos',
+            'urlCrear'          => URL . 'sexo/create',
+            'columnas'          => ['ID', 'Descripcion'],
+            'columnas_claves'   => ['id_sexo', 'descripcion'],
+            'data'              => $sexos,
+            'acciones'          => function ($fila) {
+                $id     = $fila['id_sexo'];
+                $url    = URL . 'sexo';
                 return '
                 <a href="' . $url . '/edit/' . $id . '" class="btn btn-sm btn-outline-primary">Editar</a>
                 <a href="' . $url . '/delete/' . $id . '" class="btn btn-sm btn-outline-primary">Eliminar</a>
@@ -36,10 +36,10 @@ class SexoController extends Control
     public function create()
     {
         $datos = [
-            'title' => 'Crear sexo',
-            'action' => URL . 'sexo/save',
-            'values' => [],
-            'errores' => [],
+            'title'     => 'Crear sexo',
+            'action'    => URL . 'sexo/save',
+            'values'    => [],
+            'errores'   => [],
         ];
 
         $this->loadView('sexos/SexoForm', $datos);
@@ -87,9 +87,9 @@ class SexoController extends Control
         }
 
         $this->loadView("sexos/SexoForm", [
-            'title' => 'Editar sexo',
-            'action' => URL . 'sexo/update/' . $id,
-            'values' => [
+            'title'     => 'Editar sexo',
+            'action'    => URL . 'sexo/update/' . $id,
+            'values'    => [
                 'descripcion' => $sexo['descripcion'],
             ],
             'errores' => []
@@ -114,10 +114,10 @@ class SexoController extends Control
                 ];
 
                 $this->loadView("sexos/SexoForm", [
-                    'title' => 'Editar sexo',
-                    'action' => URL . 'sexo/update/' . $id,
-                    'values' => $sexo,
-                    'errores' => $errores
+                    'title'     => 'Editar sexo',
+                    'action'    => URL . 'sexo/update/' . $id,
+                    'values'    => $sexo,
+                    'errores'   => $errores
                 ]);
                 return;
             }

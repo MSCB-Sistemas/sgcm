@@ -6,7 +6,13 @@
     define('DB_USER', 'root');
     define('DB_PASS', '');
 
-    $protocolo = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
+    if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'){
+        $protocolo = 'https://';
+    }
+    else{
+        $protocolo = 'http://';
+    }
+    
     $host = $_SERVER['HTTP_HOST'];
     $baseUrl = '/cementerio/mvc_cementerio/';
 

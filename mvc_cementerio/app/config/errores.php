@@ -8,15 +8,25 @@ function errorMensaje($codigo, $extra = '') {
         '401' => 'Error 401: No autorizado',
         '400' => 'Error 400: Solicitud inválida',
         '405' => 'Error 405: Método no permitido',
-        '' => 'Error desconocido'
+        ''    => 'Error desconocido'
     ];
 
     if (isset($mensajes[$codigo])) {
-        return $mensajes[$codigo] . ($extra ? ': ' . $extra : '');
+        if ($extra) {
+            return $mensajes[$codigo] . ': ' . $extra;
+        } else {
+            return $mensajes[$codigo];
+        }
     }
 
+
+
     // Si no existe, devolver mensaje por defecto
-    return 'Error indefinido' . ($extra ? ': ' . $extra : '');
+    if ($extra) {
+            return 'Error indefinido' . ': ' . $extra;
+    } else {
+        return 'Error indefinido';
+    }
 }
 
 ?>

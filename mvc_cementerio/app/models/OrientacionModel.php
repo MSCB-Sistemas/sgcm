@@ -55,8 +55,8 @@ class OrientacionModel {
      */
     public function insertOrientacion($descripcion): int
     {
-        $sql = "INSERT INTO orientacion (descripcion) VALUES (:descripcion)";
-        $stmt = $this->db->prepare($sql);
+        $sql        = "INSERT INTO orientacion (descripcion) VALUES (:descripcion)";
+        $stmt       = $this->db->prepare($sql);
         $parametros = ['descripcion' => $descripcion];
         $stmt->execute($parametros);
         
@@ -86,7 +86,7 @@ class OrientacionModel {
         $stmt = $this->db->prepare($sql);
         $parametros = [
             'id_orientacion' => $id_orientacion,
-            'descripcion' => $descripcion
+            'descripcion'    => $descripcion
         ];
         $stmt->execute($parametros);
 
@@ -108,8 +108,8 @@ class OrientacionModel {
      */
     public function deleteOrientacion($id_orientacion): bool
     {
-        $sql = "DELETE FROM orientacion WHERE id_orientacion = :id_orientacion";
-        $stmt = $this->db->prepare($sql);
+        $sql        = "DELETE FROM orientacion WHERE id_orientacion = :id_orientacion";
+        $stmt       = $this->db->prepare($sql);
         $parametros = ['id_orientacion' => $id_orientacion];
         $stmt->execute($parametros);
         

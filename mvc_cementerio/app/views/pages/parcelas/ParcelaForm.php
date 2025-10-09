@@ -16,54 +16,34 @@
                 </div>
             <?php endif; ?>
 
-            <?php                
-                if (isset($datos['values']['id_tipo_parcela'])) {
-                    $id_tipo_parcela_selected = $datos['values']['id_tipo_parcela'];
-                } else {
-                    $id_tipo_parcela_selected = '';
-                }
+            <?php
+            // Campos con htmlspecialchars
+            $campos_html = ['numero_ubicacion', 'hilera', 'seccion', 'fraccion', 'nivel'];
 
-                if (isset($datos['values']['id_deudo'])) {
-                    $id_deudo_selected = $datos['values']['id_deudo'];
-                } else {
-                    $id_deudo_selected = '';
-                }
+            // Campos directos con nombres personalizados
+            $campos_directos = [
+                'id_tipo_parcela' => 'id_tipo_parcela_selected',
+                'id_deudo' => 'id_deudo_selected',
+                'id_orientacion' => 'id_orientacion_selected'
+            ];
 
-                if (isset($datos['values']['numero_ubicacion'])) {
-                    $numero_ubicacion = htmlspecialchars($datos['values']['numero_ubicacion']);
+            // Asignación de campos con htmlspecialchars
+            foreach ($campos_html as $campo) {
+                if (isset($datos['values'][$campo])) {
+                    $$campo = htmlspecialchars($datos['values'][$campo]);
                 } else {
-                    $numero_ubicacion = '';
+                    $$campo = '';
                 }
+            }
 
-                if (isset($datos['values']['hilera'])) {
-                    $hilera = htmlspecialchars($datos['values']['hilera']);
+            // Asignación de campos directos con variables renombradas
+            foreach ($campos_directos as $campo => $variable) {
+                if (isset($datos['values'][$campo])) {
+                    $$variable = $datos['values'][$campo];
                 } else {
-                    $hilera = '';
+                    $$variable = '';
                 }
-
-                if (isset($datos['values']['seccion'])) {
-                    $seccion = htmlspecialchars($datos['values']['seccion']);
-                } else {
-                    $seccion = '';
-                }
-
-                if (isset($datos['values']['fraccion'])) {
-                    $fraccion = htmlspecialchars($datos['values']['fraccion']);
-                } else {
-                    $fraccion = '';
-                }
-
-                if (isset($datos['values']['nivel'])) {
-                    $nivel = htmlspecialchars($datos['values']['nivel']);
-                } else {
-                    $nivel = '';
-                }
-
-                if (isset($datos['values']['id_orientacion'])) {
-                    $id_orientacion_selected = $datos['values']['id_orientacion'];
-                } else {
-                    $id_orientacion_selected = '';
-                }
+            }
             ?>
             
             <form action="<?= $datos['action'] ?>" method="POST" class="needs-validation" novalidate>

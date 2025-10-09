@@ -8,17 +8,17 @@ class PagoController extends Control {
 
     public function __construct() {
         $this->requireLogin();
-        $this->model = $this->loadModel("PagoModel");
-        $this->deudoModel = $this->loadModel("DeudoModel");
+        $this->model        = $this->loadModel("PagoModel");
+        $this->deudoModel   = $this->loadModel("DeudoModel");
         $this->parcelaModel = $this->loadModel("ParcelaModel");
         $this->usuarioModel = $this->loadModel("UsuarioModel");
         $this->tipoOperacionModel = $this->loadModel("TipoOperacionModel");
     }
 
     public function index() {
-        $puedeCrear = $this->can('crear_pago');
-        $puedeEditar = $this->can('editar_pago');
-        $puedeEliminar = $this->can('eliminar_pago');
+        $puedeCrear         = $this->can('crear_pago');
+        $puedeEditar        = $this->can('editar_pago');
+        $puedeEliminar      = $this->can('eliminar_pago');
 
         $datos = [
             'title' => 'Lista de pagos',
@@ -32,10 +32,20 @@ class PagoController extends Control {
                 ['data' => 'parcela'],
                 ['data' => 'id_tipo_operacion'],
                 ['data' => 'fecha_pago', 'render' => function($data) {
-                    return $data ? date('d/m/Y', strtotime($data)) : '-';
+                    if ($data){
+                        return date('d/m/Y', strtotime($data));
+                    }
+                    else{
+                        return '-';
+                    }
                 }],
                 ['data' => 'fecha_vencimiento', 'render' => function($data) {
-                    return $data ? date('d/m/Y', strtotime($data)) : '-';
+                    if ($data){
+                        return date('d/m/Y', strtotime($data));
+                    }
+                    else{
+                        return '-';
+                    }
                 }],
                 ['data' => 'importe', 'render' => function($data) {
                     return '$ ' . number_format($data, 2);
@@ -53,7 +63,6 @@ class PagoController extends Control {
             ],
             'puedeCrear' => $puedeCrear,
             'errores' => [],
-            'csrfToken' => $this->generateCsrfToken()
         ];
 
         $this->loadView('partials/tablaAbmAjax', $datos);
@@ -151,6 +160,7 @@ class PagoController extends Control {
     }
 
     public function edit($id) {
+
         $pago = $this->model->getPago($id);
         $deudos = $this->deudoModel->getAllDeudos();
         $parcelas = $this->parcelaModel->getAllParcelas();
@@ -276,21 +286,46 @@ class PagoController extends Control {
     public function ajax() {
         header('Content-Type: application/json; charset=utf-8');
         
-        $draw = $_POST['draw'] ?? 1;
-        $start = intval($_POST['start'] ?? 0);
-        $length = intval($_POST['length'] ?? 10);
-        $search = $_POST['search']['value'] ?? '';
-        $orderColumnIndex = $_POST['order'][0]['column'] ?? 0;
-        $orderDir = $_POST['order'][0]['dir'] ?? 'asc';
+        function getPost($key, $default = '') {
+            if (isset($_POST[$key])) {
+                return $_POST[$key];
+            } else {
+                return $default;
+            }
+        }
+
+        function getNestedPost($keys, $default = '') {
+            $value = $_POST;
+            foreach ($keys as $key) {
+                if (!isset($value[$key])) {
+                    return $default;
+                }
+                $value = $value[$key];
+            }
+            return $value;
+        }
+
+        $draw               = getPost('draw', 1);
+        $start              = intval(getPost('start', 0));
+        $length             = intval(getPost('length', 10));
+        $search             = getNestedPost(['search', 'value'], '');
+        $orderColumnIndex   = getNestedPost(['order', 0, 'column'], 0);
+        $orderDir           = getNestedPost(['order', 0, 'dir'], 'asc');
 
         $columns = [
             'id_pago', 'nombre_deudo', 'tipo_operacion', 'parcela', 'fecha_pago', 
             'fecha_vencimiento', 'importe', 'recargo', 'total', 'vinculo_familiar', 
             'responsable_tramite', 'usuario'
         ];
-        $orderCol = $columns[$orderColumnIndex] ?? 'id_pago';
+
+        if (isset($columns[$orderColumnIndex])) {
+            $orderCol = $columns[$orderColumnIndex];
+        } else {
+            $orderCol = 'id_pago';
+        }
 
         $totalRecords = $this->model->countAll();
+
 
         if ($search) {
             $data = $this->model->getFiltered($search, $orderCol, $orderDir, $start, $length);
@@ -321,20 +356,51 @@ class PagoController extends Control {
         }  
 
         echo json_encode([
-            "draw" => intval($draw),
-            "recordsTotal" => $totalRecords,
-            "recordsFiltered" => $filteredRecords,
-            "data" => $data
+            "draw"              => intval($draw),
+            "recordsTotal"      => $totalRecords,
+            "recordsFiltered"   => $filteredRecords,
+            "data"              => $data
         ]);
         exit;
     }
 
-    private function generateCsrfToken()
+    public function registrarPagoMantenimiento()
     {
-        if (!isset($_SESSION['csrf_token'])) {
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . URL . '/estadisticas');
+            exit;
         }
-        return $_SESSION['csrf_token'];
+
+        $deudo_id          = $_POST['deudo_id'] ?? null;
+        $parcela_id        = $_POST['parcela_id'] ?? null;
+        $monto             = $_POST['monto'] ?? 0;
+        $fecha_pago        = $_POST['fecha_pago'] ?? date('Y-m-d');
+        
+        $fecha_vencimiento_nueva = $_POST['fecha_vencimiento'] ?? null;
+        
+        $usuario_id        = $_SESSION['usuario_id'];
+        $tipo_operacion_id = 1;
+
+        if (!$deudo_id || !$parcela_id || !$fecha_vencimiento_nueva || !is_numeric($monto)) {
+            die("Error: Faltan datos esenciales o el monto no es válido.");
+        }
+
+        $pagoExitoso = $this->model->insertarPagoMantenimiento(
+            $deudo_id,
+            $parcela_id,
+            $tipo_operacion_id,
+            $fecha_pago,
+            $fecha_vencimiento_nueva,
+            $monto,
+            $usuario_id
+        );
+
+        if ($pagoExitoso) {
+            header('Location: ' . URL . '/estadisticas#morosos');
+            exit;
+        } else {
+            die("Error al guardar el pago en la base de datos.");
+        }
     }
 }
 ?>

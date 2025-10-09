@@ -54,8 +54,8 @@ class NacionalidadesModel {
      */
     public function insertNacionalidad($nacionalidad): int
     {
-        $sql = "INSERT INTO nacionalidades (nacionalidad) VALUES (:nacionalidad)";
-        $stmt = $this->db->prepare($sql);
+        $sql        = "INSERT INTO nacionalidades (nacionalidad) VALUES (:nacionalidad)";
+        $stmt       = $this->db->prepare($sql);
         $parametros = ['nacionalidad' => $nacionalidad];
         $stmt->execute($parametros);
         
@@ -105,8 +105,8 @@ class NacionalidadesModel {
      */
     public function deleteNacionalidad($id_nacionalidad): bool
     {
-        $sql = "DELETE FROM nacionalidades WHERE id_nacionalidad = :id_nacionalidad";
-        $stmt = $this->db->prepare($sql);
+        $sql        = "DELETE FROM nacionalidades WHERE id_nacionalidad = :id_nacionalidad";
+        $stmt       = $this->db->prepare($sql);
         $parametros = ['id_nacionalidad' => $id_nacionalidad];
         $stmt->execute($parametros);
         

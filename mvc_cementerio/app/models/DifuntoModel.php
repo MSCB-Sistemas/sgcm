@@ -86,18 +86,18 @@ class DifuntoModel
         $stmt = $this->db->prepare($sql);
 
         $parametros = [
-            'id_deudo' => $id_deudo,
-            'nombre' => $nombre,
-            'apellido' => $apellido,
-            'dni' => $dni,
-            'edad' => $edad,
-            'fecha_fallecimiento' => $fecha_fallecimiento,
-            'id_sexo' => $id_sexo,
-            'id_nacionalidad' => $id_nacionalidad,
-            'id_estado_civil' => $id_estado_civil,
-            'domicilio' => $domicilio,
-            'localidad' => $localidad,
-            'codigo_postal' => $codigo_postal
+            'id_deudo'              => $id_deudo,
+            'nombre'                => $nombre,
+            'apellido'              => $apellido,
+            'dni'                   => $dni,
+            'edad'                  => $edad,
+            'fecha_fallecimiento'   => $fecha_fallecimiento,
+            'id_sexo'               => $id_sexo,
+            'id_nacionalidad'       => $id_nacionalidad,
+            'id_estado_civil'       => $id_estado_civil,
+            'domicilio'             => $domicilio,
+            'localidad'             => $localidad,
+            'codigo_postal'         => $codigo_postal
         ];
         $stmt->execute($parametros);
 
@@ -120,36 +120,36 @@ class DifuntoModel
     public function updateDifunto(int $id_difunto, $id_deudo, $nombre, $apellido, $dni, $edad, $fecha_fallecimiento, $id_sexo, $id_nacionalidad, $id_estado_civil, $domicilio, $localidad, $codigo_postal): bool
     {
         $sql = "UPDATE difunto SET 
-                id_deudo = :id_deudo,
-                nombre = :nombre,
-                apellido = :apellido,
-                dni = :dni,
-                edad = :edad,
+                id_deudo            = :id_deudo,
+                nombre              = :nombre,
+                apellido            = :apellido,
+                dni                 = :dni,
+                edad                = :edad,
                 fecha_fallecimiento = :fecha_fallecimiento,
-                id_sexo = :id_sexo,
-                id_nacionalidad = :id_nacionalidad,
-                id_estado_civil = :id_estado_civil,
-                domicilio = :domicilio,
-                localidad = :localidad,
-                codigo_postal = :codigo_postal
-                WHERE id_difunto = :id_difunto
+                id_sexo             = :id_sexo,
+                id_nacionalidad     = :id_nacionalidad,
+                id_estado_civil     = :id_estado_civil,
+                domicilio           = :domicilio,
+                localidad           = :localidad,
+                codigo_postal       = :codigo_postal
+                WHERE id_difunto    = :id_difunto
                 ";
         $stmt = $this->db->prepare($sql);
 
         $parametros = [
-            "id_difunto" => $id_difunto,
-            "id_deudo" => $id_deudo,
-            "nombre" => $nombre,
-            "apellido" => $apellido,
-            "dni" => $dni,
-            "edad" => $edad,
-            "fecha_fallecimiento" => $fecha_fallecimiento,
-            "id_sexo" => $id_sexo,
-            "id_nacionalidad" => $id_nacionalidad,
-            "id_estado_civil" => $id_estado_civil,
-            "domicilio" => $domicilio,
-            "localidad" => $localidad,
-            "codigo_postal" => $codigo_postal
+            "id_difunto"            => $id_difunto,
+            "id_deudo"              => $id_deudo,
+            "nombre"                => $nombre,
+            "apellido"              => $apellido,
+            "dni"                   => $dni,
+            "edad"                  => $edad,
+            "fecha_fallecimiento"   => $fecha_fallecimiento,
+            "id_sexo"               => $id_sexo,
+            "id_nacionalidad"       => $id_nacionalidad,
+            "id_estado_civil"       => $id_estado_civil,
+            "domicilio"             => $domicilio,
+            "localidad"             => $localidad,
+            "codigo_postal"         => $codigo_postal
         ];
         $stmt->execute($parametros);
 
@@ -170,8 +170,8 @@ class DifuntoModel
      */
     public function deleteDifunto(int $id_difunto): bool
     {
-        $sql = "DELETE FROM difunto WHERE id_difunto = :id_difunto";
-        $stmt = $this->db->prepare($sql);
+        $sql        = "DELETE FROM difunto WHERE id_difunto = :id_difunto";
+        $stmt       = $this->db->prepare($sql);
         $parametros = ['id_difunto' => $id_difunto];
         $stmt->execute($parametros);
 
@@ -187,7 +187,7 @@ class DifuntoModel
 
     public function countAll(): int
     {
-        $stmt = $this->db->prepare("SELECT COUNT(*) as total FROM difunto");
+        $stmt   = $this->db->prepare("SELECT COUNT(*) as total FROM difunto");
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return (int)$result['total'];
@@ -211,11 +211,11 @@ class DifuntoModel
                    OR d.domicilio LIKE :search 
                    OR d.localidad LIKE :search";
 
-        $stmt = $this->db->prepare($sql);
+        $stmt       = $this->db->prepare($sql);
         $searchTerm = "%$search%";
         $stmt->bindParam(':search', $searchTerm);
         $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $result     = $stmt->fetch(PDO::FETCH_ASSOC);
         return (int)$result['total'];
     }
 

@@ -151,8 +151,8 @@ class PagoModel {
      */
     public function deletePago($id_pago): bool
     {
-        $sql = "DELETE FROM pago WHERE id_pago = :id_pago";
-        $stmt = $this->db->prepare($sql);
+        $sql        = "DELETE FROM pago WHERE id_pago = :id_pago";
+        $stmt       = $this->db->prepare($sql);
         $parametros = ['id_pago' => $id_pago];
         $stmt->execute($parametros);
         
@@ -168,7 +168,7 @@ class PagoModel {
 
     public function countAll(): int
     {
-        $stmt = $this->db->prepare("SELECT COUNT(*) as total FROM pago");
+        $stmt   = $this->db->prepare("SELECT COUNT(*) as total FROM pago");
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return (int)$result['total'];
@@ -257,7 +257,7 @@ class PagoModel {
             'responsable_tramite',
             'usuario'
         ];
-        
+      
         if (!in_array($orderCol, $allowedColumns)) {
             $orderCol = 'id_pago';
         }
@@ -293,6 +293,37 @@ class PagoModel {
         $stmt->bindParam(':length', $length, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function insertarPagoMantenimiento($deudo_id, $parcela_id, $tipo_operacion_id, $fecha_pago, $fecha_vencimiento, $importe, $usuario_id): bool
+    {
+        $recargo = 0;
+        $total = $importe;
+
+        try {
+            $sql = "INSERT INTO pago 
+                        (id_deudo, id_parcela, id_tipo_operacion, fecha_pago, fecha_vencimiento, importe, recargo, total, id_usuario) 
+                    VALUES 
+                        (:deudo, :parcela, :tipo_op, :fecha_pago, :fecha_venc, :importe, :recargo, :total, :usuario)";
+            
+            $stmt = $this->db->prepare($sql);
+
+            $stmt->bindParam(':deudo', $deudo_id, PDO::PARAM_INT);
+            $stmt->bindParam(':parcela', $parcela_id, PDO::PARAM_INT);
+            $stmt->bindParam(':tipo_op', $tipo_operacion_id, PDO::PARAM_INT);
+            $stmt->bindParam(':fecha_pago', $fecha_pago);
+            $stmt->bindParam(':fecha_venc', $fecha_vencimiento);
+            $stmt->bindParam(':importe', $importe);
+            $stmt->bindParam(':recargo', $recargo);
+            $stmt->bindParam(':total', $total);
+            $stmt->bindParam(':usuario', $usuario_id, PDO::PARAM_INT);
+
+            return $stmt->execute();
+
+        } catch (PDOException $e) {
+            error_log("Error en insertarPagoMantenimiento: " . $e->getMessage());
+            return false;
+        }
     }
 }
 ?>
