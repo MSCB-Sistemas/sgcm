@@ -9,6 +9,8 @@ return [
     
 // Listados / estadísticas
     'estadisticas'    => ['EstadisticasController','index',       'ver_estadisticas'],
+    'estadisticas/ajaxTraslados'    => ['EstadisticasController','ajaxTraslados',       'ver_estadisticas'],
+    'estadisticas/ajaxParcelasVendidas'    => ['EstadisticasController','ajaxParcelasVendidas',       'ver_estadisticas'],
 
 // ABM (rutas “index” con sus permisos)
     // Usuario 
@@ -64,6 +66,7 @@ return [
     'pago/update'     => ['PagoController', 'update',             'editar_pago'],
     'pago/delete'     => ['PagoController', 'delete',             'eliminar_pago'],
     'pago/ajax'      => [PagoController::class, 'ajax',          '__login__'],
+    'pago/registrarPagoMantenimiento'     => ['PagoController', 'registrarPagoMantenimiento',             'crear_pago'],
 
     // TipoParcela
     'tipoParcela'         => ['TipoParcelaController', 'index',   'ver_tipo_parcela'],

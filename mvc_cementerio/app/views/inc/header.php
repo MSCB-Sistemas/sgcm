@@ -198,8 +198,9 @@
     }
     
     .table thead th {
-        border-bottom: 2px solid var(--bs-border-color);
-        background-color: #ffffffff;
+    background-color: #212529;
+    color: white;
+    border-bottom: 2px solid #495057; 
     }
     
     .table-hover tbody tr:hover {
