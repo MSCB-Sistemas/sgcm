@@ -39,34 +39,33 @@
                 <p class="text-muted small">Mueve un difunto de su ubicacion actual a una nueva parcela vacía.</p>
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label for="difunto_search_traslado" class="form-label">Difunto a trasladar</label>
+                        <label class="form-label">Difunto a trasladar</label>
                         <div class="input-group">
-                            <input list="difuntos" id="difunto_search_traslado" name="id_difunto_ti" class="form-control" placeholder="Buscar difunto...">
-                            <input type="hidden" id="id_difunto_traslado">
+                            <input list="difuntos" id="difunto_search_ti" class="form-control" placeholder="Buscar difunto...">
+                            <input type="hidden" name="id_difunto_ti" id="id_difunto_ti">
                             <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modalDifunto">
                                 <i class="bi bi-plus"></i>
                             </button>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <label for="parcela_search_destino" class="form-label">Parcela de Destino</label>
+                        <label class="form-label">Parcela de Destino (debe estar vacía)</label>
                         <div class="input-group">
-                            <input list="parcelas" id="parcela_search_destino" name="id_parcela_destino" class="form-control" placeholder="Buscar parcela de destino...">
-                            <input type="hidden" id="id_parcela_destino">
+                            <input list="parcelas" id="parcela_search_ti" class="form-control" placeholder="Buscar parcela de destino...">
+                            <input type="hidden" name="id_parcela_ti" id="id_parcela_ti">
                             <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modalParcela">
                                 <i class="bi bi-plus"></i>
                             </button>
                         </div>
                     </div>
+                </div>
+                <div class="row g-3">
                     <div class="col-md-4">
-                        <label for="fecha_traslado" class="form-label">Fecha del Traslado</label>
-                        <input type="date" class="form-control" name="fecha_traslado" value="<?= date('Y-m-d'); ?>">
+                        <label class="form-label">Fecha del Traslado</label>
+                        <input type="date" class="form-control" name="fecha_traslado_ti" value="<?= date('Y-m-d'); ?>"> 
                     </div>
                 </div>
-                <?php 
-                    $prefix = 'ti';
-                    include __DIR__ . '/../partials/_campos_pago.php'; 
-                ?>
+                <?php $prefix = 'ti'; include __DIR__ . '/../partials/_campos_pago.php'; ?>
             </div>
 
             <div id="seccion-2" class="seccion-operacion" style="display:none;">
@@ -74,53 +73,50 @@
                 <p class="text-muted small">Registra el retiro de un difunto del cementerio.</p>
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label for="difunto_search_externo" class="form-label">Difunto a exhumar</label>
-                        <input list="difuntos" id="difunto_search_externo" name="id_difunto_te" class="form-control" placeholder="Buscar difunto...">
-                        <input type="hidden" id="id_difunto_externo">
+                        <label class="form-label">Difunto a exhumar</label>
+                        <div class="input-group">
+                            <input list="difuntos" id="difunto_search_te" class="form-control" placeholder="Buscar difunto...">
+                            <input type="hidden" name="id_difunto_te" id="id_difunto_te"> 
+                        </div>
                     </div>
                     <div class="col-md-4">
-                        <label for="fecha_exhumacion" class="form-label">Fecha de Exhumación</label>
-                        <input type="date" class="form-control" name="fecha_exhumacion" value="<?= date('Y-m-d'); ?>">
+                        <label class="form-label">Fecha de Exhumación</label>
+                        <input type="date" class="form-control" name="fecha_exhumacion_te" value="<?= date('Y-m-d'); ?>"> 
                     </div>
                 </div>
             </div>
 
-            <div id="seccion-3" class="seccion-operacion" style="display:none;">
+            <div id="seccion-3" class="seccion-operacion" data-prefix="br" style="display:none;">
                 <h5 class="mb-3">Autorización para Personas de Bajos Recursos</h5>
                 <p class="text-muted small">Registra un nuevo ingreso en una parcela asignada.</p>
-                <div class="row g-3">
+                <div class="row g-3 mb-3">
                     <div class="col-md-6">
-                        <label for="difunto_search_br" class="form-label">Difunto a inhumar</label>
-                        <input list="difuntos" id="difunto_search_br" name="id_difunto_br" class="form-control" placeholder="Buscar o registrar difunto...">
-                        <input type="hidden" id="id_difunto_br">
-                    </div>
-                    <div class="col-md-6">
-                        <label for="parcela_search_br" class="form-label">Parcela Asignada (debe estar vacía)</label>
-                        <input list="parcelas" id="parcela_search_br" name="id_parcela_br" class="form-control" placeholder="Buscar parcela...">
-                        <input type="hidden" id="id_parcela_br">
-                    </div>
-                </div>
-                <?php 
-                    $prefix = 'br';
-                    include __DIR__ . '/../partials/_campos_pago.php'; 
-                ?>
-            </div>
-
-            <div id="seccion-4" class="seccion-operacion" style="display:none;">
-                 <h5 class="mb-3">Certificado Libre de Deuda</h5>
-                 <div class="row g-3">
-                    <div class="col-md-6">
-                        <label for="difunto_search_traslado" class="form-label">Difunto a averiguar</label>
+                        <label class="form-label">Difunto a inhumar</label>
                         <div class="input-group">
-                            <input list="difuntos" id="difunto_search_traslado" name="id_difunto_ti" class="form-control" placeholder="Buscar difunto...">
-                            <input type="hidden" id="id_difunto_traslado">
+                            <input list="difuntos" id="difunto_search_br" class="form-control" placeholder="Buscar difunto...">
+                            <input type="hidden" name="id_difunto_br" id="id_difunto_br"> 
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <label for="parcela_search_destino" class="form-label">Parcela del difunto</label>
+                        <label class="form-label">Parcela Asignada (debe estar vacía)</label>
                         <div class="input-group">
-                            <input list="parcelas" id="parcela_search_destino" name="id_parcela_destino" class="form-control" placeholder="Buscar parcela de destino...">
-                            <input type="hidden" id="id_parcela_destino">
+                            <input list="parcelas" id="parcela_search_br" class="form-control" placeholder="Buscar parcela...">
+                            <input type="hidden" name="id_parcela_br" id="id_parcela_br"> 
+                        </div>
+                    </div>
+                </div>
+                <?php $prefix = 'br'; include __DIR__ . '/../partials/_campos_pago.php'; ?>
+            </div>
+
+            <div id="seccion-4" class="seccion-operacion" style="display:none;">
+                <h5 class="mb-3">Certificado Libre de Deuda</h5>
+                <p class="text-muted small">Imprime comprobante de libre de deuda para un deudo y parcela especifica.</p>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Parcela a verificar</label>
+                        <div class="input-group">
+                            <input list="parcelas" id="parcela_search_ld" class="form-control" placeholder="Buscar parcela...">
+                            <input type="hidden" name="id_parcela_ld" id="id_parcela_ld"> 
                         </div>
                     </div>
                 </div>

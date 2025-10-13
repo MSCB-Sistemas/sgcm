@@ -51,11 +51,11 @@ class OperacionController extends Control
 
     public function save()
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return $this->index();
         }
 
-        $tipo_operacion_id = $_POST['tipo_operacion_id'] ?? 0;
+        $tipo_operacion_id = $_POST['tipo_operacion'] ?? 0;
 
         switch ($tipo_operacion_id) {
             case 1:
@@ -74,49 +74,40 @@ class OperacionController extends Control
     private function procesarTrasladoInterno($data)
     {
         $errores = [];
-        $id_difunto = $data['id_difunto_ti'] ?? null;
-        $id_parcela_nueva = $data['id_parcela_destino'] ?? null;
-        $fecha_traslado = $data['fecha_traslado'] ?? null;
-        $id_deudo = $data['id_deudo'] ?? null;
-        $importe = $data['importe'] ?? null;
-        $fecha_vencimiento = $data['fecha_vencimiento'] ?? null;
+        $id_difunto       = $data['id_difunto_ti'] ?? null;
+        $id_parcela_nueva = $data['id_parcela_ti'] ?? null;
+        $id_deudo         = $data['id_deudo_ti'] ?? null;
+        $fecha_operacion  = $data['fecha_traslado_ti'] ?? date('Y-m-d');
+        $importe          = $data['importe_ti'] ?? null;
+        $vencimiento      = $data['fecha_vencimiento_ti'] ?? null;
 
-        if (!$id_difunto) $errores[] = "Debe seleccionar un difunto a trasladar.";
-        if (!$id_parcela_nueva) $errores[] = "Debe seleccionar una parcela de destino.";
-        if (!$id_deudo) $errores[] = "Debe seleccionar un deudo responsable del pago.";
-        if (!is_numeric($importe)) $errores[] = "El importe del pago es obligatorio y debe ser un número.";
-        if (!$fecha_vencimiento) $errores[] = "Debe especificar una fecha de vencimiento para el pago.";
-
-        // ... (otras validaciones de parcela ocupada, etc.) ...
+        if (!$id_difunto || !$id_parcela_nueva || !$id_deudo || !is_numeric($importe) || !$vencimiento) {
+            $errores[] = "Para un Traslado Interno, todos los campos son obligatorios.";
+        } else {
+            // ... (validaciones de parcela ocupada) ...
+        }
         
         if (!empty($errores)) {
             return $this->index($errores, $data);
         }
 
-        try {
-            $ubicacion_actual = $this->model->obtenerUbicacionActual($id_difunto);
-            $this->model->actualizarFechaRetiro($ubicacion_actual['id_ubicacion_difunto'], $fecha_traslado);
-            $this->model->crearNuevaUbicacion($id_difunto, $id_parcela_nueva, $fecha_traslado);
-            
-            $total = floatval($importe) + (floatval($importe) * (floatval($data['recargo'] ?? 0) / 100));
-            $this->model->crearNuevoPago(
-                $id_deudo, $id_parcela_nueva, 1,
-                $fecha_traslado, $fecha_vencimiento, $importe, 
-                $data['recargo'] ?? 0, $total, $_SESSION['usuario_id']
-            );
-            
-            header('Location: ' . URL . 'operacion?exito=1'); 
-            exit;
-        } catch (Exception $e) {
-            return $this->index(['Error al procesar la operación: ' . $e->getMessage()], $data);
-        }
+        $ubicacion_actual = $this->model->obtenerUbicacionActual($id_difunto);
+        $this->model->actualizarFechaRetiro($ubicacion_actual['id_ubicacion_difunto'], $fecha_operacion);
+        $this->model->crearNuevaUbicacion($id_difunto, $id_parcela_nueva, $fecha_operacion);
+        
+        $total = floatval($importe) + (floatval($importe) * (floatval($data['recargo_ti'] ?? 0) / 100));
+
+        $this->model->crearNuevoPago($id_deudo, $id_parcela_nueva, 1, $fecha_operacion, $vencimiento, $importe, $data['recargo_ti'] ?? 0, $total, $_SESSION['usuario_id']);
+        
+        header('Location: ' . URL . 'operacion?exito=1'); 
+        exit;
     }
 
     private function procesarTrasladoExterno($data)
     {
-        $id_difunto = $data['id_difunto'] ?? null;
-        $fecha_operacion = $data['fecha_traslado'] ?? date('Y-m-d');
         $errores = [];
+        $id_difunto = $data['id_difunto_te'] ?? null;
+        $fecha_operacion = $data['fecha_exhumacion_te'] ?? date('Y-m-d');
 
         if (!$id_difunto) $errores[] = "Para un traslado externo, debe seleccionar un difunto.";
         
@@ -136,11 +127,11 @@ class OperacionController extends Control
         $errores = [];
         $id_difunto = $data['id_difunto_br'] ?? null;
         $id_parcela = $data['id_parcela_br'] ?? null;
-        $id_deudo = $data['id_deudo'] ?? null;
-        $fecha_vencimiento = $data['fecha_vencimiento'] ?? null;
+        $id_deudo   = $data['id_deudo_br'] ?? null;
+        $vencimiento = $data['fecha_vencimiento_br'] ?? null;
 
         if (!$id_difunto || !$id_parcela || !$id_deudo) $errores[] = "Debe seleccionar difunto, deudo y parcela.";
-        if (empty($fecha_vencimiento)) $errores[] = "Debe especificar una fecha de vencimiento.";
+        if (empty($vencimiento)) $errores[] = "Debe especificar una fecha de vencimiento.";
         if ($this->model->verificarParcelaOcupada($id_parcela)) $errores[] = "La parcela ya está ocupada.";
         
         if (!empty($errores)) {
@@ -152,7 +143,7 @@ class OperacionController extends Control
 
             $this->model->crearNuevoPago(
                 $id_deudo, $id_parcela, 3,
-                date('Y-m-d'), $fecha_vencimiento, 0, 0, 0, $_SESSION['usuario_id']
+                date('Y-m-d'), $vencimiento, 0, 0, 0, $_SESSION['usuario_id']
             );
 
             header('Location: ' . URL . 'operacion?exito=3');
@@ -164,8 +155,8 @@ class OperacionController extends Control
 
     private function procesarLibreDeuda($data)
     {
-        $id_parcela = $data['id_parcela'] ?? null;
         $errores = [];
+        $id_parcela = $data['id_parcela_ld'] ?? null;   
 
         if (!$id_parcela) $errores[] = "Debe seleccionar una parcela para verificar su estado de deuda.";
         
