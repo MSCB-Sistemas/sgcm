@@ -6,6 +6,11 @@ class OperacionController extends Control
     private DeudoModel $deudoModel;
     private DifuntoModel $difuntoModel;
     private TipoOperacionModel $tipoOperacionModel;
+    private SexoModel $sexoModel;
+    private NacionalidadesModel $nacionalidadesModel;
+    private EstadoCivilModel $estadoCivilModel;
+    private TipoParcelaModel $tipoParcelaModel;
+    private OrientacionModel $orientacionModel;
 
     public function __construct()
     {
@@ -16,6 +21,11 @@ class OperacionController extends Control
         $this->deudoModel = $this->loadModel('DeudoModel');
         $this->difuntoModel = $this->loadModel('DifuntoModel');
         $this->tipoOperacionModel = $this->loadModel('TipoOperacionModel');
+        $this->sexoModel          = $this->loadModel("SexoModel");
+        $this->nacionalidadesModel= $this->loadModel("NacionalidadesModel");
+        $this->estadoCivilModel   = $this->loadModel("EstadoCivilModel");
+        $this->tipoParcelaModel   = $this->loadModel("TipoParcelaModel");
+        $this->orientacionModel   = $this->loadModel("OrientacionModel");
     }
 
     public function index($errores = [], $values = [])
@@ -27,6 +37,11 @@ class OperacionController extends Control
             'parcelas' => $this->parcelaModel->getAllParcelas(),
             'deudos' => $this->deudoModel->getAllDeudos(),
             'difuntos' => $this->difuntoModel->getAllDifuntos(),
+            'sexos'            => $this->sexoModel->getAllSexos(),
+            'nacionalidades'   => $this->nacionalidadesModel->getAllNacionalidades(),
+            'estados_civiles'  => $this->estadoCivilModel->getAllEstadosCiviles(),
+            'tipos_parcelas'   => $this->tipoParcelaModel->getAllTiposParcelas(),
+            'orientaciones'    => $this->orientacionModel->getAllOrientaciones(),
             'values' => $values,
             'errores' => $errores
         ];

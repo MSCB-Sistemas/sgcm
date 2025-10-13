@@ -77,74 +77,74 @@ class ParcelaController extends Control
     
     public function save()
     {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            if (isset($_POST['tipo_parcela'])) {
-                $tipo_parcela = $_POST['tipo_parcela'];
-            } else {
-                $tipo_parcela = '';
-            }
-            if (isset($_POST['deudo'])) {
-                $deudo = $_POST['deudo'];
-            } else {
-                $deudo = '';
-            }
-            if (isset($_POST['numero_ubicacion'])) {
-                $nro_ubicacion = trim($_POST['numero_ubicacion']);
-            } else {
-                $nro_ubicacion = '';
-            }
-            if (isset($_POST['hilera'])) {
-                $hilera = trim($_POST['hilera']);
-            } else {
-                $hilera = '';
-            }
-            if (isset($_POST['seccion'])) {
-                $seccion = trim($_POST['seccion']);
-            } else {
-                $seccion = '';
-            }
-            if (isset($_POST['fraccion'])) {
-                $fraccion = trim($_POST['fraccion']);
-            } else {
-                $fraccion = '';
-            }
-            if (isset($_POST['nivel'])) {
-                $nivel = trim($_POST['nivel']);
-            } else {
-                $nivel = '';
-            }
-            if (isset($_POST['orientacion'])) {
-                $orientacion = $_POST['orientacion'];
-            } else {
-                $orientacion = '';
-            }
-            $errores = [];
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header("Location: " . URL . "parcela/create");
+            exit;
+        }
 
-            if (empty($tipo_parcela)) $errores[]    = "El tipo de parcela es obligatorio.";
-            if (empty($orientacion)) $errores[]     = "La orientacion de la parcela es obligatoria.";
+        $tipo_parcela = $_POST['tipo_parcela'];
+        $id_deudo = $_POST['id_deudo'];
+        $nro_ubicacion = trim($_POST['numero_ubicacion']);
+        $hilera = trim($_POST['hilera']);
+        $seccion = trim($_POST['seccion']);
+        $fraccion = trim($_POST['fraccion']);
+        $nivel = trim($_POST['nivel']);
+        $orientacion = $_POST['orientacion'];
 
-            if (!empty($errores)) {
-                $tipos_parcelas = $this->tipoParcelaModel->getAllTiposParcelas();
-                $deudos = $this->deudoModel->getAllDeudos();
-                $orientaciones = $this->orientacionModel->getAllOrientaciones();
+        $errores = [];
 
-                $this->loadView('parcelas/ParcelaForm', [
-                    'title'             => 'Crear parcela',
-                    'action'            => URL . 'parcela/save',
-                    'values'            => $_POST,
-                    'errores'           => $errores,
-                    'tipos_parcelas'    => $tipos_parcelas,
-                    'deudos'            => $deudos,
-                    'orientaciones'     => $orientaciones,
-                ]);
-                return;
-            }
+        if (empty($tipo_parcela)) $errores[]    = "El tipo de parcela es obligatorio.";
+        if (empty($orientacion)) $errores[]     = "La orientacion de la parcela es obligatoria.";
 
-            if ($this->model->insertParcela($tipo_parcela, $deudo, $nro_ubicacion, $hilera, $seccion, $fraccion, $nivel, $orientacion)) {
-                header("Location: " . URL . "parcela");
+        $es_ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+
+        if (!empty($errores)) {
+            if ($es_ajax) {
+                http_response_code(422);
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'errors' => $errores]);
                 exit;
             } else {
-                die("Error al guardar la parcela");
+                $datos_error = [
+                    'title' => 'Crear parcela', 'action' => URL . 'parcela/save',
+                    'values' => $_POST, 'errores' => $errores,
+                    'tipos_parcelas' => $this->tipoParcelaModel->getAllTiposParcelas(),
+                    'deudos' => $this->deudoModel->getAllDeudos(),
+                    'orientaciones' => $this->orientacionModel->getAllOrientaciones()
+                ];
+
+                $this->loadView('parcelas/ParcelaForm', $datos_error);
+                return;
+            }
+        }
+
+        $nuevo_ingreso = $this->model->insertParcela($tipo_parcela, $id_deudo, $nro_ubicacion, $hilera, $seccion, $fraccion, $nivel, $orientacion);
+
+        if ($nuevo_ingreso) {
+            if ($es_ajax) {
+                header('Content-Type: application/json');
+                $texto_parcela = "ID: $nuevo_ingreso (Ubic: $nro_ubicacion, Sec: $seccion)";
+                echo json_encode([
+                    'success' => true,
+                    'newItem' => [
+                        'id'   => $nuevo_ingreso,
+                        'text' => $texto_parcela
+                    ]
+                ]);
+                exit;
+            } else {
+                header("Location: " . URL . "parcela");
+                exit;
+            }
+        } else {
+            $errorMsg = ['Error al guardar la parcela en la base de datos.'];
+            if ($es_ajax) {
+                http_response_code(500);
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'errors' => $errorMsg]);
+                exit;
+            } else {
+                die($errorMsg[0]);
             }
         }
     }

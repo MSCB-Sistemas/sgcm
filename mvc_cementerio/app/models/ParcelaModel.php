@@ -68,53 +68,38 @@ class ParcelaModel
      * @param int $id_orientacion ID de la orientación
      * @return int Resultado de la operación
      */
-    public function insertParcela($id_tipo_parcela, $id_deudo, $numero_ubicacion, $hilera, $seccion, $fraccion, $nivel, $id_orientacion): int
+    public function insertParcela($id_tipo_parcela, $id_deudo, $numero_ubicacion, $hilera, $seccion, $fraccion, $nivel, $id_orientacion): int|false
     {
-        $parametros = [
-            'id_tipo_parcela'  => $id_tipo_parcela,
-            'id_deudo'         => $id_deudo,
-            'numero_ubicacion' => $numero_ubicacion,
-            'hilera'           => $hilera,
-            'seccion'          => $seccion,
-            'fraccion'         => $fraccion,
-            'nivel'            => $nivel,
-            'id_orientacion'   => $id_orientacion
-        ];
+        $sql = "INSERT INTO parcela 
+                    (id_tipo_parcela, id_deudo, numero_ubicacion, hilera, seccion, fraccion, nivel, id_orientacion) 
+                VALUES 
+                    (:id_tipo_parcela, :id_deudo, :numero_ubicacion, :hilera, :seccion, :fraccion, :nivel, :id_orientacion)";
+        
+        try {
+            $stmt = $this->db->prepare($sql);
 
-        $sql = "INSERT INTO parcela (id_tipo_parcela, id_deudo, numero_ubicacion, hilera, seccion, fraccion, nivel, id_orientacion) 
-                VALUES (:id_tipo_parcela,";
-                
-        if (!empty($id_deudo)) {
-            $sql .= " :id_deudo,";
-            $parametros['id_deudo'] = $id_deudo;
-        } else {
-            $sql .= " NULL,";
+            $parametros = [
+                'id_tipo_parcela'  => $id_tipo_parcela,
+                'id_deudo'         => !empty($id_deudo) ? $id_deudo : null,
+                'numero_ubicacion' => $numero_ubicacion,
+                'hilera'           => $hilera,
+                'seccion'          => $seccion,
+                'fraccion'         => $fraccion,
+                'nivel'            => $nivel,
+                'id_orientacion'   => $id_orientacion
+            ];
+            
+            $stmt->execute($parametros);
+            $nuevo_id = $this->db->lastInsertId();
+
+            AuditoriaHelper::log($_SESSION['usuario_id'], $sql, $parametros, "Parcela Model", "Insert");
+
+            return (int) $nuevo_id;
+
+        } catch (PDOException $e) {
+            error_log("Error en insertParcela: " . $e->getMessage());
+            return false;
         }
-        $sql .= " :numero_ubicacion, :hilera, :seccion, :fraccion, :nivel, :id_orientacion)";
-
-        $stmt = $this->db->prepare($sql);
-
-        // para debugear
-        AuditoriaHelper::log(
-            $_SESSION['usuario_id'],   
-            $sql,                 
-            $parametros,           
-            "Parcela Model",            
-            "Insert"                
-        );
-
-        $stmt->execute($parametros);
-
-        AuditoriaHelper::log(
-            $_SESSION['usuario_id'],   
-            $sql,                 
-            $parametros,           
-            "Parcela Model",            
-            "Insert"                
-        );
-
-        return (int) $this->db->lastInsertId();
-
     }
 
     /** 

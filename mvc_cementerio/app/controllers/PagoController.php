@@ -92,71 +92,87 @@ class PagoController extends Control {
 
 
     public function save() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $deudo = $_POST['id_deudo'];
-            $parcela = $_POST['parcela'];
-            $tipo_operacion = $_POST['tipo_operacion'];
-            $fecha_pago = trim($_POST['fecha_pago']);
-            $fecha_vencimiento = trim($_POST['fecha_vencimiento']);
-            $importe = trim($_POST['importe']);
-            $recargo = trim($_POST['recargo']);
-            $total = trim($_POST['total']);
-            $vinculo_familiar = trim($_POST['vinculo_familiar']);
-            $responsable_tramite = trim($_POST['responsable_tramite']);
-            $usuario = $_SESSION['usuario_id'];
-            $errores = [];
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return $this->index();
+        }
 
-            if (empty($deudo)) $errores[] = 'El deudo es obligatorio';
-            if (empty($parcela)) $errores[] = 'La parcela es obligatoria';
-            if (empty($tipo_operacion)) $errores[] = 'La operacion es obligatoria';
-            if (empty($fecha_pago)) $errores[] = 'La fecha es obligatoria';
-            if (empty($fecha_vencimiento)) $errores[] = 'La fecha de vencimiento es obligatoria';
-            if (empty($importe)) $errores[] = 'El importe es obligatorio';
-            if (empty($recargo)) $errores[] = 'El recargo es obligatorio';
-            if (empty($total)) $errores[] = 'El total es obligatorio';
-            if (empty($vinculo_familiar)) $errores[] = 'El vinculo familiar es obligatorio';
-            if (empty($responsable_tramite)) $errores[] = 'El responsable del tramite es obligatorio';
-            if (empty($usuario)) $errores[] = 'El usuario es obligatorio';
+        $deudo = $_POST['id_deudo'];
+        $parcela = $_POST['parcela'];
+        $tipo_operacion = $_POST['tipo_operacion'];
+        $fecha_pago = trim($_POST['fecha_pago']);
+        $fecha_vencimiento = trim($_POST['fecha_vencimiento']);
+        $importe = trim($_POST['importe']);
+        $recargo = trim($_POST['recargo']);
+        $total = trim($_POST['total']);
+        $vinculo_familiar = trim($_POST['vinculo_familiar']);
+        $responsable_tramite = trim($_POST['responsable_tramite']);
+        $usuario = $_SESSION['usuario_id'];
+        $errores = [];
 
-            if (!empty($errores)) {
-                $deudos = $this->deudoModel->getAllDeudos();
-                $parcelas = $this->parcelaModel->getAllParcelas();
-                $usuarios = $this->usuarioModel->getAllUsuarios();
-                $tipo_operaciones = $this->tipoOperacionModel->getAllTipoOperaciones();
+        if (empty($deudo)) $errores[] = 'El deudo es obligatorio';
+        if (empty($parcela)) $errores[] = 'La parcela es obligatoria';
+        if (empty($tipo_operacion)) $errores[] = 'La operacion es obligatoria';
+        if (empty($fecha_pago)) $errores[] = 'La fecha es obligatoria';
+        if (empty($fecha_vencimiento)) $errores[] = 'La fecha de vencimiento es obligatoria';
+        if (empty($importe)) $errores[] = 'El importe es obligatorio';
+        if (empty($recargo)) $errores[] = 'El recargo es obligatorio';
+        if (empty($total)) $errores[] = 'El total es obligatorio';
+        if (empty($vinculo_familiar)) $errores[] = 'El vinculo familiar es obligatorio';
+        if (empty($responsable_tramite)) $errores[] = 'El responsable del tramite es obligatorio';
+        if (empty($usuario)) $errores[] = 'El usuario es obligatorio';
 
-                $this->loadView('pagos/PagosForm', [
-                    'title' => 'Crear pago',
-                    'action' => URL . 'parcela/save',
-                    'values' => $_POST,
-                    'errores' => $errores,
-                    'deudos' => $deudos,
-                    'parcelas' => $parcelas,
-                    'usuarios' => $usuarios,
-                    'tipo_operaciones' => $tipo_operaciones
-                ]);
-                return;
-            }
+        if (!empty($errores)) {
+            $es_ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
 
-            if ($this->model->insertPago(
-                $deudo,
-                $parcela,
-                $tipo_operacion,
-                $fecha_pago,
-                $fecha_vencimiento,
-                $importe,
-                $recargo,
-                $total,
-                $vinculo_familiar,
-                $responsable_tramite,
-                $usuario
-            )) 
-            {
-                header("Location: " . URL . "pago");
+            if ($es_ajax) {
+                http_response_code(422);
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'errors' => $errores]);
                 exit;
             } else {
-                die("Error al guardar el pago");
+                $datos_error = [
+                    'title' => 'Crear pago',
+                    'action' => URL . 'pago/save',
+                    'values' => $_POST,
+                    'errores' => $errores,
+                    'deudos' => $this->deudoModel->getAllDeudos(),
+                    'parcelas' => $this->parcelaModel->getAllParcelas(),
+                    'tipo_operaciones' => $this->tipoOperacionModel->getAllTipoOperaciones()
+                ];
+
+                $this->loadView('pagos/PagosForm', $datos_error);
+                return;
             }
         }
+
+        $nuevo_ingreso = $this->model->insertPago(
+            $deudo,
+            $parcela,
+            $tipo_operacion,
+            $fecha_pago,
+            $fecha_vencimiento,
+            $importe,
+            $recargo,
+            $total,
+            $vinculo_familiar,
+            $responsable_tramite,
+            $usuario
+        );
+
+        if ($nuevo_ingreso) {
+            $is_ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+
+           if ($is_ajax) {
+               header('Content-Type: application/json');
+               echo json_encode(['success' => true, 'newItem' => ['id' => $nuevo_ingreso, 'text' => "Pago #$nuevo_ingreso"]]);
+               exit;
+           } else {
+               header("Location: " . URL . "pago");
+               exit;
+           }
+       } else {
+           die("Error al guardar el pago");
+       }
     }
 
     public function edit($id) {
@@ -375,9 +391,7 @@ class PagoController extends Control {
         $parcela_id        = $_POST['parcela_id'] ?? null;
         $monto             = $_POST['monto'] ?? 0;
         $fecha_pago        = $_POST['fecha_pago'] ?? date('Y-m-d');
-        
         $fecha_vencimiento_nueva = $_POST['fecha_vencimiento'] ?? null;
-        
         $usuario_id        = $_SESSION['usuario_id'];
         $tipo_operacion_id = 1;
 

@@ -34,7 +34,7 @@
         <form action="<?= $datos['action'] ?>" method="POST" id="operacionForm">
             <input type="hidden" name="tipo_operacion" id="tipo_operacion_hidden">
 
-            <div id="seccion-1" class="seccion-operacion" style="display:none;">
+            <div id="seccion-1" class="seccion-operacion" data-prefix="ti" style="display:none;">
                 <h5 class="mb-3">Traslado Interno</h5>
                 <p class="text-muted small">Mueve un difunto de su ubicacion actual a una nueva parcela vacía.</p>
                 <div class="row g-3">
@@ -110,23 +110,17 @@
                  <h5 class="mb-3">Certificado Libre de Deuda</h5>
                  <div class="row g-3">
                     <div class="col-md-6">
-                        <label for="difunto_search_traslado" class="form-label">Difunto a trasladar</label>
+                        <label for="difunto_search_traslado" class="form-label">Difunto a averiguar</label>
                         <div class="input-group">
                             <input list="difuntos" id="difunto_search_traslado" name="id_difunto_ti" class="form-control" placeholder="Buscar difunto...">
                             <input type="hidden" id="id_difunto_traslado">
-                            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modalDifunto">
-                                <i class="bi bi-plus"></i>
-                            </button>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <label for="parcela_search_destino" class="form-label">Parcela de Destino</label>
+                        <label for="parcela_search_destino" class="form-label">Parcela del difunto</label>
                         <div class="input-group">
                             <input list="parcelas" id="parcela_search_destino" name="id_parcela_destino" class="form-control" placeholder="Buscar parcela de destino...">
                             <input type="hidden" id="id_parcela_destino">
-                            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modalParcela">
-                                <i class="bi bi-plus"></i>
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -136,9 +130,37 @@
     </div>
 </div>
 
-<datalist id="parcelas"><?php foreach ($datos['parcelas'] as $p): ?><option value="<?= htmlspecialchars($p['id_parcela'] . ' - ...') ?>" data-id="<?= $p['id_parcela'] ?>"><?php endforeach; ?></datalist>
-<datalist id="deudos"><?php foreach ($datos['deudos'] as $d): ?><option value="<?= htmlspecialchars($d['dni'] . ' - ...') ?>" data-id="<?= $d['id_deudo'] ?>"><?php endforeach; ?></datalist>
-<datalist id="difuntos"><?php foreach ($datos['difuntos'] as $di): ?><option value="<?= htmlspecialchars($di['dni'] . ' - ...') ?>" data-id="<?= $di['id_difunto'] ?>"><?php endforeach; ?></datalist>
+<datalist id="parcelas">
+    <?php foreach ($datos['parcelas'] as $p): ?>
+        <?php 
+            $texto_parcela = "ID: " . ($p['id_parcela'] ?? '') . 
+                             " | Ubic: " . ($p['numero_ubicacion'] ?? 'S/N') . 
+                             " | Sec: " . ($p['seccion'] ?? 'S/S') .
+                             " | Hil: " . ($p['hilera'] ?? 'S/H');
+        ?>
+        <option value="<?= htmlspecialchars($texto_parcela) ?>" data-id="<?= $p['id_parcela'] ?>">
+    <?php endforeach; ?>
+</datalist>
+
+<datalist id="deudos">
+    <?php foreach ($datos['deudos'] as $d): ?>
+        <?php
+            $texto_deudo = ($d['dni'] ?? 'S/DNI') . ' - ' . 
+                           ($d['apellido'] ?? '') . ', ' . ($d['nombre'] ?? '');
+        ?>
+        <option value="<?= htmlspecialchars(strtoupper($texto_deudo)) ?>" data-id="<?= $d['id_deudo'] ?>">
+    <?php endforeach; ?>
+</datalist>
+
+<datalist id="difuntos">
+    <?php foreach ($datos['difuntos'] as $di): ?>
+         <?php
+            $texto_difunto = ($di['dni'] ?? 'S/DNI') . ' - ' . 
+                             ($di['apellido'] ?? '') . ', ' . ($di['nombre'] ?? '');
+        ?>
+        <option value="<?= htmlspecialchars(strtoupper($texto_difunto)) ?>" data-id="<?= $di['id_difunto'] ?>">
+    <?php endforeach; ?>
+</datalist>
 
 <div class="d-flex justify-content-end gap-2 mt-4">
     <button type="submit" form="operacionForm" class="btn btn-success"><i class="bi bi-save"></i> Guardar Operación</button>
@@ -146,52 +168,184 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+document.addEventListener('DOMContentLoaded', function() {
     function configurarAutocompletado(inputId, hiddenId, datalistId) {
         const input = document.getElementById(inputId);
         const hidden = document.getElementById(hiddenId);
-
         if (!input || !hidden) return;
+
+        const normalizeText = (str) => str.toLowerCase().replace(/[\s-]+/g, '');
 
         input.addEventListener('input', () => {
             hidden.value = '';
-            const val = input.value;
+            const valorInputNormalizado = normalizeText(input.value);
+            
+            if (valorInputNormalizado === '') return;
+
             const options = document.querySelectorAll(`#${datalistId} option`);
-            const match = Array.from(options).find(opt => opt.value === val);
-            if (match) {
-                hidden.value = match.dataset.id;
+            
+            for (const option of options) {
+                const valorOpcionNormalizado = normalizeText(option.value);
+                
+                if (valorOpcionNormalizado === valorInputNormalizado) {
+                    hidden.value = option.dataset.id;
+                    input.setCustomValidity("");
+                    input.dispatchEvent(new Event('change', { 'bubbles': true }));
+                    break;
+                }
+            }
+        });
+        
+        input.addEventListener('blur', () => {
+            if (!hidden.value && input.required) { 
+                input.setCustomValidity("Debe seleccionar un elemento válido de la lista.");
+            } else {
+                input.setCustomValidity("");
             }
         });
     }
 
-    // Traslado Interno
-    configurarAutocompletado('difunto_search_traslado', 'id_difunto_traslado', 'difuntos');
-    configurarAutocompletado('parcela_search_destino', 'id_parcela_destino', 'parcelas');
-    configurarAutocompletado('deudo_search_ti', 'id_deudo_ti', 'deudos'); 
-    
-    // Bajos Recursos
-    configurarAutocompletado('difunto_search_br', 'id_difunto_br', 'difuntos');
-    configurarAutocompletado('parcela_search_br', 'id_parcela_br', 'parcelas');
-    configurarAutocompletado('deudo_search_br', 'id_deudo_br', 'deudos'); 
+    function configurarInfoDinamica(inputId, hiddenId, urlTemplate, accordionId) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
 
-    // Libre de Deuda
-    configurarAutocompletado('deudo_search_libredeuda', 'id_deudo_libredeuda', 'deudos');
-    configurarAutocompletado('parcela_search_libredeuda', 'id_parcela_libredeuda', 'parcelas');
+        input.addEventListener('change', function() {
+            const id = document.getElementById(hiddenId).value;
+            const accordion = document.getElementById(accordionId);
+
+            if (!id) {
+                accordion.innerHTML = '';
+                return;
+            }
+            
+            accordion.innerHTML = '<div class="text-center p-3"><div class="spinner-border text-primary" role="status"></div></div>';
+
+            fetch(urlTemplate + id)
+                .then(res => {
+                    if (!res.ok) throw new Error('Error en la respuesta del servidor');
+                    return res.json();
+                })
+                .then(data => {
+                    // Aquí va tu lógica completa para construir el HTML del acordeón
+                    // (La he extraído de tu código anterior)
+                    let pagosHtml = `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePagos">Pagos Asociados (${data.pagos.length})</button></h2><div id="collapsePagos" class="accordion-collapse collapse show"><div class="accordion-body p-0">`;
+                    if (data.pagos.length > 0) {
+                        pagosHtml += `<table class="table table-sm table-striped mb-0"><thead><tr><th>Fecha Pago</th><th>Vencimiento</th><th>Total</th><th>Deudo</th></tr></thead><tbody>`;
+                        data.pagos.forEach(p => {
+                            pagosHtml += `<tr><td>${p.fecha_pago}</td><td>${p.fecha_vencimiento}</td><td>ARS ${p.total}</td><td>${p.Deudo}</td></tr>`;
+                        });
+                        pagosHtml += `</tbody></table>`;
+                    } else {
+                        pagosHtml += `<p class="text-center text-muted p-3">No hay pagos asociados.</p>`;
+                    }
+                    pagosHtml += `</div></div></div>`;
+
+                    let difuntosHtml = `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDifuntos">Difuntos Asociados (${data.difuntos.length})</button></h2><div id="collapseDifuntos" class="accordion-collapse collapse"><div class="accordion-body p-0">`;
+                    if (data.difuntos.length > 0) {
+                         difuntosHtml += `<table class="table table-sm table-striped mb-0"><thead><tr><th>DNI</th><th>Nombre</th><th>Apellido</th><th>Fecha Ubicación</th></tr></thead><tbody>`;
+                        data.difuntos.forEach(d => {
+                            difuntosHtml += `<tr><td>${d.dni}</td><td>${d.nombre}</td><td>${d.apellido}</td><td>${d.fecha_ubicacion}</td></tr>`;
+                        });
+                        difuntosHtml += `</tbody></table>`;
+                    } else {
+                        difuntosHtml += `<p class="text-center text-muted p-3">No hay difuntos asociados.</p>`;
+                    }
+                    difuntosHtml += `</div></div></div>`;
+
+                    accordion.innerHTML = pagosHtml + difuntosHtml;
+                })
+                .catch(err => {
+                    console.error("Error al cargar info dinámica:", err);
+                    accordion.innerHTML = `<div class="alert alert-danger">Error al cargar los detalles.</div>`;
+                });
+        });
+    }
+
+    function configurarModalAjax(modalId, formId) {
+        const form = document.getElementById(formId);
+        const modalEl = document.getElementById(modalId);
+        if (!form || !modalEl) return;
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const url = form.getAttribute('action');
+
+            fetch(url, { method: 'POST', body: formData, headers: {'X-Requested-With': 'XMLHttpRequest'} })
+            .then(response => {
+                return response.json().then(data => ({ ok: response.ok, data: data }));
+            })
+            .then(({ ok, data }) => {
+                if (ok && data.success) {
+                    const datalistId = modalId.replace('modal', '').toLowerCase() + 's';
+                    const datalist = document.getElementById(datalistId);
+                    
+                    if (datalist && data.newItem) {
+                        const option = document.createElement('option');
+                        option.value = data.newItem.text;
+                        option.dataset.id = data.newItem.id;
+                        datalist.appendChild(option);
+                    }
+                    
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    modal.hide();
+                    form.reset();
+                    alert(data.mensaje || 'Creado con éxito.');
+
+                } else {
+                    const errorMsg = data.errors ? data.errors.join('\n') : 'Ocurrió un error desconocido.';
+                    alert('No se pudo guardar:\n' + errorMsg);
+                }
+            })
+            .catch(error => {
+                console.error('Error de conexión o JSON inválido:', error);
+                alert('Ocurrió un error de comunicación. Revisa la consola para más detalles.');
+            });
+        });
+    }
 
     const selectorOperacion = document.getElementById('tipo_operacion_selector');
-    const inputHiddenOperacion = document.getElementById('tipo_operacion_hidden');
+    if (selectorOperacion) {
+        selectorOperacion.addEventListener('change', function() {
+            const seleccion = this.value;
+            document.querySelectorAll('.seccion-operacion').forEach(s => s.style.display = 'none');
+            if (seleccion) {
+                const seccionAMostrar = document.getElementById('seccion-' + seleccion);
+                if (seccionAMostrar) seccionAMostrar.style.display = 'block';
+                document.getElementById('tipo_operacion_hidden').value = seleccion;
+            }
+        });
+    }
 
-    selectorOperacion.addEventListener('change', function() {
-        const seleccion = this.value;
-        document.querySelectorAll('.seccion-operacion').forEach(s => s.style.display = 'none');
-        
-        if (seleccion) {
-            const seccionAMostrar = document.getElementById('seccion-' + seleccion);
-            if (seccionAMostrar) seccionAMostrar.style.display = 'block';
-            inputHiddenOperacion.value = seleccion;
-        } else {
-            inputHiddenOperacion.value = '';
-        }
-    });
+    configurarAutocompletado('difunto_search_ti', 'id_difunto_ti', 'difuntos');
+    configurarAutocompletado('parcela_search_ti', 'id_parcela_ti', 'parcelas');
+    configurarAutocompletado('deudo_search_ti', 'id_deudo_ti', 'deudos');
+    configurarAutocompletado('difunto_search_te', 'id_difunto_te', 'difuntos');
+    configurarAutocompletado('difunto_search_br', 'id_difunto_br', 'difuntos');
+    configurarAutocompletado('parcela_search_br', 'id_parcela_br', 'parcelas');
+    configurarAutocompletado('deudo_search_br', 'id_deudo_br', 'deudos');
+    configurarAutocompletado('parcela_search_ld', 'id_parcela_ld', 'parcelas');
+    configurarAutocompletado('deudo_search_in_modal', 'id_deudo_in_modal', 'deudos');
+    configurarAutocompletado('deudo_search_in_modal_parcela', 'id_deudo_in_modal_parcela', 'deudos');
+
+    const urlInfoParcela = "<?= URL ?>parcela/obtenerInfoParcela/";
+    configurarInfoDinamica('parcela_search_ti', 'id_parcela_ti', urlInfoParcela, 'accordionParcelaInfo');
+    configurarInfoDinamica('parcela_search_br', 'id_parcela_br', urlInfoParcela, 'accordionParcelaInfo');
+    configurarInfoDinamica('parcela_search_ld', 'id_parcela_ld', urlInfoParcela, 'accordionParcelaInfo');
+    
+    const getActiveTargets = (baseName) => {
+        const seccionActiva = document.querySelector('.seccion-operacion[style*="block"]');
+        if (!seccionActiva) return null;
+        const prefix = seccionActiva.id.split('-')[1];
+        return {
+            inputId: `${baseName}_search_${prefix}`,
+            hiddenId: `id_${baseName}_${prefix}`
+        };
+    };
+
+    configurarModalAjax('modalDifunto', 'formNuevoDifunto', 'difuntos');
+    configurarModalAjax('modalParcela', 'formNuevaParcela', 'parcelas');
+    configurarModalAjax('modalDeudo', 'formNuevoDeudo', 'deudos');
 
     function configurarCalculoTotal(prefix) {
         const monto = document.getElementById(`importe_${prefix}`);
@@ -202,8 +356,7 @@
             if (!monto || !recargo || !total) return;
             const montoVal = parseFloat(monto.value) || 0;
             const recargoVal = parseFloat(recargo.value) || 0;
-            const totalVal = montoVal + (montoVal * recargoVal / 100);
-            total.value = totalVal.toFixed(2);
+            total.value = (montoVal + (montoVal * recargoVal / 100)).toFixed(2);
         }
 
         if (monto) monto.addEventListener("input", calcular);
@@ -212,45 +365,5 @@
     
     configurarCalculoTotal('ti');
     configurarCalculoTotal('br');
-
-    function configurarModalAjax(modalId, formId, datalistId, targetInputId, targetHiddenId) {
-        const form = document.getElementById(formId);
-        if (!form) return;
-
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const formData = new FormData(form);
-            const url = form.getAttribute('action');
-
-            fetch(url, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success && data.newItem) {
-                    const option = document.createElement('option');
-                    option.value = data.newItem.text; 
-                    option.dataset.id = data.newItem.id; 
-
-                    document.getElementById(datalistId).appendChild(option);
-
-                    document.getElementById(targetInputId).value = data.newItem.text;
-                    document.getElementById(targetHiddenId).value = data.newItem.id;
-
-                    const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
-                    modal.hide();
-                    form.reset();
-                } else {
-                    alert('Errores: ' + (data.errors || []).join('\n'));
-                }
-            })
-            .catch(error => console.error('Error en el envío del modal:', error));
-        });
-    }
-
-    configurarModalAjax('modalDifunto', 'formNuevoDifunto', 'difuntos', 'difunto_search_traslado', 'id_difunto_traslado');
-    configurarModalAjax('modalParcela', 'formNuevaParcela', 'parcelas', 'parcela_search_destino', 'id_parcela_destino');
-    configurarModalAjax('modalDeudo', 'formNuevoDeudo', 'deudos', 'deudo_search_ti', 'id_deudo_ti');
+});
 </script>
