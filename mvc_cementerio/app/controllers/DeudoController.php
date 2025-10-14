@@ -56,70 +56,90 @@ class DeudoController extends Control
 
     public function save()
     {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $dni            = trim($_POST['dni']);
-            $nombre         = trim($_POST['nombre']);
-            $apellido       = trim($_POST['apellido']);
-            $telefono       = trim($_POST['telefono']);
-            $email          = trim($_POST['email']);
-            $domicilio      = trim($_POST['domicilio']);
-            $localidad      = trim($_POST['localidad']);
-            $codigo_postal  = trim($_POST['codigo_postal']);
-            $errores        = [];
-            
-            if (empty($dni)) {
-                $errores[] = "El DNI es obligatorio.";
-            }
-            if (empty($nombre)) {
-                $errores[] = "Tenes que ingresar un nombre.";
-            }
-            if (empty($apellido)) {
-                $errores[] = "Tenes que ingresar un apellido.";
-            }
-            if (empty($telefono)) {
-                $errores[] = "Tenes que ingresar un telefono de referencia.";
-            }
-            if (empty($email)) {
-                $errores[] = "Ingresa un mail.";
-            }
-            if (empty($domicilio)) {
-                $errores[] = "Tiene que ingresar un domicilio.";
-            }
-            if (empty($localidad)) {
-                $errores[] = "Tiene que ingresar una localidad.";
-            }
-            if (empty($codigo_postal)) {
-                $errores[] = "El codigo postal es obligatorio.";
-            }
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . URL . 'deudo/create');
+            exit;
+        }
 
-            if (!empty($errores)) {
-                $datos = [
-                    'title' => 'Crear Deudo',
-                    'action' => URL . 'deudo/save',
-                    'values' => [
-                        'dni'           => $dni,
-                        'nombre'        => $nombre,
-                        'apellido'      => $apellido,
-                        'telefono'      => $telefono,
-                        'email'         => $email,
-                        'domicilio'     => $domicilio,
-                        'localidad'     => $localidad,
-                        'codigo_postal' => $codigo_postal
-                    ],
-                    'errores' => $errores
-                ];
-                $this->loadView('deudos/DeudoForm', $datos);
+        $dni            = trim($_POST['dni']);
+        $nombre         = trim($_POST['nombre']);
+        $apellido       = trim($_POST['apellido']);
+        $telefono       = trim($_POST['telefono']);
+        $email          = trim($_POST['email']);
+        $domicilio      = trim($_POST['domicilio']);
+        $localidad      = trim($_POST['localidad']);
+        $codigo_postal  = trim($_POST['codigo_postal']);
+        $errores        = [];
+        
+        if (empty($dni)) {
+            $errores[] = "El DNI es obligatorio.";
+        }
+        if (empty($nombre)) {
+            $errores[] = "Tenes que ingresar un nombre.";
+        }
+        if (empty($apellido)) {
+            $errores[] = "Tenes que ingresar un apellido.";
+        }
+        if (empty($telefono)) {
+            $errores[] = "Tenes que ingresar un telefono de referencia.";
+        }
+        if (empty($email)) {
+            $errores[] = "Ingresa un mail.";
+        }
+        if (empty($domicilio)) {
+            $errores[] = "Tiene que ingresar un domicilio.";
+        }
+        if (empty($localidad)) {
+            $errores[] = "Tiene que ingresar una localidad.";
+        }
+        if (empty($codigo_postal)) {
+            $errores[] = "El codigo postal es obligatorio.";
+        }
+
+        $es_ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+
+        if (!empty($errores)) {
+            if ($es_ajax) {
+                http_response_code(422);
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'errors' => $errores]);
+                exit;
+            } else {
+                $this->loadView('deudos/DeudoForm', [
+                    'title' => 'Crear Deudo', 'action' => URL . 'deudo/save',
+                    'values' => $_POST, 'errores' => $errores
+                ]);
                 return;
             }
+        }
 
-            $idDeudo = $this->model->insertDeudo($dni, $nombre, $apellido, $telefono, $email, $domicilio, $localidad, $codigo_postal);
-            if ($idDeudo) {
-                header('Location: ' . URL . 'deudo');
+        $nuevo_ingreso = $this->model->insertDeudo($dni, $nombre, $apellido, $telefono, $email, $domicilio, $localidad, $codigo_postal);
+        
+        if ($nuevo_ingreso) {
+            if ($es_ajax) {
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'success' => true,
+                    'newItem' => [
+                        'id'   => $nuevo_ingreso,
+                        'text' => strtoupper(($dni ? "$dni - " : "") . "$apellido, $nombre")
+                    ]
+                ]);
+                exit;
             } else {
-                die('Error al guardar el deudo');
+                header("Location: " . URL . "deudo");
+                exit;
             }
-
-            header('Location: ' . URL . 'deudo');
+        } else {
+            $errorMsg = ['Error al guardar el deudo en la base de datos.'];
+            if ($es_ajax) {
+                http_response_code(500);
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'errors' => $errorMsg]);
+                exit;
+            } else {
+                die($errorMsg[0]);
+            }
         }
     }
 
@@ -151,7 +171,7 @@ class DeudoController extends Control
     public function update($id)
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            // Definir campos y etiquetas personalizadas
+
             $campos = [
                 'dni'           => 'DNI',
                 'nombre'        => 'nombre',
@@ -213,8 +233,6 @@ class DeudoController extends Control
             }
         }
     }
-
-
     public function delete($id)
     {
         $eliminado = $this->model->deleteDeudo($id);
@@ -240,14 +258,12 @@ class DeudoController extends Control
         $columns = ['id_deudo', 'dni', 'nombre', 'apellido', 'telefono', 'email', 'domicilio', 'localidad', 'codigo_postal'];
         $orderCol = $columns[$orderColumnIndex] ?? 'id_deudo';
 
-        // Validar si el índice de columna existe
         if (isset($columns[$orderColumnIndex])) {
             $orderCol = $columns[$orderColumnIndex];
         } else {
             $orderCol = 'id_deudo';
         }
 
-        // Obtener el total de registros desde el modelo
         $totalRecords = $this->model->countAll();
 
         if ($search) {
@@ -276,7 +292,7 @@ class DeudoController extends Control
                     . '</form>';
             }
 
-            $fila['acciones'] = $acciones; // Esta es la clave que espera DataTables
+            $fila['acciones'] = $acciones;
         }
 
         echo json_encode([

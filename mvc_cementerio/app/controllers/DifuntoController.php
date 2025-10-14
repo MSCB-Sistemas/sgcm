@@ -75,83 +75,46 @@ class DifuntoController extends Control
 
     public function save()
     {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . URL . 'difunto/create');
+            exit;
+        }
 
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            if (isset($_POST["deudo"])) {
-                $deudo = $_POST["deudo"];
-            } else {
-                $deudo = '';
-            }
-            if (isset($_POST["nombre"])) {
-                $nombre = trim($_POST["nombre"]);
-            } else {
-                $nombre = '';
-            }
-            if (isset($_POST["apellido"])) {
-                $apellido = trim($_POST["apellido"]);
-            } else {
-                $apellido = '';
-            }
-            if (isset($_POST["dni"])) {
-                $dni = trim($_POST["dni"]);
-            } else {
-                $dni = '';
-            }
-            if (isset($_POST["edad"])) {
-                $edad = trim($_POST["edad"]);
-            } else {
-                $edad = '';
-            }
-            if (isset($_POST["fecha_fallecimiento"])) {
-                $fechaFallecimiento = trim($_POST["fecha_fallecimiento"]);
-            } else {
-                $fechaFallecimiento = '';
-            }
-            if (isset($_POST["sexo"])) {
-                $sexo = $_POST["sexo"];
-            } else {
-                $sexo = '';
-            }
-            if (isset($_POST["nacionalidad"])) {
-                $nacionalidad = $_POST["nacionalidad"];
-            } else {
-                $nacionalidad = '';
-            }
-            if (isset($_POST["estado_civil"])) {
-                $estadoCivil = $_POST["estado_civil"];
-            } else {
-                $estadoCivil = '';
-            }
-            if (isset($_POST["domicilio"])) {
-                $domicilio = trim($_POST["domicilio"]);
-            } else {
-                $domicilio = '';
-            }
-            if (isset($_POST["localidad"])) {
-                $localidad = trim($_POST["localidad"]);
-            } else {
-                $localidad = '';
-            }
-            if (isset($_POST["codigo_postal"])) {
-                $codigoPostal = trim($_POST["codigo_postal"]);
-            } else {
-                $codigoPostal = '';
-            }
-            $errores = [];
+        $id_deudo = $_POST["id_deudo"];
+        $nombre = trim($_POST["nombre"]);
+        $apellido = trim($_POST["apellido"]);
+        $dni = trim($_POST["dni"]);
+        $edad = trim($_POST["edad"]);
+        $fechaFallecimiento = trim($_POST["fecha_fallecimiento"]);
+        $sexo = $_POST["sexo"];
+        $nacionalidad = $_POST["nacionalidad"];
+        $estadoCivil = $_POST["estado_civil"];
+        $domicilio = trim($_POST["domicilio"]);
+        $localidad = trim($_POST["localidad"]);
+        $codigoPostal = trim($_POST["codigo_postal"]);
+        $errores = [];
 
 
-            if (empty($deudo))
-                $errores[] = "El deudo es obligatorio";
-            if (empty($dni))
-                $errores[] = "El dni es obligatorio";
-            if (empty($fechaFallecimiento))
-                $errores[] = "La fecha de fallecimiento es obligatoria";
-            if (empty($domicilio))
-                $errores[] = "El domicilio es obligatorio";
-            if (empty($localidad))
-                $errores[] = "La localidad es obligatorio";
+        if (empty($id_deudo))
+            $errores[] = "El deudo es obligatorio";
+        if (empty($dni))
+            $errores[] = "El dni es obligatorio";
+        if (empty($fechaFallecimiento))
+            $errores[] = "La fecha de fallecimiento es obligatoria";
+        if (empty($domicilio))
+            $errores[] = "El domicilio es obligatorio";
+        if (empty($localidad))
+            $errores[] = "La localidad es obligatorio";
 
-            if (!empty($errores)) {
+        if (!empty($errores)) {
+            $es_ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+            
+            if ($es_ajax) {
+                http_response_code(422);
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'errores' => $errores]);
+                exit;
+            } else {
                 $deudos = $this->deudoModel->getAllDeudos();
                 $nacionalidades = $this->nacionalidadesModel->getAllNacionalidades();
                 $sexos = $this->sexoModel->getAllSexos();
@@ -169,13 +132,29 @@ class DifuntoController extends Control
                 ]);
                 return;
             }
+        }
 
-            if ($this->model->insertDifunto($deudo, $nombre, $apellido, $dni, $edad, $fechaFallecimiento, $sexo, $nacionalidad, $estadoCivil, $domicilio, $localidad, $codigoPostal)) {
-                header("Location: " . URL . "difunto");
+        $nuevo_ingreso = $this->model->insertDifunto($id_deudo, $nombre, $apellido, $dni, $edad, $fechaFallecimiento, $sexo, $nacionalidad, $estadoCivil, $domicilio, $localidad, $codigoPostal);
+
+        if ($nuevo_ingreso) {
+            $is_ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+        
+            if ($is_ajax) {
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'success' => true,
+                    'newItem' => [
+                        'id'   => $nuevo_ingreso,
+                        'text' => ($dni ? "$dni - " : "") . "$nombre $apellido"
+                    ]
+                ]);
                 exit;
             } else {
-                die("Error al guardar el difunto");
+                header("Location: " . URL . "difunto");
+                exit;
             }
+        } else {
+            die("Error al guardar el difunto en la base de datos.");
         }
     }
 
@@ -357,7 +336,6 @@ class DifuntoController extends Control
         $orderColumnIndex = $_POST['order'][0]['column'] ?? 0;
         $orderDir = $_POST['order'][0]['dir'] ?? 'asc';
 
-        // Definir columnas permitidas para ordenamiento
         $columns = [
             'id_difunto',
             'nombre_deudo',
@@ -374,14 +352,12 @@ class DifuntoController extends Control
             'codigo_postal'
         ];
 
-        // Validar si el índice de columna existe
         if (isset($columns[$orderColumnIndex])) {
             $orderCol = $columns[$orderColumnIndex];
         } else {
             $orderCol = 'id_difunto';
         }
 
-        // Obtener el total de registros desde el modelo
         $totalRecords = $this->model->countAll();
 
 

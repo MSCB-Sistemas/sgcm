@@ -6,7 +6,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form id="formDifunto">
+                <form id="formNuevaParcela" action="<?= URL ?>/parcela/save" method="POST">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -32,11 +32,10 @@
                             </div>
                             
                             <div class="mb-3">
-                                <label for="deudo_search" class="form-label fw-bold">Deudo</label>
+                                <label for="deudo_search_in_modal_parcela" class="form-label fw-bold">Deudo</label>
                                 <div class="input-group">
-                                    <input list="deudos" id="deudo_search" name="deudo_search"
-                                        class="form-control" placeholder="Ingrese un deudo" autocomplete="off" required>
-                                    <input type="hidden" id="id_deudo" name="id_deudo">
+                                    <input list="deudos" id="deudo_search_in_modal_parcela" name="deudo_search" class="form-control" placeholder="Ingrese un deudo" autocomplete="off" required>
+                                    <input type="hidden" id="id_deudo_in_modal_parcela" name="id_deudo">
                                 </div>
                                 <datalist id="deudos">
                                     <?php foreach ($datos['deudos'] as $d): ?>
@@ -101,74 +100,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    function setupModalAJAX(formId, endpoint, datalistId, inputId, mapOptionValue) {
-        document.getElementById(formId).addEventListener('submit', function(e){
-            e.preventDefault();
-            const formData = new FormData(this);
-            fetch(endpoint, {method:'POST', body:formData})
-                .then(res=>res.json())
-                .then(data=>{
-                    if(data.success){
-                        const modal = bootstrap.Modal.getInstance(this.closest('.modal'));
-                        modal.hide();
-                        this.reset();
-
-                        if(datalistId && inputId){
-                            const datalist = document.getElementById(datalistId);
-                            const option = document.createElement('option');
-                            option.value = mapOptionValue(data);
-                            option.dataset.id = data[formId==='formDifunto'?'difunto':'deudo']?.id_difunto ?? data[formId==='formDeudo'?'deudo':'parcela']?.id_deudo ?? data.parcela.id_parcela;
-                            datalist.appendChild(option);
-
-                            const input = document.getElementById(inputId);
-                            input.value = option.value;
-                            const hiddenId = inputId.replace('_search','');
-                            if(document.getElementById('id_'+hiddenId))
-                                document.getElementById('id_'+hiddenId).value = option.dataset.id;
-                        }
-                        alert(data.mensaje);
-                    } else {
-                        alert(data.mensaje);
-                    }
-                }).catch(err=>console.error(err));
-        });
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-        const formParcela = document.getElementById('formParcela');
-        if (formParcela) {
-            setupModalAJAX('formParcela', 'ajax_guardar_parcela.php','parcelas','parcela_search',
-                data => `${data.parcela.id_parcela} - Tipo - ${data.parcela.tipo}`);
-        }
-    });
-
-    function configurarAutocompletado(inputId, hiddenId, datalistId) {
-        const input = document.getElementById(inputId);
-        const hidden = document.getElementById(hiddenId);
-
-        input.addEventListener('input', () => {
-            hidden.value = '';
-            const val = input.value;
-            const options = document.querySelectorAll(`#${datalistId} option`);
-            const match = Array.from(options).find(opt => opt.value === val);
-            if (match) {
-                hidden.value = match.dataset.id;
-                input.setCustomValidity("");
-            }
-        });
-
-        input.addEventListener('blur', () => {
-            if (!hidden.value) { 
-                input.setCustomValidity("Debe seleccionar un elemento de la lista");
-            } else {
-                input.setCustomValidity("");
-            }
-        });
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        configurarAutocompletado('deudo_search', 'id_deudo', 'deudos');
-    });
-</script>

@@ -165,6 +165,14 @@ CREATE TABLE `tipos_usuarios_permisos` (
   CONSTRAINT `rol_permiso_tipos_usuarios_FK` FOREIGN KEY (`id_tipo_usuario`) REFERENCES `tipos_usuarios` (`id_tipo_usuario`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish2_ci;
 
+-- cementerio.tipo_operacion definition
+
+CREATE TABLE `tipo_operacion` (
+  `id_tipo_operacion` int NOT NULL AUTO_INCREMENT,
+  `descripcion` varchar(100) COLLATE utf8mb4_spanish2_ci DEFAULT NULL,
+  PRIMARY KEY (`id_tipo_operacion`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish2_ci;
+
 -- cementerio.ubicacion_difunto definition
 
 CREATE TABLE `ubicacion_difunto` (
