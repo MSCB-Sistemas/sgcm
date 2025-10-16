@@ -83,5 +83,26 @@ class OperacionModel
         $stmt->execute(['id_parcela' => $id_parcela, 'fecha_actual' => $fecha_actual]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function getDatosParaPdfLibreDeuda($id_parcela)
+    {
+        $sql = "SELECT
+                    p.id_parcela, p.hilera, p.seccion,
+                    tp.nombre_parcela as tipo_parcela,
+                    CONCAT(d.apellido, ', ', d.nombre) as deudo,
+                    d.dni as dni_deudo,
+                    (SELECT GROUP_CONCAT(CONCAT(dif.nombre, ' ', dif.apellido) SEPARATOR ', ') 
+                    FROM ubicacion_difunto ud JOIN difunto dif ON ud.id_difunto = dif.id_difunto
+                    WHERE ud.id_parcela = p.id_parcela AND ud.fecha_retiro IS NULL) as difunto,
+                    (SELECT MAX(pg.fecha_vencimiento) FROM pago pg WHERE pg.id_parcela = p.id_parcela) as fecha_vencimiento
+                FROM parcela p
+                JOIN deudo d ON p.id_deudo = d.id_deudo
+                LEFT JOIN tipo_parcela tp ON p.id_tipo_parcela = tp.id_tipo_parcela
+                WHERE p.id_parcela = :id_parcela";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id_parcela' => $id_parcela]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
 ?>

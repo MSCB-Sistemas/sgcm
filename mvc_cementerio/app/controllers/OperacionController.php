@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../helpers/PdfHelper.php';
 class OperacionController extends Control
 {
     private OperacionModel $model;
@@ -169,7 +170,13 @@ class OperacionController extends Control
             return $this->index(["La parcela presenta una deuda pendiente con vencimiento el $vencimiento."], $data);
         }
 
-        echo "Generando PDF de Libre Deuda...";
+        $datos_pdf = $this->model->getDatosParaPdfLibreDeuda($id_parcela);
+        
+        $datos_pdf['fecha_vencimiento'] = date('d \d\e F \d\e Y', strtotime($datos_pdf['fecha_vencimiento']));
+        $datos_pdf['fecha_pago'] = date('d \d\e F \d\e Y');
+
+        $templatePath = __DIR__ . '/../../../docs/LIBREDEUDA.html';
+        PdfHelper::generarPlantilla($templatePath, $datos_pdf, "LibreDeuda-{$id_parcela}.pdf");
         exit;
     }
 }
