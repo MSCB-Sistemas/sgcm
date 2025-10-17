@@ -113,6 +113,13 @@
                 <p class="text-muted small">Imprime comprobante de libre de deuda para un deudo y parcela especifica.</p>
                 <div class="row g-3">
                     <div class="col-md-6">
+                        <label for="deudo_search_ld" class="form-label">Deudo a verificar</label>
+                        <div class="input-group">
+                            <input list="deudos" id="deudo_search_ld" class="form-control" placeholder="Buscar deudo...">
+                            <input type="hidden" name="id_deudo_ld" id="id_deudo_ld">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
                         <label class="form-label">Parcela a verificar</label>
                         <div class="input-group">
                             <input list="parcelas" id="parcela_search_ld" class="form-control" placeholder="Buscar parcela...">
@@ -121,7 +128,6 @@
                     </div>
                 </div>
             </div>
-            
         </form>
     </div>
 </div>
@@ -321,6 +327,7 @@ document.addEventListener('DOMContentLoaded', function() {
     configurarAutocompletado('parcela_search_br', 'id_parcela_br', 'parcelas');
     configurarAutocompletado('deudo_search_br', 'id_deudo_br', 'deudos');
     configurarAutocompletado('parcela_search_ld', 'id_parcela_ld', 'parcelas');
+    configurarAutocompletado('deudo_search_ld', 'id_deudo_ld', 'deudos');
     configurarAutocompletado('deudo_search_in_modal', 'id_deudo_in_modal', 'deudos');
     configurarAutocompletado('deudo_search_in_modal_parcela', 'id_deudo_in_modal_parcela', 'deudos');
 

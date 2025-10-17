@@ -85,7 +85,9 @@ class OperacionController extends Control
         if (!$id_difunto || !$id_parcela_nueva || !$id_deudo || !is_numeric($importe) || !$vencimiento) {
             $errores[] = "Para un Traslado Interno, todos los campos son obligatorios.";
         } else {
-            // ... (validaciones de parcela ocupada) ...
+            $ubicacion_actual = $this->model->obtenerUbicacionActual($id_difunto);
+            if (!$ubicacion_actual) $errores[] = "El difunto no tiene una ubicación activa para trasladar.";
+            if ($this->model->verificarParcelaOcupada($id_parcela_nueva)) $errores[] = "La parcela de destino ya está ocupada.";
         }
         
         if (!empty($errores)) {
@@ -98,8 +100,21 @@ class OperacionController extends Control
         
         $total = floatval($importe) + (floatval($importe) * (floatval($data['recargo_ti'] ?? 0) / 100));
 
-        $this->model->crearNuevoPago($id_deudo, $id_parcela_nueva, 1, $fecha_operacion, $vencimiento, $importe, $data['recargo_ti'] ?? 0, $total, $_SESSION['usuario_id']);
+        $nuevo_ingreso = $this->model->crearNuevoPago($id_deudo, $id_parcela_nueva, 1, $fecha_operacion, $vencimiento, $importe, $data['recargo_ti'] ?? 0, $total, $_SESSION['usuario_id']);
         
+        if ($nuevo_ingreso) {
+            $datos_pdf = $this->model->getDatosParaPdfTraslado($id_difunto, $nuevo_ingreso);
+
+            $datos_pdf['fecha_fallecimiento'] = date('d/m/Y', strtotime($datos_pdf['fecha_fallecimiento']));
+            $datos_pdf['fecha_pago'] = date('d/m/Y', strtotime($datos_pdf['fecha_pago']));
+
+            $templatePath = __DIR__ . '/../../../docs/AUTORIZACIONTRASLADOINTERNO.html';
+            
+            PdfHelper::generarPlantilla($templatePath, $datos_pdf, "Traslado-{$id_difunto}.pdf");
+        } else {
+            return $this->index(['Error fatal al crear el registro de pago.'], $data);
+        }
+
         header('Location: ' . URL . 'operacion?exito=1'); 
         exit;
     }
@@ -157,22 +172,29 @@ class OperacionController extends Control
     private function procesarLibreDeuda($data)
     {
         $errores = [];
-        $id_parcela = $data['id_parcela_ld'] ?? null;   
+        $id_parcela = $data['id_parcela_ld'] ?? null;
+        $id_deudo = $data['id_deudo_ld'] ?? null;   
 
-        if (!$id_parcela) $errores[] = "Debe seleccionar una parcela para verificar su estado de deuda.";
+        if (!$id_parcela || !$id_deudo) $errores[] = "Debe seleccionar un deudo y parcela para verificar su estado de deuda.";
         
         if (!empty($errores)) return $this->index($errores, $data);
         
-        $deuda = $this->model->obtenerUltimoPagoVencido($id_parcela);
+        $deuda = $this->model->obtenerDeudaPorDeudoYParcela($id_deudo, $id_parcela);
 
         if ($deuda) {
             $vencimiento = date('d/m/Y', strtotime($deuda['fecha_vencimiento']));
-            return $this->index(["La parcela presenta una deuda pendiente con vencimiento el $vencimiento."], $data);
+            return $this->index(["El deudo presenta una deuda en esta parcela con vencimiento el $vencimiento."], $data);
         }
 
-        $datos_pdf = $this->model->getDatosParaPdfLibreDeuda($id_parcela);
+        $datos_pdf = $this->model->getDatosParaPdfLibreDeuda($id_parcela, $id_deudo);
+
+        if (!$datos_pdf) {
+            return $this->index(["No se encontraron datos para la parcela seleccionada."], $data);
+        }
+
+        setlocale(LC_TIME, 'es_ES.UTF-8', 'es_ES', 'esp');
         
-        $datos_pdf['fecha_vencimiento'] = date('d \d\e F \d\e Y', strtotime($datos_pdf['fecha_vencimiento']));
+        $datos_pdf['fecha_vencimiento'] = $datos_pdf['fecha_vencimiento'] ? date('d \d\e F \d\e Y', strtotime($datos_pdf['fecha_vencimiento'])) : 'No registra pagos';
         $datos_pdf['fecha_pago'] = date('d \d\e F \d\e Y');
 
         $templatePath = __DIR__ . '/../../../docs/LIBREDEUDA.html';

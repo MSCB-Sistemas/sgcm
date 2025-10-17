@@ -10,7 +10,8 @@ class PdfHelper {
         $html = file_get_contents($path);
 
         foreach ($data as $key => $value) {
-            $html = str_replace("{{ $key }}", htmlspecialchars($value), $html);
+            $valor_seguro = $value ?? '';
+            $html = str_replace('{' . $key . '}', htmlspecialchars($valor_seguro), $html);
         }
 
         $options = new Options();
