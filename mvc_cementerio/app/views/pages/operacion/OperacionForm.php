@@ -113,6 +113,13 @@
                 <p class="text-muted small">Imprime comprobante de libre de deuda para un deudo y parcela especifica.</p>
                 <div class="row g-3">
                     <div class="col-md-6">
+                        <label for="deudo_search_ld" class="form-label">Deudo a verificar</label>
+                        <div class="input-group">
+                            <input list="deudos" id="deudo_search_ld" class="form-control" placeholder="Buscar deudo...">
+                            <input type="hidden" name="id_deudo_ld" id="id_deudo_ld">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
                         <label class="form-label">Parcela a verificar</label>
                         <div class="input-group">
                             <input list="parcelas" id="parcela_search_ld" class="form-control" placeholder="Buscar parcela...">
@@ -121,7 +128,36 @@
                     </div>
                 </div>
             </div>
-            
+
+            <div id="seccion-5" class="seccion-operacion" data-prefix="in" style="display:none;">
+                <h5 class="mb-3">Ingreso de Difunto</h5>
+                <p class="text-muted small">Registra la primera inhumación de un difunto en una parcela vacía.</p>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Difunto a inhumar</label>
+                        <div class="input-group">
+                            <input list="difuntos" id="difunto_search_in" class="form-control" placeholder="Buscar difunto...">
+                            <input type="hidden" name="id_difunto_in" id="id_difunto_in">
+                            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modalDifunto"><i class="bi bi-plus"></i></button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Parcela de Destino (debe estar vacía)</label>
+                        <div class="input-group">
+                            <input list="parcelas" id="parcela_search_in" class="form-control" placeholder="Buscar parcela...">
+                            <input type="hidden" name="id_parcela_in" id="id_parcela_in">
+                            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modalParcela"><i class="bi bi-plus"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha de Ingreso</label>
+                        <input type="date" class="form-control" name="fecha_ingreso_in" value="<?= date('Y-m-d'); ?>"> 
+                    </div>
+                </div>
+                <?php $prefix = 'in'; include __DIR__ . '/../partials/_campos_pago.php'; ?>
+            </div>
         </form>
     </div>
 </div>
@@ -321,8 +357,12 @@ document.addEventListener('DOMContentLoaded', function() {
     configurarAutocompletado('parcela_search_br', 'id_parcela_br', 'parcelas');
     configurarAutocompletado('deudo_search_br', 'id_deudo_br', 'deudos');
     configurarAutocompletado('parcela_search_ld', 'id_parcela_ld', 'parcelas');
+    configurarAutocompletado('deudo_search_ld', 'id_deudo_ld', 'deudos');
     configurarAutocompletado('deudo_search_in_modal', 'id_deudo_in_modal', 'deudos');
     configurarAutocompletado('deudo_search_in_modal_parcela', 'id_deudo_in_modal_parcela', 'deudos');
+    configurarAutocompletado('difunto_search_in', 'id_difunto_in', 'difuntos');
+    configurarAutocompletado('parcela_search_in', 'id_parcela_in', 'parcelas');
+    configurarAutocompletado('deudo_search_in', 'id_deudo_in', 'deudos');
 
     const urlInfoParcela = "<?= URL ?>parcela/obtenerInfoParcela/";
     configurarInfoDinamica('parcela_search_ti', 'id_parcela_ti', urlInfoParcela, 'accordionParcelaInfo');
@@ -361,5 +401,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     configurarCalculoTotal('ti');
     configurarCalculoTotal('br');
+    configurarCalculoTotal('in');
 });
 </script>

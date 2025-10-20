@@ -1,296 +1,102 @@
 <html>
 <head>
-    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Libre Deuda</title>
     <style type="text/css">
-        ol {
-            margin: 0;
-            padding: 0
-        }
-
-        table td,
-        table th {
-            padding: 0
-        }
-
-        .c1 {
-            margin-left: -14pt;
-            padding-top: 0pt;
-            padding-bottom: 0pt;
-            line-height: 1.5;
-            orphans: 2;
-            widows: 2;
-            text-align: left;
-            height: 11pt
-        }
-
-        .c6 {
-            margin-left: 58pt;
-            padding-top: 0pt;
-            text-indent: 14pt;
-            padding-bottom: 0pt;
-            line-height: 1.5;
-            orphans: 2;
-            widows: 2;
-            text-align: left
-        }
-
-        .c11 {
-            padding-top: 0pt;
-            padding-bottom: 0pt;
-            line-height: 1.1500000000000001;
-            orphans: 2;
-            widows: 2;
-            text-align: left;
-            height: 11pt
-        }
-
-        .c14 {
-            margin-left: 166pt;
-            padding-top: 0pt;
-            padding-bottom: 0pt;
-            line-height: 1.5;
-            orphans: 2;
-            widows: 2;
-            text-align: left
-        }
-
-        .c9 {
-            color: #000000;
-            font-weight: 400;
-            text-decoration: none;
-            vertical-align: baseline;
-            font-size: 11pt;
-            font-family: "Arial";
-            font-style: normal
-        }
-
-        .c10 {
-            margin-left: -14pt;
-            padding-top: 12pt;
-            padding-bottom: 0pt;
-            line-height: 1.5;
-            orphans: 2;
-            widows: 2;
-            text-align: left
-        }
-
-        .c0 {
-            color: #000000;
-            font-weight: 400;
-            text-decoration: none;
-            vertical-align: baseline;
+        body {
+            font-family: "Times New Roman", serif;
             font-size: 12pt;
-            font-family: "Times New Roman";
-            font-style: normal
-        }
-
-        .c13 {
-            margin-left: 36pt;
-            padding-top: 0pt;
-            padding-bottom: 0pt;
-            line-height: 1.5;
-            orphans: 2;
-            widows: 2;
-            text-align: center
-        }
-
-        .c2 {
-            margin-left: -14pt;
-            padding-top: 0pt;
-            padding-bottom: 0pt;
-            line-height: 1.5;
-            orphans: 2;
-            widows: 2;
-            text-align: left
-        }
-
-        .c5 {
-            margin-left: -14pt;
-            padding-top: 0pt;
-            padding-bottom: 0pt;
-            line-height: 1.5;
-            orphans: 2;
-            widows: 2;
-            text-align: center
-        }
-
-        .c8 {
-            color: #000000;
-            text-decoration: none;
-            vertical-align: baseline;
-            font-size: 13pt;
-            font-style: normal
-        }
-
-        .c4 {
-            text-decoration-skip-ink: none;
-            font-family: "Times New Roman";
-            -webkit-text-decoration-skip: none;
-            font-weight: 700;
-            text-decoration: underline
-        }
-
-        .c12 {
-            color: #000000;
-            vertical-align: baseline;
-            font-size: 12pt;
-            font-style: normal
-        }
-
-        .c3 {
-            background-color: #ffffff;
-            max-width: 451.5pt;
-            padding: 72pt 72pt 72pt 72pt
-        }
-
-        .c7 {
-            font-weight: 700;
-            font-family: "Times New Roman"
-        }
-
-        .title {
-            padding-top: 0pt;
-            color: #000000;
-            font-size: 26pt;
-            padding-bottom: 3pt;
-            font-family: "Arial";
-            line-height: 1.1500000000000001;
-            page-break-after: avoid;
-            orphans: 2;
-            widows: 2;
-            text-align: left
-        }
-
-        .subtitle {
-            padding-top: 0pt;
-            color: #666666;
-            font-size: 15pt;
-            padding-bottom: 16pt;
-            font-family: "Arial";
-            line-height: 1.1500000000000001;
-            page-break-after: avoid;
-            orphans: 2;
-            widows: 2;
-            text-align: left
-        }
-
-        li {
-            color: #000000;
-            font-size: 11pt;
-            font-family: "Arial"
+            padding: 72pt 72pt;
         }
 
         p {
             margin: 0;
-            color: #000000;
+            padding: 0;
+            line-height: 1.5;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24pt;
+        }
+
+        .header-main {
+            font-weight: 700;
+            font-size: 13pt;
+        }
+
+        .header-sub {
+            font-weight: 700;
             font-size: 11pt;
-            font-family: "Arial"
         }
 
-        h1 {
-            padding-top: 20pt;
-            color: #000000;
-            font-size: 20pt;
-            padding-bottom: 6pt;
-            font-family: "Arial";
-            line-height: 1.1500000000000001;
-            page-break-after: avoid;
-            orphans: 2;
-            widows: 2;
-            text-align: left
+        .title-block {
+            text-align: center;
+            margin-bottom: 24pt;
         }
 
-        h2 {
-            padding-top: 18pt;
-            color: #000000;
-            font-size: 16pt;
-            padding-bottom: 6pt;
-            font-family: "Arial";
-            line-height: 1.1500000000000001;
-            page-break-after: avoid;
-            orphans: 2;
-            widows: 2;
-            text-align: left
+        .main-title, .sub-title {
+            font-weight: 700;
+            text-decoration: underline;
         }
 
-        h3 {
-            padding-top: 16pt;
-            color: #434343;
-            font-size: 14pt;
-            padding-bottom: 4pt;
-            font-family: "Arial";
-            line-height: 1.1500000000000001;
-            page-break-after: avoid;
-            orphans: 2;
-            widows: 2;
-            text-align: left
+        .data-section {
+            margin-bottom: 24pt;
         }
 
-        h4 {
-            padding-top: 14pt;
-            color: #666666;
-            font-size: 12pt;
-            padding-bottom: 4pt;
-            font-family: "Arial";
-            line-height: 1.1500000000000001;
-            page-break-after: avoid;
-            orphans: 2;
-            widows: 2;
-            text-align: left
+        .data-item {
+            margin-bottom: 4pt;
         }
 
-        h5 {
-            padding-top: 12pt;
-            color: #666666;
-            font-size: 11pt;
-            padding-bottom: 4pt;
-            font-family: "Arial";
-            line-height: 1.1500000000000001;
-            page-break-after: avoid;
-            orphans: 2;
-            widows: 2;
-            text-align: left
+        .data-item strong {
+            font-weight: normal;
+        }
+        
+        .main-paragraph {
+            text-align: justify;
+            text-indent: 36pt;
+            margin-bottom: 24pt;
         }
 
-        h6 {
-            padding-top: 12pt;
-            color: #666666;
-            font-size: 11pt;
-            padding-bottom: 4pt;
-            font-family: "Arial";
-            line-height: 1.1500000000000001;
-            page-break-after: avoid;
-            font-style: italic;
-            orphans: 2;
-            widows: 2;
-            text-align: left
+        .closing {
+            margin-bottom: 48pt;
         }
+
+        .footer {
+            text-align: left;
+        }
+
     </style>
 </head>
-    <body class="c3 doc-content">
-        <p class="c6"><span class="c7 c8">MUNICIPALIDAD DE SAN CARLOS DE BARILOCHE</span></p>
-        <p class="c5"><span
-                class="c7">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PROVINCIA
-                DE R&Iacute;O NEGRO</span><span class="c0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p>
-        <p class="c5"><span class="c0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p>
-        <p class="c14"><span class="c4 c12">LIBRE DEUDA</span></p>
-        <p class="c13"><span class="c7">&nbsp; &nbsp;</span><span class="c4">DERECHOS DE CEMENTERIO POR RENOVACI&Oacute;N DE
-                {</span><span class="c4">TIPO_PARCELA</span><span class="c4">}</span></p>
-        <p class="c2"><span class="c0">Restos de : &nbsp;{difunto}</span></p>
-        <p class="c2"><span class="c0">{tipo_parcela}</span></p>
-        <p class="c2"><span class="c0">Hilera : {hilera}</span></p>
-        <p class="c2"><span class="c0">Secci&oacute;n : {seccion}</span></p>
-        <p class="c2"><span class="c0">Responsable : {deudo}</span></p>
-        <p class="c1"><span class="c0"></span></p>
-        <p class="c2"><span
-                class="c0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Se
-                informa que la parcela antes mencionada no registra deuda por DERECHOS DE CEMENTERIO. Se eleva la misma para
-                ser presentada a la administraci&oacute;n del cementerio municipal. Pr&oacute;ximo vencimiento de la parcela
-                antes mencionada : {fecha_vencimiento}</span></p>
-        <p class="c1"><span class="c0"></span></p>
-        <p class="c1"><span class="c0"></span></p>
-        <p class="c2"><span class="c0">Atentamente.</span></p>
-        <p class="c10"><span class="c0">SAN CARLOS DE BARILOCHE {fecha_pago}</span></p>
-        <p class="c11"><span class="c9"></span></p>
-    </body>
+<body>
+
+    <div class="header">
+        <p class="header-main">MUNICIPALIDAD DE SAN CARLOS DE BARILOCHE</p>
+        <p class="header-sub">PROVINCIA DE RÍO NEGRO</p>
+    </div>
+
+    <div class="title-block">
+        <p class="main-title">LIBRE DEUDA</p>
+        <p class="sub-title">DERECHOS DE CEMENTERIO POR RENOVACIÓN DE {tipo_parcela}</p>
+    </div>
+
+    <div class="data-section">
+        <p class="data-item"><strong>Restos de:</strong> {difunto}</p>
+        <p class="data-item"><strong>Tipo de Parcela:</strong> {tipo_parcela}</p>
+        <p class="data-item"><strong>Hilera:</strong> {hilera}</p>
+        <p class="data-item"><strong>Sección:</strong> {seccion}</p>
+        <p class="data-item"><strong>Responsable:</strong> {deudo}</p>
+    </div>
+
+    <p class="main-paragraph">
+        Se informa que la parcela antes mencionada no registra deuda por DERECHOS DE CEMENTERIO. Se eleva la misma para ser presentada a la administración del cementerio municipal. Próximo vencimiento de la parcela antes mencionada: <strong>{fecha_vencimiento}</strong>.
+    </p>
+    
+    <p class="closing">Atentamente.</p>
+    
+    <div class="footer">
+        <p>SAN CARLOS DE BARILOCHE, {fecha_pago}</p>
+    </div>
+
+</body>
 </html>

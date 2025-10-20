@@ -1,239 +1,100 @@
 <html>
 <head>
-    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
-    <style type="text/css">
-        ol {
-            margin: 0;
-            padding: 0
-        }
-
-        table td,
-        table th {
-            padding: 0
-        }
-
-        .c3 {
-            padding-top: 0pt;
-            padding-bottom: 0pt;
-            line-height: 1.1500000000000001;
-            orphans: 2;
-            widows: 2;
-            text-align: left;
-            height: 11pt
-        }
-
-        .c0 {
-            margin-left: -14.2pt;
-            padding-top: 0pt;
-            padding-bottom: 0pt;
-            line-height: 1.5;
-            orphans: 2;
-            widows: 2;
-            text-align: left
-        }
-
-        .c2 {
-            color: #000000;
-            font-weight: 400;
-            text-decoration: none;
-            vertical-align: baseline;
+    <meta charset="UTF-8">
+    <title>Autorización de Traslado Externo</title>
+    <style>
+        body {
+            font-family: "Times New Roman", serif;
             font-size: 12pt;
-            font-family: "Times New Roman";
-            font-style: normal
+            line-height: 1.6;
+            margin: 1.5cm; 
         }
 
-        .c8 {
-            color: #000000;
-            text-decoration: none;
-            vertical-align: baseline;
-            font-style: normal
-        }
-
-        .c6 {
-            font-size: 12pt;
-            font-weight: 400;
-            font-family: "Times New Roman"
-        }
-
-        .c9 {
-            font-weight: 700;
-            font-size: 11pt;
-            font-family: "Times New Roman"
-        }
-
-        .c5 {
-            font-size: 12pt;
-            font-weight: 700;
-            font-family: "Times New Roman"
-        }
-
-        .c7 {
-            background-color: #ffffff;
-            max-width: 452.6pt;
-            padding: 72pt 72pt 72pt 70.9pt
-        }
-
-        .c4 {
-            height: 11pt
-        }
-
-        .c1 {
-            margin-right: -30.4pt
-        }
-
-        .c10 {
-            text-indent: 99.2pt
-        }
-
-        .c11 {
-            margin-left: 36pt
-        }
-
-        .title {
-            padding-top: 0pt;
-            color: #000000;
-            font-size: 26pt;
-            padding-bottom: 3pt;
-            font-family: "Arial";
-            line-height: 1.1500000000000001;
-            page-break-after: avoid;
-            orphans: 2;
-            widows: 2;
-            text-align: left
-        }
-
-        .subtitle {
-            padding-top: 0pt;
-            color: #666666;
-            font-size: 15pt;
-            padding-bottom: 16pt;
-            font-family: "Arial";
-            line-height: 1.1500000000000001;
-            page-break-after: avoid;
-            orphans: 2;
-            widows: 2;
-            text-align: left
-        }
-
-        li {
-            color: #000000;
-            font-size: 11pt;
-            font-family: "Arial"
+        .container {
+            width: 100%;
         }
 
         p {
-            margin: 0;
-            color: #000000;
-            font-size: 11pt;
-            font-family: "Arial"
+            margin: 0 0 12pt 0;
+            text-align: justify;
         }
 
-        h1 {
-            padding-top: 20pt;
-            color: #000000;
-            font-size: 20pt;
-            padding-bottom: 6pt;
-            font-family: "Arial";
-            line-height: 1.1500000000000001;
-            page-break-after: avoid;
-            orphans: 2;
-            widows: 2;
-            text-align: left
+        .encabezado {
+            margin-bottom: 24pt;
         }
 
-        h2 {
-            padding-top: 18pt;
-            color: #000000;
-            font-size: 16pt;
-            padding-bottom: 6pt;
-            font-family: "Arial";
-            line-height: 1.1500000000000001;
-            page-break-after: avoid;
-            orphans: 2;
-            widows: 2;
-            text-align: left
-        }
-
-        h3 {
-            padding-top: 16pt;
-            color: #434343;
+        .titulo {
+            text-align: center;
+            font-weight: bold;
             font-size: 14pt;
-            padding-bottom: 4pt;
-            font-family: "Arial";
-            line-height: 1.1500000000000001;
-            page-break-after: avoid;
-            orphans: 2;
-            widows: 2;
-            text-align: left
+            text-decoration: underline;
+            margin-top: 24pt;
+            margin-bottom: 24pt;
         }
 
-        h4 {
-            padding-top: 14pt;
-            color: #666666;
-            font-size: 12pt;
-            padding-bottom: 4pt;
-            font-family: "Arial";
-            line-height: 1.1500000000000001;
-            page-break-after: avoid;
-            orphans: 2;
-            widows: 2;
-            text-align: left
+        strong {
+            font-weight: bold;
+        }
+        
+        .detalles {
+            padding-left: 20pt;
+            margin-top: 20pt;
+            margin-bottom: 20pt;
         }
 
-        h5 {
-            padding-top: 12pt;
-            color: #666666;
-            font-size: 11pt;
-            padding-bottom: 4pt;
-            font-family: "Arial";
-            line-height: 1.1500000000000001;
-            page-break-after: avoid;
-            orphans: 2;
-            widows: 2;
-            text-align: left
+        .pie-pagina {
+            margin-top: 48pt;
         }
-
-        h6 {
-            padding-top: 12pt;
-            color: #666666;
-            font-size: 11pt;
-            padding-bottom: 4pt;
-            font-family: "Arial";
-            line-height: 1.1500000000000001;
-            page-break-after: avoid;
-            font-style: italic;
-            orphans: 2;
-            widows: 2;
-            text-align: left
+        
+        .linea-firma {
+            border-bottom: 1px solid #333;
+            display: inline-block;
+            width: 300px;
+            margin-left: 10px;
         }
     </style>
 </head>
-    <body class="c7 doc-content">
-        <p class="c0"><span class="c2">DE: DIRECCI&Oacute;N DE SERVICIOS P&Uacute;BLICOS.</span></p>
-        <p class="c0"><span class="c8 c5">A. ENCARGADO DE CEMENTERIO MUNICIPAL.</span></p>
-        <p class="c0 c4"><span class="c5 c8"></span></p>
-        <p class="c0"><span class="c6">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                &nbsp; &nbsp; &nbsp; &nbsp;Por la presente se </span><span class="c5">AUTORIZA</span><span
-                class="c6">&nbsp;el </span><span class="c5">TRASLADO EXTERNO</span><span class="c2">&nbsp;de los restos de
-                quien en vida fuera {difunto}</span></p>
-        <p class="c0 c1"><span class="c6">Defunci&oacute;n del d&iacute;a {</span><span
-                class="c6">fecha_fallecimiento</span><span class="c2">} de la Fosa/Nicho N&ordm; {id_parcela} Hilera
-                {hilera} Secci&oacute;n {seccion} </span></p>
-        <p class="c0 c1"><span class="c5">A CEMENTERIO</span><span
-                class="c2">&nbsp;__________________________________________________________ .--</span></p>
-        <p class="c0"><span class="c6">POR EMPRESA:{deudo}.- </span><span class="c8 c5">DERECHOS ABONADOS</span></p>
-        <p class="c0"><span class="c5">MEDIANTE RECIBO N&ordm; {id_pago}</span><span class="c2">.-,CON FECHA
-                {fecha_pago}</span></p>
-        <p class="c0"><span class="c2">Tr&aacute;mite realizado por el Sr./Sra. {responsable_tramite}</span></p>
-        <p class="c0"><span class="c2">DNI N&ordm; ____________________________ V&iacute;nculo familiar
-                {vinculo_familiar}</span></p>
-        <p class="c0 c4"><span class="c2"></span></p>
-        <p class="c0 c4"><span class="c2"></span></p>
-        <p class="c0"><span class="c2">SAN CARLOS DE BARILOCHE {fecha_pago}</span></p>
-        <p class="c3"><span class="c2"></span></p>
-        <p class="c3"><span class="c8 c5"></span></p>
-        <p class="c3 c10"><span class="c2"></span></p>
-        <p class="c3 c11"><span class="c2"></span></p>
-        <p class="c3 c11"><span class="c8 c9"></span></p>
-    </body>
+<body>
+    <div class="container">
+
+        <div class="encabezado">
+            <p><strong>DE:</strong> DIRECCIÓN DE SERVICIOS PÚBLICOS.</p>
+            <p><strong>A:</strong> ENCARGADO DE CEMENTERIO MUNICIPAL.</p>
+        </div>
+
+        <h1 class="titulo">AUTORIZACIÓN DE TRASLADO EXTERNO (EXHUMACIÓN)</h1>
+
+        <p>
+            Por la presente se <strong>AUTORIZA</strong> la exhumación y traslado externo de los restos de quien en vida fuera 
+            <strong>{difunto}</strong>, con fecha de defunción el día <strong>{fecha_fallecimiento}</strong>.
+        </p>
+
+        <div class="detalles">
+            <p>
+                <strong>UBICACIÓN DE ORIGEN:</strong><br>
+                {tipo_parcela} N° {id_parcela}, Hilera {hilera}, Sección {seccion}.
+            </p>
+            <p>
+                <strong>CEMENTERIO DE DESTINO:</strong><br>
+                <span class="linea-firma"></span>
+            </p>
+        </div>
+
+        <p>
+            El trámite es gestionado por la empresa/persona: <strong>{empresa_responsable}</strong>.
+        </p>
+        <p>
+            Derechos de exhumación abonados mediante <strong>RECIBO N° {id_pago}</strong> con fecha {fecha_pago}.
+        </p>
+        
+        <p>
+            Trámite solicitado por: <strong>{responsable_tramite}</strong>, DNI N° <strong>{dni_responsable}</strong>, en su carácter de {vinculo_familiar}.
+        </p>
+
+        <p class="pie-pagina">
+            SAN CARLOS DE BARILOCHE, {fecha_operacion}.
+        </p>
+
+    </div>
+</body>
 </html>
