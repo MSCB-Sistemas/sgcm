@@ -111,7 +111,7 @@ class OperacionController extends Control
 
         $total = floatval($importe) + (floatval($importe) * (floatval($recargo) / 100));
 
-        $this->model->crearNuevoPago($id_deudo, $id_parcela_nueva, 1, $fecha_operacion, $vencimiento, $importe, $recargo, $total, $_SESSION['usuario_id']);
+        $nuevo_ingreso = $this->model->crearNuevoPago($id_deudo, $id_parcela_nueva, 1, $fecha_operacion, $vencimiento, $importe, $recargo, $total, $_SESSION['usuario_id']);
         
         if ($nuevo_ingreso) {
             $datos_pdf = $this->model->getDatosParaPdfTraslado($id_difunto, $nuevo_ingreso);
