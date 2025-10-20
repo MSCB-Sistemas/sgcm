@@ -129,7 +129,7 @@
                                 }
                                 ?>
                                 <option value="<?= $n['id_tipo_usuario'] ?>" <?= $selected ?>>
-                                    <?= htmlspecialchars($n['descripcion']) ?>
+                                    <?= htmlspecialchars($n['rol']) ?>
                                 </option>
                             <?php endforeach ?>
                         </select>
