@@ -1,227 +1,91 @@
 <html>
 <head>
-    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
-    <style type="text/css">
-        ol {
-            margin: 0;
-            padding: 0
+    <meta charset="UTF-8">
+    <title>Autorización de Operación</title>
+    <style>
+        body {
+            font-family: "Times New Roman", serif;
+            font-size: 12pt;
+            line-height: 1.6;
+            margin: 1.5cm; 
         }
 
-        table td,
-        table th {
-            padding: 0
-        }
-
-        .c2 {
-            margin-left: -14pt;
-            padding-top: 12pt;
-            padding-bottom: 0pt;
-            line-height: 1.5;
-            orphans: 2;
-            widows: 2;
-            text-align: left
-        }
-
-        .c3 {
-            color: #000000;
-            font-weight: 400;
-            text-decoration: none;
-            vertical-align: baseline;
-            font-size: 11pt;
-            font-family: "Times New Roman";
-            font-style: normal
-        }
-
-        .c0 {
-            color: #000000;
-            font-weight: 700;
-            text-decoration: none;
-            vertical-align: baseline;
-            font-size: 11pt;
-            font-family: "Times New Roman";
-            font-style: normal
-        }
-
-        .c7 {
-            color: #000000;
-            font-weight: 400;
-            text-decoration: none;
-            vertical-align: baseline;
-            font-size: 11pt;
-            font-family: "Arial";
-            font-style: normal
-        }
-
-        .c9 {
-            padding-top: 0pt;
-            padding-bottom: 0pt;
-            line-height: 1.1500000000000001;
-            orphans: 2;
-            widows: 2;
-            text-align: left
-        }
-
-        .c1 {
-            background-color: #ffffff;
-            max-width: 451.5pt;
-            padding: 72pt 72pt 72pt 72pt
-        }
-
-        .c6 {
-            font-weight: 700;
-            font-family: "Times New Roman"
-        }
-
-        .c4 {
-            font-weight: 400;
-            font-family: "Times New Roman"
-        }
-
-        .c5 {
-            margin-right: -30pt
-        }
-
-        .c8 {
-            height: 11pt
-        }
-
-        .title {
-            padding-top: 0pt;
-            color: #000000;
-            font-size: 26pt;
-            padding-bottom: 3pt;
-            font-family: "Arial";
-            line-height: 1.1500000000000001;
-            page-break-after: avoid;
-            orphans: 2;
-            widows: 2;
-            text-align: left
-        }
-
-        .subtitle {
-            padding-top: 0pt;
-            color: #666666;
-            font-size: 15pt;
-            padding-bottom: 16pt;
-            font-family: "Arial";
-            line-height: 1.1500000000000001;
-            page-break-after: avoid;
-            orphans: 2;
-            widows: 2;
-            text-align: left
-        }
-
-        li {
-            color: #000000;
-            font-size: 11pt;
-            font-family: "Arial"
+        .container {
+            width: 100%;
         }
 
         p {
-            margin: 0;
-            color: #000000;
-            font-size: 11pt;
-            font-family: "Arial"
+            margin: 0 0 12pt 0;
+            text-align: justify;
         }
 
-        h1 {
-            padding-top: 20pt;
-            color: #000000;
-            font-size: 20pt;
-            padding-bottom: 6pt;
-            font-family: "Arial";
-            line-height: 1.1500000000000001;
-            page-break-after: avoid;
-            orphans: 2;
-            widows: 2;
-            text-align: left
+        .encabezado {
+            margin-bottom: 24pt;
         }
 
-        h2 {
-            padding-top: 18pt;
-            color: #000000;
-            font-size: 16pt;
-            padding-bottom: 6pt;
-            font-family: "Arial";
-            line-height: 1.1500000000000001;
-            page-break-after: avoid;
-            orphans: 2;
-            widows: 2;
-            text-align: left
-        }
-
-        h3 {
-            padding-top: 16pt;
-            color: #434343;
+        .titulo {
+            text-align: center;
+            font-weight: bold;
             font-size: 14pt;
-            padding-bottom: 4pt;
-            font-family: "Arial";
-            line-height: 1.1500000000000001;
-            page-break-after: avoid;
-            orphans: 2;
-            widows: 2;
-            text-align: left
+            text-decoration: underline;
+            margin-top: 24pt;
+            margin-bottom: 24pt;
         }
 
-        h4 {
-            padding-top: 14pt;
-            color: #666666;
-            font-size: 12pt;
-            padding-bottom: 4pt;
-            font-family: "Arial";
-            line-height: 1.1500000000000001;
-            page-break-after: avoid;
-            orphans: 2;
-            widows: 2;
-            text-align: left
+        strong {
+            font-weight: bold;
+        }
+        
+        .detalles {
+            padding-left: 20pt;
+            border-left: 1px solid #ccc;
+            margin-top: 20pt;
+            margin-bottom: 20pt;
         }
 
-        h5 {
-            padding-top: 12pt;
-            color: #666666;
-            font-size: 11pt;
-            padding-bottom: 4pt;
-            font-family: "Arial";
-            line-height: 1.1500000000000001;
-            page-break-after: avoid;
-            orphans: 2;
-            widows: 2;
-            text-align: left
-        }
-
-        h6 {
-            padding-top: 12pt;
-            color: #666666;
-            font-size: 11pt;
-            padding-bottom: 4pt;
-            font-family: "Arial";
-            line-height: 1.1500000000000001;
-            page-break-after: avoid;
-            font-style: italic;
-            orphans: 2;
-            widows: 2;
-            text-align: left
+        .pie-pagina {
+            margin-top: 48pt;
         }
     </style>
 </head>
-    <body class="c1 doc-content">
-        <p class="c2"><span class="c3">DE: DIRECCI&Oacute;N DE SERVICIOS P&Uacute;BLICOS.</span></p>
-        <p class="c2"><span class="c0">A. ENCARGADO DE CEMENTERIO MUNICIPAL.</span></p>
-        <p class="c2"><span class="c4">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Por la presente se </span><span
-                class="c6">AUTORIZA</span><span class="c4">&nbsp;el </span><span class="c6">TRASLADO INTERNO</span><span
-                class="c3">&nbsp;de los restos de quien en vida fuera {difunto}</span></p>
-        <p class="c2 c5"><span class="c3">Defunci&oacute;n del d&iacute;a {fecha_fallecimiento} de la {tipo_parcela} N&ordm;
-                {id_parcela} Hilera {hilera} Secci&oacute;n {seccion}</span></p>
-        <p class="c2 c5"><span class="c3">para ser Inhumados en la {tipo_parcela_2} N&ordm; {id_parcela_2} Hilera {hilera_2}
-                Secci&oacute;n {seccion_2} .con los </span></p>
-        <p class="c2 c5"><span class="c3">restos de quien en vida fuera {difunto}</span></p>
-        <p class="c2 c5"><span class="c4">Fallecido el d&iacute;a {fecha_fallecimiento} </span><span class="c0">DERECHOS
-                ABONADOS MEDIANTE</span></p>
-        <p class="c2"><span class="c6">RECIBO N&ordm;{id_pago}</span><span class="c3">.-,CON FECHA {fecha_pago}</span></p>
-        <p class="c2"><span class="c3">Tr&aacute;mite realizado por: {resp&ograve;nsable_tramite} DNI N&ordm;:</span></p>
-        <p class="c2 c8"><span class="c3"></span></p>
-        <p class="c2"><span class="c3">SAN CARLOS DE BARILOCHE {fecha_pago}</span></p>
-        <p class="c8 c9"><span class="c7"></span></p>
-    </body>
+<body>
+    <div class="container">
+
+        <div class="encabezado">
+            <p><strong>DE:</strong> DIRECCIÓN DE SERVICIOS PÚBLICOS.</p>
+            <p><strong>A:</strong> ENCARGADO DE CEMENTERIO MUNICIPAL.</p>
+        </div>
+
+        <h1 class="titulo">AUTORIZACIÓN DE TRASLADO INTERNO</h1>
+
+        <p>
+            Por la presente se <strong>AUTORIZA</strong> el traslado de los restos de quien en vida fuera 
+            <strong>{difunto}</strong>, con fecha de defunción el día <strong>{fecha_fallecimiento}</strong>.
+        </p>
+
+        <div class="detalles">
+            <p>
+                <strong>UBICACIÓN DE ORIGEN:</strong><br>
+                {tipo_parcela} N° {id_parcela}, Hilera {hilera}, Sección {seccion}.
+            </p>
+            <p>
+                <strong>UBICACIÓN DE DESTINO:</strong><br>
+                {tipo_parcela_2} N° {id_parcela_2}, Hilera {hilera_2}, Sección {seccion_2}.
+            </p>
+        </div>
+
+        <p>
+            Los derechos fueron abonados mediante <strong>RECIBO N° {id_pago}</strong> con fecha {fecha_pago}.
+        </p>
+        
+        <p>
+            Trámite realizado por: <strong>{responsable_tramite}</strong>.
+        </p>
+
+        <p class="pie-pagina">
+            SAN CARLOS DE BARILOCHE, {fecha_pago}.
+        </p>
+
+    </div>
+</body>
 </html>
