@@ -34,7 +34,7 @@
                             <div class="mb-3">
                                 <label for="deudo_search_in_modal_parcela" class="form-label fw-bold">Deudo</label>
                                 <div class="input-group">
-                                    <input list="deudos" id="deudo_search_in_modal_parcela" name="deudo_search" class="form-control" placeholder="Ingrese un deudo" autocomplete="off" required>
+                                    <input list="deudos" id="deudo_search_in_modal_parcela" name="deudo_search" class="form-control" placeholder="Ingrese un deudo" autocomplete="off">
                                     <input type="hidden" id="id_deudo_in_modal_parcela" name="id_deudo">
                                 </div>
                                 <datalist id="deudos">
