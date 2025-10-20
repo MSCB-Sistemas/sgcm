@@ -5,7 +5,6 @@ class AuthController extends Control
 
     public function __construct()
     {
-        // Carga el modelo de permisos una vez
         $this->permisoModel = $this->loadModel('PermisoModel');
     }
 
@@ -51,12 +50,12 @@ class AuthController extends Control
                 exit;
             } else {
                 $datos['error'] = 'Credenciales incorrectas';
-                $this->loadView('loginView', $datos, 'login');
+                $this->loadView('LoginView', $datos, 'login');
             }
         } else {
-            $this->loadView('loginView', $datos, 'login');
+            $this->loadView('LoginView', $datos, 'login');
         }
-        $this->loadView('loginView', $datos, 'login');
+        $this->loadView('LoginView', $datos, 'login');
         
     }
 
