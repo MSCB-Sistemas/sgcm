@@ -250,15 +250,15 @@ class OperacionController extends Control
         $this->model->crearNuevaUbicacion($id_difunto, $id_parcela, $fecha_operacion);
         
         $total = floatval($importe) + (floatval($importe) * (floatval($data['recargo_in'] ?? 0) / 100));
-        $nuevo_pago = $this->model->crearNuevoPago($id_deudo, $id_parcela, 1, $fecha_operacion, $vencimiento, $importe, $data['recargo_in'] ?? 0, $total, $_SESSION['usuario_id']);
+        $nuevo_pago = $this->model->crearNuevoPago($id_deudo, $id_parcela, 5, $fecha_operacion, $vencimiento, $importe, $data['recargo_in'] ?? 0, $total, $_SESSION['usuario_id']);
         
         if ($nuevo_pago) {
-            $datos_pdf = $this->model->getDatosParaPdfTraslado($id_difunto, $nuevo_pago);
+            $datos_pdf = $this->model->getDatosParaPdfIngresoDifunto($id_difunto, $nuevo_pago);
 
             $datos_pdf['fecha_fallecimiento'] = date('d/m/Y', strtotime($datos_pdf['fecha_fallecimiento']));
             $datos_pdf['fecha_pago'] = date('d/m/Y', strtotime($datos_pdf['fecha_pago']));
 
-            $templatePath = __DIR__ . '/../../../docs/AUTORIZACIONTRASLADOINTERNO.html';
+            $templatePath = __DIR__ . '/../../../docs/AUTORIZACIONINGRESO.html';
             
             PdfHelper::generarPlantilla($templatePath, $datos_pdf, "Comprobante-Ingreso-{$id_difunto}.pdf");
             exit;

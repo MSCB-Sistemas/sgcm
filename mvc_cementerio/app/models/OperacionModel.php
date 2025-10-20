@@ -93,6 +93,51 @@ class OperacionModel
 
     public function getDatosParaPdfTraslado($id_difunto, $id_pago)
     {
+        $sql = "
+            SELECT 
+                d.nombre AS difunto_nombre, 
+                d.apellido AS difunto_apellido, 
+                d.fecha_fallecimiento,
+                
+                de.nombre AS deudo_nombre, 
+                de.apellido AS deudo_apellido,
+                
+                p.fecha_pago,
+                
+                po.id_parcela AS origen_id_parcela,
+                po.hilera AS origen_hilera,
+                po.seccion AS origen_seccion,
+                tpo.nombre_parcela AS origen_tipo_parcela,
+                
+                pd.id_parcela AS destino_id_parcela,
+                pd.hilera AS destino_hilera,
+                pd.seccion AS destino_seccion,
+                tpd.nombre_parcela AS destino_tipo_parcela
+
+            FROM pago p
+            JOIN deudo de ON p.id_deudo = de.id_deudo
+            JOIN difunto d ON d.id_difunto = :id_difunto
+            
+            JOIN ubicacion_difunto uo ON uo.id_difunto = d.id_difunto AND uo.fecha_retiro IS NOT NULL
+            JOIN parcela po ON po.id_parcela = uo.id_parcela
+            JOIN tipo_parcela tpo ON tpo.id_tipo_parcela = po.id_tipo_parcela
+            
+            JOIN ubicacion_difunto ud ON ud.id_difunto = d.id_difunto AND ud.fecha_retiro IS NULL
+            JOIN parcela pd ON pd.id_parcela = ud.id_parcela
+            JOIN tipo_parcela tpd ON tpd.id_tipo_parcela = pd.id_tipo_parcela
+
+            WHERE p.id_pago = :id_pago
+            ORDER BY uo.fecha_retiro DESC 
+            LIMIT 1
+        ";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id_difunto' => $id_difunto, 'id_pago' => $id_pago]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getDatosParaPdfIngresoDifunto($id_difunto, $id_pago)
+    {
         $sql = "SELECT
                     CONCAT(d.apellido, ', ', d.nombre) as difunto,
                     d.fecha_fallecimiento,
