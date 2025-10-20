@@ -51,11 +51,42 @@
                 <tbody>
                     <?php foreach ($datos['deudores_morosos'] as $index => $moroso) : ?>
                         <tr class="fila-moroso" data-estado="activo">
-                            
-                            <td><?= htmlspecialchars($moroso['id_parcela'] ?? '') ?></td>
-                            <td><?= htmlspecialchars($moroso['dni'] ?? '') ?></td>
-                            <td><?= htmlspecialchars($moroso['nombre'] ?? '') ?></td>
-                            <td><?= htmlspecialchars($moroso['apellido'] ?? '') ?></td>
+                            <td>
+                                <?php
+                                    if (isset($moroso['id_parcela'])) {
+                                        echo htmlspecialchars($moroso['id_parcela']);
+                                    } else {
+                                        echo '';
+                                    }
+                                ?>
+                            </td>
+                            <td>
+                                <?php
+                                    if (isset($moroso['dni'])) {
+                                        echo htmlspecialchars($moroso['dni']);
+                                    } else {
+                                        echo '';
+                                    }
+                                ?>
+                            </td>
+                            <td>
+                                <?php
+                                    if (isset($moroso['nombre'])) {
+                                        echo htmlspecialchars($moroso['nombre']);
+                                    } else {
+                                        echo '';
+                                    }
+                                ?>
+                            </td>
+                            <td>
+                                <?php
+                                    if (isset($moroso['apellido'])) {
+                                        echo htmlspecialchars($moroso['apellido']);
+                                    } else {
+                                        echo '';
+                                    }
+                                ?>
+                            </td>
                             
                             <td class="text-danger fw-bold">
                                 <?= date('d/m/Y', strtotime($moroso['fecha_vencimiento'])) ?>
@@ -80,7 +111,21 @@
                                         data-bs-target="#pagoModal"
                                         data-deudor-id="<?= $moroso['id_deudo'] ?>"
                                         data-parcela-id="<?= $moroso['id_parcela'] ?>"
-                                        data-deudor-nombre="<?= htmlspecialchars(($moroso['apellido'] ?? '') . ', ' . ($moroso['nombre'] ?? '')) ?>"
+                                        data-deudor-nombre="<?php
+                                            $nombre_completo = ''; 
+                                            
+                                            if (isset($moroso['apellido'])) {
+                                                $nombre_completo .= $moroso['apellido'];
+                                            }
+
+                                            $nombre_completo .= ', ';
+
+                                            if (isset($moroso['nombre'])) {
+                                                $nombre_completo .= $moroso['nombre'];
+                                            }
+
+                                            echo htmlspecialchars($nombre_completo);
+                                        ?>"
                                         data-vencimiento-anterior="<?= $moroso['fecha_vencimiento'] ?>">
                                     <i class="bi bi-cash-coin"></i> Registrar Pago
                                 </button>
@@ -102,11 +147,38 @@
                     <div class="card-body">
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item">Personas Fallecidas:
-                                <strong><?= $datos['total_difuntos'] ?? 0 ?></strong></li>
+                                <strong>
+                                    <?php
+                                        if (isset($datos['total_difuntos'])) {
+                                            echo $datos['total_difuntos'];
+                                        } else {
+                                            echo 0;
+                                        }
+                                    ?>
+                                </strong>
+                            </li>
                             <li class="list-group-item">Parcelas Ocupadas:
-                                <strong><?= $datos['total_parcelas'] ?? 0 ?></strong></li>
+                                <strong>
+                                    <?php
+                                        if (isset($datos['total_parcelas'])) {
+                                            echo $datos['total_parcelas'];
+                                        } else {
+                                            echo 0;
+                                        }
+                                    ?>
+                                </strong>
+                            </li>
                             <li class="list-group-item">Traslados Registrados:
-                                <strong><?= $datos['total_traslados'] ?? 0 ?></strong></li>
+                                <strong>
+                                    <?php
+                                        if (isset($datos['total_traslados'])) {
+                                            echo $datos['total_traslados'];
+                                        } else {
+                                            echo 0;
+                                        }
+                                    ?>
+                                </strong>
+                            </li>
                         </ul>
                     </div>
                 </div>

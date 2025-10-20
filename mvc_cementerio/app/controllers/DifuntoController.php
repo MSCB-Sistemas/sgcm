@@ -140,12 +140,19 @@ class DifuntoController extends Control
             $is_ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
         
             if ($is_ajax) {
+                $texto_completo = '';
+                if (!empty($dni)) {
+                    $texto_completo = "$dni - $nombre $apellido";
+                } else {
+                    $texto_completo = "$nombre $apellido";
+                }
+
                 header('Content-Type: application/json');
                 echo json_encode([
                     'success' => true,
                     'newItem' => [
                         'id'   => $nuevo_ingreso,
-                        'text' => ($dni ? "$dni - " : "") . "$nombre $apellido"
+                        'text' => $texto_completo
                     ]
                 ]);
                 exit;
@@ -329,12 +336,12 @@ class DifuntoController extends Control
     {
         header('Content-Type: application/json; charset=utf-8');
 
-        $draw = $_POST['draw'] ?? 1;
-        $start = intval($_POST['start'] ?? 0);
-        $length = intval($_POST['length'] ?? 10);
-        $search = $_POST['search']['value'] ?? '';
-        $orderColumnIndex = $_POST['order'][0]['column'] ?? 0;
-        $orderDir = $_POST['order'][0]['dir'] ?? 'asc';
+        if ($_POST['draw']) { $draw   = $_POST['draw']; } else { $draw = 1; }
+        if (intval($_POST['start'])) { $start = intval($_POST['start']); } else { $start = 0; }
+        if (intval($_POST['length'])) { $length = intval($_POST['length']); } else { $length = 10; }
+        if ($_POST['search']['value']) { $search = $_POST['search']['value']; } else { $search = ''; }
+        if ($_POST['order'][0]['column']) { $orderColumnIndex = $_POST['order'][0]['column']; } else { $orderColumnIndex = 0; }
+        if ($_POST['order'][0]['dir']) { $orderDir = $_POST['order'][0]['dir']; } else { $orderDir = 'asc'; }
 
         $columns = [
             'id_difunto',

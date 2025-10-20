@@ -107,7 +107,12 @@
                         <div class="mb-3">
                             <label for="fecha_vencimiento" class="form-label fw-bold">Fecha de vencimiento</label>
                             <input type="date" class="form-control" id="fecha_vencimiento" name="fecha_vencimiento" 
-                                   value="<?= htmlspecialchars($datos['values']['fecha_vencimiento'] ?? '') ?>" required>
+                                   value="<?php
+                                        if (isset($datos['values']['fecha_vencimiento'])) {
+                                            echo htmlspecialchars($datos['values']['fecha_vencimiento']);
+                                        } else {
+                                            echo '';
+                                        }?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese la fecha de vencimiento
                             </div>
@@ -116,7 +121,13 @@
                         <div class="mb-3">
                             <label for="importe" class="form-label fw-bold">Importe</label>
                             <input type="number" class="form-control" id="importe" name="importe"
-                                value="<?= htmlspecialchars($datos['values']['importe'] ?? '') ?>" required oninput="calcularTotal()">
+                                value="<?php
+                                    if (isset($datos['values']['importe'])) {
+                                        echo htmlspecialchars($datos['values']['importe']);
+                                    } else {
+                                        echo '';
+                                    }
+                                ?>" required oninput="calcularTotal()">
                             <div class="invalid-feedback">
                                 Por favor ingrese el importe
                             </div>
@@ -128,7 +139,13 @@
                         <div class="mb-3">
                             <label for="vinculo_familiar" class="form-label fw-bold">Vinculo familiar</label>
                             <input type="text" class="form-control" id="vinculo_familiar" name="vinculo_familiar"
-                                value="<?= htmlspecialchars($datos['values']['vinculo_familiar'] ?? '') ?>">
+                                value="<?php
+                                    if (isset($datos['values']['vinculo_familiar'])) {
+                                        echo htmlspecialchars($datos['values']['vinculo_familiar']);
+                                    } else {
+                                        echo '';
+                                    } 
+                                ?>">
                             <div class="invalid-feedback">
                                 Por favor ingrese el vincula familiar
                             </div>
@@ -137,7 +154,13 @@
                         <div class="mb-3">
                             <label for="responsable_tramite" class="form-label fw-bold">Responsable de tramite</label>
                             <input type="text" class="form-control" id="responsable_tramite" name="responsable_tramite"
-                                value="<?= htmlspecialchars($datos['values']['responsable_tramite'] ?? '') ?>">
+                                value="<?php
+                                    if (isset($datos['values']['responsable_tramite'])) { 
+                                        echo htmlspecialchars($datos['values']['responsable_tramite']); 
+                                    } else {
+                                        echo '';
+                                    } 
+                                ?>">
                             <div class="invalid-feedback">
                                 Por favor ingrese el responsable del tramite
                             </div>
@@ -146,7 +169,12 @@
                         <div class="mb-3">
                             <label for="recargo" class="form-label fw-bold">Recargo (%)</label>
                             <input type="number" step="0.01" class="form-control" id="recargo" name="recargo" 
-                                value="<?= htmlspecialchars($datos['values']['recargo'] ?? '') ?>" required oninput="calcularTotal()">
+                                value="<?php 
+                                    if (isset($datos['values']['recargo'])) { 
+                                        echo htmlspecialchars($datos['values']['recargo']); 
+                                    } else {
+                                        echo '';
+                                    }?>" required oninput="calcularTotal()">
                             <div class="invalid-feedback">
                                 Por favor ingrese el recargo
                             </div>
@@ -155,7 +183,12 @@
                         <div class="mb-3">
                             <label for="total" class="form-label fw-bold">Total</label>
                             <input type="number" step="0.01" class="form-control" id="total" name="total"
-                                value="<?= htmlspecialchars($datos['values']['total'] ?? '') ?>" readonly>
+                                value="<?php
+                                    if (isset($datos['values']['total'])) { 
+                                        echo htmlspecialchars($datos['values']['total']); 
+                                    } else {
+                                        echo '';
+                                    }?>" readonly>
                             <div class="invalid-feedback">
                                 Por favor ingrese la fracción
                             </div>

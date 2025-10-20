@@ -85,12 +85,10 @@ $labelFor = [
 ];
 
 $groupFor = [
-  // ítems sueltos
   'home'           => null,
   'estadisticas'   => null,
   'operacion'      => null,
   
-  // Todo lo demás al grupo ABM:
   'usuario'        => 'ABM',
   'deudo'          => 'ABM',
   'difunto'        => 'ABM',
@@ -125,7 +123,6 @@ $iconFor = [
   'pago'            => ['bi'   => 'credit-card'],
 ];
 
-// 4) Construcción del $MENU (⚠️ el grupo ABM se inserta UNA sola vez al final)
 $MENU = [];
 $solo = [];
 $abmChildren = [];
@@ -133,16 +130,14 @@ $abmChildren = [];
 foreach ($indexRoutes as $path => $def) 
 {
     [$ctrl, $method, $guard] = $def;
-    $icon = $iconFor[$path] ?? [];
-
-    $label = $labelFor[$path] ?? ucfirst($path);
+    if (isset($iconFor[$path])) { $icon = $iconFor[$path]; } else { $icon = []; }
+    if (isset($labelFor[$path])) { $label = $labelFor[$path]; } else { $label = ucfirst($path); }
     $perms = $guardToPerms($guard);
     $href  = $base . '/' . $path;
     $group = array_key_exists($path, $groupFor) ? $groupFor[$path] : 'ABM';
     
     if ($group === null) 
     {
-        // Ítems sueltos (home, estadísticas, etc.)
         $solo []= ['label' => $label, 'href' => $href, 'perms' => $perms] + $icon;
         continue;
     }

@@ -68,9 +68,15 @@ if (!function_exists('renderIcon')) {
                 <?php if (!$hasChildren): ?>
                   <li class="nav-item">
                     <a class="nav-link text-white <?= $itemActive ? 'active' : '' ?>"
-                      href="<?= htmlspecialchars($itemHref ?? '#') ?>">
-                      <?= renderIcon($item) ?>
-                      <?= htmlspecialchars($item['label']) ?>
+                        <?php
+                            if (isset($itemHref)) {
+                                echo 'href="' . htmlspecialchars($itemHref) . '"';
+                            } else {
+                                echo 'href="#"';
+                            }
+                        ?>>
+                        <?= renderIcon($item) ?>
+                        <?= htmlspecialchars($item['label']) ?>
                     </a>
                   </li>
                 <?php else: ?>
@@ -82,7 +88,7 @@ if (!function_exists('renderIcon')) {
                       href="#<?= $grpId ?>"
                       role="button" aria-expanded="false"
                       aria-controls="<?= $grpId ?>">
-                      <?= renderIcon($item) /* <-- icono en el título del grupo */ ?>
+                      <?= renderIcon($item) ?>
                       <?= htmlspecialchars($item['label']) ?>
                       <span class="position-absolute end-0 me-3" id="<?= $grpId ?>-arrow">&#x25BC;</span>
                     </a>
@@ -92,7 +98,7 @@ if (!function_exists('renderIcon')) {
                         <?php foreach ($children as $ch): ?>
                           <li>
                             <a class="nav-link text-white" href="<?= htmlspecialchars($ch['href']) ?>">
-                                <?= renderIcon($ch) /* <-- icono en el hijo */ ?>                              
+                                <?= renderIcon($ch) ?>                              
                                 <?= htmlspecialchars($ch['label']) ?>
                             </a>
                           </li>

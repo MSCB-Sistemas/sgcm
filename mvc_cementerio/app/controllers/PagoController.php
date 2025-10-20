@@ -387,12 +387,12 @@ class PagoController extends Control {
             exit;
         }
 
-        $deudo_id          = $_POST['deudo_id'] ?? null;
-        $parcela_id        = $_POST['parcela_id'] ?? null;
-        $monto             = $_POST['monto'] ?? 0;
-        $fecha_pago        = $_POST['fecha_pago'] ?? date('Y-m-d');
-        $fecha_vencimiento_nueva = $_POST['fecha_vencimiento'] ?? null;
-        $usuario_id        = $_SESSION['usuario_id'];
+        if ($_POST['deudo_id']) { $deudo_id = $_POST['deudo_id']; } else { $deudo_id = null; }
+        if ($_POST['parcela_id']) { $parcela_id = $_POST['parcela_id']; } else { $parcela_id = null; }     
+        if ($_POST['monto']) { $monto = $_POST['monto']; } else { $monto = 0; }
+        if ($_POST['fecha_pago']) { $fecha_pago = $_POST['fecha_pago']; } else { $fecha_pago = date('Y-m-d'); }
+        if ($_POST['fecha_vencimiento']) { $fecha_vencimiento_nueva = $_POST['fecha_vencimiento']; } else {$fecha_vencimiento_nueva = null; }
+        $usuario_id = $_SESSION['usuario_id'];
         $tipo_operacion_id = 1;
 
         if (!$deudo_id || !$parcela_id || !$fecha_vencimiento_nueva || !is_numeric($monto)) {

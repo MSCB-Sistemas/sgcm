@@ -3,17 +3,15 @@ require_once 'Database.php';
 
 class AuditoriaHelper {
     public static function log(
-        ?int $id_usuario, 
+        int $id_usuario, 
         string $query_sql, 
         array $parametros, 
         string $model, 
         string $accion
     ): bool {
         try {
-            /* Conexión a la base de datos */
             $db = Database::connect();
 
-            // si no viene usuario explícito, lo sacamos de la sesión
             if ($id_usuario === null && isset($_SESSION['id_usuario'])) {
                 $id_usuario = $_SESSION['id_usuario'];
             }
