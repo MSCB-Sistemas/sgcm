@@ -14,7 +14,7 @@
     }
     
     $host = $_SERVER['HTTP_HOST'];
-    $baseUrl = '/cementerio/mvc_cementerio/';
+    $baseUrl = '/sgcm/';
 
     define('URL', $protocolo . $host . $baseUrl);
 ?>

@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../app/init.php';
 
-$base = '/cementerio/mvc_cementerio';
+$base = '/sgcm';
 
 $routes = require __DIR__ . '/../app/config/routes.php';
 
