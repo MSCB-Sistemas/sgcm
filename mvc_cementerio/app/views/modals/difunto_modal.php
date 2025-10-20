@@ -54,10 +54,13 @@
                                 <label for="sexo" class="form-label fw-bold">Género</label>
                                 <select class="form-select" id="sexo" name="sexo">
                                     <option value="">Seleccione...</option>
-                                    <?php foreach ($datos['sexos'] as $n): 
-                                        $selected = ($id_sexo ?? '') == $n['id_sexo'] ? 'selected' : '';
-                                    ?>
-                                        <option value="<?= $n['id_sexo'] ?>" <?= $selected ?>>
+                                    <?php foreach ($datos['sexos'] as $n): ?>
+                                        <option value="<?= $n['id_sexo'] ?>" 
+                                            <?php 
+                                                if (isset($id_sexo) && $id_sexo == $n['id_sexo']) { 
+                                                    echo 'selected'; 
+                                                } 
+                                            ?>>
                                             <?= htmlspecialchars($n['descripcion']) ?>
                                         </option>
                                     <?php endforeach ?>
@@ -68,10 +71,13 @@
                                 <label for="nacionalidad" class="form-label fw-bold">Nacionalidad</label>
                                 <select class="form-select" id="nacionalidad" name="nacionalidad">
                                     <option value="">Seleccione...</option>
-                                    <?php foreach ($datos['nacionalidades'] as $n): 
-                                        $selected = ($id_nacionalidad ?? '') == $n['id_nacionalidad'] ? 'selected' : '';
-                                    ?>
-                                        <option value="<?= $n['id_nacionalidad'] ?>" <?= $selected ?>>
+                                    <?php foreach ($datos['nacionalidades'] as $n): ?>
+                                        <option value="<?= $n['id_nacionalidad'] ?>"
+                                            <?php 
+                                                if (isset($id_nacionalidad) && $id_nacionalidad == $n['id_nacionalidad']) {
+                                                    echo 'selected';
+                                                }
+                                            ?>>
                                             <?= htmlspecialchars($n['nacionalidad']) ?>
                                         </option>
                                     <?php endforeach ?>
@@ -82,10 +88,13 @@
                                 <label for="estado_civil" class="form-label fw-bold">Estado civil</label>
                                 <select class="form-select" id="estado_civil" name="estado_civil">
                                     <option value="">Seleccione...</option>
-                                    <?php foreach ($datos['estados_civiles'] as $n): 
-                                        $selected = ($id_estado_civil ?? '') == $n['id_estado_civil'] ? 'selected' : '';
-                                    ?>
-                                        <option value="<?= $n['id_estado_civil'] ?>" <?= $selected ?>>
+                                    <?php foreach ($datos['estados_civiles'] as $n): ?>
+                                        <option value="<?= $n['id_estado_civil'] ?>"
+                                            <?php 
+                                                if (isset($id_estado_civil) && $id_estado_civil == $n['id_estado_civil']) {
+                                                    echo 'selected';
+                                                }
+                                            ?>>
                                             <?= htmlspecialchars($n['descripcion']) ?>
                                         </option>
                                     <?php endforeach ?>

@@ -12,7 +12,7 @@ function currentUser(): ?array
         'nombre'    => $_SESSION['usuario_nombre'],
         'apellido'  => $_SESSION['usuario_apellido'],
         'rol'       => (int)$_SESSION['usuario_tipo'],
-        'permisos'  => $_SESSION['usuario_permisos'] ?? [],
+        'permisos'  => $_SESSION['usuario_permisos'],
     ];
 }
 
@@ -62,7 +62,7 @@ function requireAllPermissions(array $permisos, ?string $redirect = null): void
         header('Location: ' . $base . '/login', true, 303); exit;
     }
 
-    $userPerms = $_SESSION['usuario_permisos'] ?? [];
+    if ($_SESSION['usuario_permisos']) { $userPerms = $_SESSION['usuario_permisos']; } else { $userPerms = []; }
     $faltantes = array_diff($permisos, $userPerms);
 
     if (!$faltantes) return;

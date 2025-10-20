@@ -56,7 +56,11 @@ class OperacionController extends Control
             return $this->index();
         }
 
-        $tipo_operacion_id = $_POST['tipo_operacion'] ?? 0;
+        if (isset($_POST['tipo_operacion'])) {
+            $tipo_operacion_id = $_POST['tipo_operacion'];
+        } else {
+            $tipo_operacion_id = 0;
+        }
 
         switch ($tipo_operacion_id) {
             case 1:
@@ -77,12 +81,12 @@ class OperacionController extends Control
     private function procesarTrasladoInterno($data)
     {
         $errores = [];
-        $id_difunto       = $data['id_difunto_ti'] ?? null;
-        $id_parcela_nueva = $data['id_parcela_ti'] ?? null;
-        $id_deudo         = $data['id_deudo_ti'] ?? null;
-        $fecha_operacion  = $data['fecha_traslado_ti'] ?? date('Y-m-d');
-        $importe          = $data['importe_ti'] ?? null;
-        $vencimiento      = $data['fecha_vencimiento_ti'] ?? null;
+        $id_difunto       = $data['id_difunto_ti'];
+        $id_parcela_nueva = $data['id_parcela_ti'];
+        $id_deudo         = $data['id_deudo_ti'];
+        if (isset($data['fecha_traslado_ti'])) { $fecha_operacion = $data['fecha_traslado_ti']; } else { $fecha_operacion = date('Y-m-d'); }
+        $importe          = $data['importe_ti'];
+        $vencimiento      = $data['fecha_vencimiento_ti'];
 
         if (!$id_difunto || !$id_parcela_nueva || !$id_deudo || !is_numeric($importe) || !$vencimiento) {
             $errores[] = "Para un Traslado Interno, todos los campos son obligatorios.";
@@ -100,9 +104,14 @@ class OperacionController extends Control
         $this->model->actualizarFechaRetiro($ubicacion_actual['id_ubicacion_difunto'], $fecha_operacion);
         $this->model->crearNuevaUbicacion($id_difunto, $id_parcela_nueva, $fecha_operacion);
         
-        $total = floatval($importe) + (floatval($importe) * (floatval($data['recargo_ti'] ?? 0) / 100));
+        $recargo = 0;
+        if (isset($data['recargo_ti'])) {
+            $recargo = $data['recargo_ti'];
+        }
 
-        $nuevo_ingreso = $this->model->crearNuevoPago($id_deudo, $id_parcela_nueva, 1, $fecha_operacion, $vencimiento, $importe, $data['recargo_ti'] ?? 0, $total, $_SESSION['usuario_id']);
+        $total = floatval($importe) + (floatval($importe) * (floatval($recargo) / 100));
+
+        $this->model->crearNuevoPago($id_deudo, $id_parcela_nueva, 1, $fecha_operacion, $vencimiento, $importe, $recargo, $total, $_SESSION['usuario_id']);
         
         if ($nuevo_ingreso) {
             $datos_pdf = $this->model->getDatosParaPdfTraslado($id_difunto, $nuevo_ingreso);
@@ -124,8 +133,8 @@ class OperacionController extends Control
     private function procesarTrasladoExterno($data)
     {
         $errores = [];
-        $id_difunto = $data['id_difunto_te'] ?? null;
-        $fecha_operacion = $data['fecha_exhumacion_te'] ?? date('Y-m-d');
+        $id_difunto = $data['id_difunto_te'];
+        if ($data['fecha_exhumacion_te']) { $fecha_operacion = $data['fecha_exhumacion_te']; } else { $fecha_operacion = date('Y-m-d'); }
 
         if (!$id_difunto) $errores[] = "Para un traslado externo, debe seleccionar un difunto.";
         
@@ -153,10 +162,10 @@ class OperacionController extends Control
     private function procesarIngresoBajosRecursos($data)
     {
         $errores = [];
-        $id_difunto = $data['id_difunto_br'] ?? null;
-        $id_parcela = $data['id_parcela_br'] ?? null;
-        $id_deudo   = $data['id_deudo_br'] ?? null;
-        $vencimiento = $data['fecha_vencimiento_br'] ?? null;
+        $id_difunto = $data['id_difunto_br'];
+        $id_parcela = $data['id_parcela_br'];
+        $id_deudo   = $data['id_deudo_br'];
+        $vencimiento = $data['fecha_vencimiento_br'];
         $fecha_operacion = date('Y-m-d');
 
         if (!$id_difunto || !$id_parcela || !$id_deudo) $errores[] = "Debe seleccionar difunto, deudo y parcela.";
@@ -195,8 +204,8 @@ class OperacionController extends Control
     private function procesarLibreDeuda($data)
     {
         $errores = [];
-        $id_parcela = $data['id_parcela_ld'] ?? null;
-        $id_deudo = $data['id_deudo_ld'] ?? null;   
+        $id_parcela = $data['id_parcela_ld'];   
+        $id_deudo = $data['id_deudo_ld'];   
 
         if (!$id_parcela || !$id_deudo) $errores[] = "Debe seleccionar un deudo y parcela para verificar su estado de deuda.";
         

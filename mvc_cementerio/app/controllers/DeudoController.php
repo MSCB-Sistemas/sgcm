@@ -117,12 +117,19 @@ class DeudoController extends Control
         
         if ($nuevo_ingreso) {
             if ($es_ajax) {
+                $texto_completo = '';
+                if (!empty($dni)) {
+                    $texto_completo = "$dni - $apellido, $nombre";
+                } else {
+                    $texto_completo = "$apellido, $nombre";
+                }
+
                 header('Content-Type: application/json');
                 echo json_encode([
                     'success' => true,
                     'newItem' => [
                         'id'   => $nuevo_ingreso,
-                        'text' => strtoupper(($dni ? "$dni - " : "") . "$apellido, $nombre")
+                        'text' => strtoupper($texto_completo)
                     ]
                 ]);
                 exit;
@@ -186,7 +193,6 @@ class DeudoController extends Control
             $datos = [];
             $errores = [];
 
-            // Procesar todos los campos
             foreach ($campos as $campo => $etiqueta) {
                 if (isset($_POST[$campo])) {
                     $valor = trim($_POST[$campo]);
@@ -201,7 +207,6 @@ class DeudoController extends Control
                 }
             }
 
-            // Si hay errores, mostrar el formulario con datos y errores
             if (!empty($errores)) {
                 $this->loadView("deudos/DeudosForm", [
                     'title'   => 'Editar Deudo',
@@ -212,7 +217,6 @@ class DeudoController extends Control
                 return;
             }
 
-            // Intentar actualizar el modelo
             $exito = $this->model->updateDeudo(
                 $id,
                 $datos['dni'],
@@ -248,15 +252,14 @@ class DeudoController extends Control
     {
         header('Content-Type: application/json; charset=utf-8');
       
-        $draw   = $_POST['draw'] ?? 1;
-        $start  = intval($_POST['start'] ?? 0);
-        $length = intval($_POST['length'] ?? 10);
-        $search = $_POST['search']['value'] ?? '';
-        $orderColumnIndex = $_POST['order'][0]['column'] ?? 0;
-        $orderDir = $_POST['order'][0]['dir'] ?? 'asc';
+        if ($_POST['draw']) { $draw   = $_POST['draw']; } else { $draw = 1; }
+        if (intval($_POST['start'])) { $start = intval($_POST['start']); } else { $start = 0; }
+        if (intval($_POST['length'])) { $length = intval($_POST['length']); } else { $length = 10; }
+        if ($_POST['search']['value']) { $search = $_POST['search']['value']; } else { $search = ''; }
+        if ($_POST['order'][0]['column']) { $orderColumnIndex = $_POST['order'][0]['column']; } else { $orderColumnIndex = 0; }
+        if ($_POST['order'][0]['dir']) { $orderDir = $_POST['order'][0]['dir']; } else { $orderDir = 'asc'; }
 
         $columns = ['id_deudo', 'dni', 'nombre', 'apellido', 'telefono', 'email', 'domicilio', 'localidad', 'codigo_postal'];
-        $orderCol = $columns[$orderColumnIndex] ?? 'id_deudo';
 
         if (isset($columns[$orderColumnIndex])) {
             $orderCol = $columns[$orderColumnIndex];

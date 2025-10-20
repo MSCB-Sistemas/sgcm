@@ -165,10 +165,34 @@
 <datalist id="parcelas">
     <?php foreach ($datos['parcelas'] as $p): ?>
         <?php 
-            $texto_parcela = "ID: " . ($p['id_parcela'] ?? '') . 
-                             " | Ubic: " . ($p['numero_ubicacion'] ?? 'S/N') . 
-                             " | Sec: " . ($p['seccion'] ?? 'S/S') .
-                             " | Hil: " . ($p['hilera'] ?? 'S/H');
+            $texto_parcela = "ID: ";
+            
+            if (isset($p['id_parcela'])) {
+                $texto_parcela .= $p['id_parcela'];
+            } else {
+                $texto_parcela .= '';
+            }
+
+            $texto_parcela .= " | Ubic: ";
+            if (isset($p['numero_ubicacion'])) {
+                $texto_parcela .= $p['numero_ubicacion'];
+            } else {
+                $texto_parcela .= 'S/N';
+            }
+            
+            $texto_parcela .= " | Sec: ";
+            if (isset($p['seccion'])) {
+                $texto_parcela .= $p['seccion'];
+            } else {
+                $texto_parcela .= 'S/S';
+            }
+
+            $texto_parcela .= " | Hil: ";
+            if (isset($p['hilera'])) {
+                $texto_parcela .= $p['hilera'];
+            } else {
+                $texto_parcela .= 'S/H';
+            }
         ?>
         <option value="<?= htmlspecialchars($texto_parcela) ?>" data-id="<?= $p['id_parcela'] ?>">
     <?php endforeach; ?>
@@ -177,8 +201,27 @@
 <datalist id="deudos">
     <?php foreach ($datos['deudos'] as $d): ?>
         <?php
-            $texto_deudo = ($d['dni'] ?? 'S/DNI') . ' - ' . 
-                           ($d['apellido'] ?? '') . ', ' . ($d['nombre'] ?? '');
+            if (isset($d['dni'])) {
+                $texto_deudo = $d['dni'];
+            } else {
+                $texto_deudo = 'S/DNI';
+            }
+
+            $texto_deudo .= ' - ';
+
+            if (isset($d['apellido'])) {
+                $texto_deudo .= $d['apellido'];
+            } else {
+                $texto_deudo .= '';
+            }
+
+            $texto_deudo .= ', '; 
+
+            if (isset($d['nombre'])) {
+                $texto_deudo .= $d['nombre'];
+            } else {
+                $texto_deudo .= '';
+            }
         ?>
         <option value="<?= htmlspecialchars(strtoupper($texto_deudo)) ?>" data-id="<?= $d['id_deudo'] ?>">
     <?php endforeach; ?>
@@ -187,8 +230,27 @@
 <datalist id="difuntos">
     <?php foreach ($datos['difuntos'] as $di): ?>
          <?php
-            $texto_difunto = ($di['dni'] ?? 'S/DNI') . ' - ' . 
-                             ($di['apellido'] ?? '') . ', ' . ($di['nombre'] ?? '');
+            if (isset($di['dni'])) {
+                $texto_difunto = $di['dni'];
+            } else {
+                $texto_difunto = 'S/DNI';
+            }
+
+            $texto_difunto .= ' - '; 
+
+            if (isset($di['apellido'])) {
+                $texto_difunto .= $di['apellido'];
+            } else {
+                $texto_difunto .= '';
+            }
+
+            $texto_difunto .= ', '; 
+
+            if (isset($di['nombre'])) {
+                $texto_difunto .= $di['nombre'];
+            } else {
+                $texto_difunto .= '';
+            }
         ?>
         <option value="<?= htmlspecialchars(strtoupper($texto_difunto)) ?>" data-id="<?= $di['id_difunto'] ?>">
     <?php endforeach; ?>
