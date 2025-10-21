@@ -84,7 +84,6 @@ class OrientacionController extends Control {
 
     public function update($id){
         if ($_SERVER['REQUEST_METHOD'] == 'POST'){
-            // Reemplazo de operador ternario por if-else
             if (isset($_POST["descripcion"])) {
                 $descripcion = trim($_POST["descripcion"]);
             } else {

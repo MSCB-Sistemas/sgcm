@@ -17,16 +17,13 @@
             <?php endif; ?>
 
             <?php
-            // Campos que requieren htmlspecialchars
             $campos_html = ['fecha_pago', 'fecha_vencimiento', 'importe', 'recargo', 'total'];
 
-            // Campos directos (sin htmlspecialchars)
             $campos_directos = [
                 'id_deudo' => 'id_deudo_selected',
                 'id_parcela' => 'id_parcela_selected'
             ];
 
-            // Asignación de campos con htmlspecialchars
             foreach ($campos_html as $campo) {
                 if (isset($datos['values'][$campo])) {
                     $$campo = htmlspecialchars($datos['values'][$campo]);
@@ -35,7 +32,6 @@
                 }
             }
 
-            // Asignación de campos directos con nombres personalizados
             foreach ($campos_directos as $campo => $variable) {
                 if (isset($datos['values'][$campo])) {
                     $$variable = $datos['values'][$campo];
@@ -237,37 +233,35 @@
         configurarAutocompletado('deudo_search', 'id_deudo', 'deudos');
     });
 
-function calcularTotal()
-{
-    const importe = parseFloat(document.getElementById('importe').value) || 0;
-    const recargo = parseFloat(document.getElementById('recargo').value) || 0;
+    function calcularTotal()
+    {
+        const importe = parseFloat(document.getElementById('importe').value) || 0;
+        const recargo = parseFloat(document.getElementById('recargo').value) || 0;
 
-    const montoRecargo = importe * (recargo / 100);
-    const total = importe + montoRecargo;
+        const montoRecargo = importe * (recargo / 100);
+        const total = importe + montoRecargo;
 
-    document.getElementById('total').value = total.toFixed(2);
-}
+        document.getElementById('total').value = total.toFixed(2);
+    }
 
-(function () {
-  'use strict'
+    (function () {
+    'use strict'
 
-  var forms = document.querySelectorAll('.needs-validation')
+    var forms = document.querySelectorAll('.needs-validation')
 
-  Array.prototype.slice.call(forms)
-    .forEach(function (form) {
-      form.addEventListener('submit', function (event) {
-        if (!form.checkValidity()) {
-          event.preventDefault()
-          event.stopPropagation()
-        }
+    Array.prototype.slice.call(forms)
+        .forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+            }
 
-        form.classList.add('was-validated')
-      }, false)
-    })
-})()
-</script>
+            form.classList.add('was-validated')
+        }, false)
+        })
+    })()
 
-<script>
     function configurarAutocompletado(inputId, hiddenId, datalistId) {
         const input = document.getElementById(inputId);
         const hidden = document.getElementById(hiddenId);

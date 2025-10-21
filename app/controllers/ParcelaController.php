@@ -48,7 +48,7 @@ class ParcelaController extends Control
                 }
                 return $html;
             },
-            'puedeCrear' => $puedeCrear,   // por si tu partial muestra el botón “Nuevo”
+            'puedeCrear' => $puedeCrear, 
             'errores' => [],
         ];
 
@@ -183,11 +183,7 @@ class ParcelaController extends Control
     public function update($id)
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            if (isset($_POST['tipo_parcela'])) {
-                $tipo_parcela = $_POST['tipo_parcela'];
-            } else {
-                $tipo_parcela = '';
-            }
+            $tipo_parcela = $_POST['tipo_parcela'];
             if (isset($_POST['deudo'])) {
                 $deudo = $_POST['deudo'];
             } else {
@@ -218,11 +214,7 @@ class ParcelaController extends Control
             } else {
                 $nivel = '';
             }
-            if (isset($_POST['orientacion'])) {
-                $orientacion = $_POST['orientacion'];
-            } else {
-                $orientacion = '';
-            }
+            $orientacion = $_POST['orientacion'];
 
             if (empty($tipo_parcela)) $errores[]    = "El tipo de parcela es obligatorio.";
             if (empty($orientacion)) $errores[]     = "La orientacion de la parcela es obligatoria.";

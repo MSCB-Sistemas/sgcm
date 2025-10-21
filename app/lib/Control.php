@@ -17,15 +17,12 @@ class Control
         $viewFile = APP . '/views/pages/' . $view . '.php';
         if (!file_exists($viewFile)) { die($viewFile); }
 
-        // FLASH de error o confirmacion de algún middleware/controlador.
         if (isset($_SESSION['flash_error'])) {
             $datos['flash_error'] = $_SESSION['flash_error'];
         
-            // los borra en la sesión así no aparece en el proximo request
             unset($_SESSION['flash_error']);
         } else {
             
-            // La vista lo recibe solo en la primera carga
             $datos['flash_error'] = null;
         }
         
@@ -36,11 +33,10 @@ class Control
             $datos['flash_ok'] = null;
         }
 
-        // Variables disponibles en la vista
         extract($datos, EXTR_SKIP);
 
         if ($layout) {
-            $viewPath = $viewFile;  // el layout hace require de este path
+            $viewPath = $viewFile;
             require_once APP . "/views/layout/{$layout}.php";
         } else {
             require_once $viewFile;
@@ -82,7 +78,7 @@ class Control
 
     protected function requirePermissionInController(string|array $permisos, ?string $redirect = null): void 
     {
-        requirePermission($permisos, $redirect); // reusa el helper global
+        requirePermission($permisos, $redirect); 
     }
 
     protected function redirect(string $path, int $code = 303): void
@@ -94,7 +90,6 @@ class Control
 
     protected function requireLogin(string $redirect = URL . 'login'): void
     {
-        // NO session_start() acá: la sesión ya se abrió en init.php
         if (!($this->isLogin())) {
             $_SESSION['flash_error'] = 'Debés iniciar sesión.';
             header('Location: ' . rtrim($redirect, '/'));

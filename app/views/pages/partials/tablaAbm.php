@@ -55,7 +55,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     $('#tablaABM').DataTable({
-        dom: 'Bfrtip', // B: botones, f: filtro, r: información, t: tabla, i: info, p: paginación
+        dom: 'Bfrtip',
         buttons: [
             { extend: 'copy', text: 'Copiar', className: 'btn btn-secondary btn-sm', exportOptions: { columns: ':not(:last-child)' } },
             { extend: 'csv', text: 'CSV', className: 'btn btn-primary btn-sm', bom: true, charset: 'UTF-8', exportOptions: { columns: ':not(:last-child)' } },
@@ -66,9 +66,9 @@ document.addEventListener('DOMContentLoaded', function () {
         language: {
             url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
         },
-        pageLength: 8,       // Número de filas por página
-        lengthMenu: [5, 10, 25, 50, 100], // Opciones para cambiar cantidad
-        order: []             // Sin orden inicial (para que el usuario elija)
+        pageLength: 8,
+        lengthMenu: [5, 10, 25, 50, 100],
+        order: []
     });
 });
 </script>

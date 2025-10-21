@@ -17,13 +17,10 @@
             <?php endif; ?>
 
             <?php
-            // Campos que necesitan htmlspecialchars
             $campos_html = ['usuario', 'nombre', 'apellido', 'telefono', 'email', 'cargo', 'sector'];
 
-            // Campo directo (sin htmlspecialchars)
             $campos_directos = ['id_tipo_usuario'];
 
-            // Asignación de campos con htmlspecialchars
             foreach ($campos_html as $campo) {
                 if (isset($datos['values'][$campo])) {
                     $$campo = htmlspecialchars($datos['values'][$campo]);
@@ -32,7 +29,6 @@
                 }
             }
 
-            // Asignación de campos sin htmlspecialchars
             foreach ($campos_directos as $campo) {
                 if (isset($datos['values'][$campo])) {
                     $$campo = $datos['values'][$campo];

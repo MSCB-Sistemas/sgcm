@@ -19,14 +19,10 @@ function errorMensaje($codigo, $extra = '') {
         }
     }
 
-
-
-    // Si no existe, devolver mensaje por defecto
     if ($extra) {
             return 'Error indefinido' . ': ' . $extra;
     } else {
         return 'Error indefinido';
     }
 }
-
 ?>

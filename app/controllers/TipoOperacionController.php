@@ -48,11 +48,7 @@ class TipoOperacionController extends Control
     public function save()
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            if (isset($_POST['descripcion'])) {
-                $descripcion = trim($_POST['descripcion']);
-            } else {
-                $descripcion = '';
-            }
+            $descripcion = trim($_POST['descripcion']);
             $errores = [];
 
             if (empty($descripcion))
@@ -98,11 +94,7 @@ class TipoOperacionController extends Control
     public function update($id)
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            if (isset($_POST['descripcion'])) {
-                $descripcion = trim($_POST['descripcion']);
-            } else {
-                $descripcion = '';
-            }
+            $descripcion = trim($_POST['descripcion']);
             $errores = [];
 
             if (empty($descripcion))

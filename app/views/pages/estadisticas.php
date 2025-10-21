@@ -313,10 +313,8 @@
 
         document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tabEl => {
             tabEl.addEventListener('shown.bs.tab', event => {
-                // Guardamos la pestaña para la próxima visita
                 localStorage.setItem('activeTab', event.target.getAttribute('data-bs-target'));
                 
-                // Buscamos e inicializamos la tabla DENTRO de la pestaña que se acaba de mostrar
                 const panelId = event.target.getAttribute('data-bs-target');
                 const tablaEnPanel = document.querySelector(panelId + ' .datatable-ajax');
                 if (tablaEnPanel) {
@@ -325,12 +323,9 @@
             });
         });
 
-        // Lógica para RESTAURAR la pestaña al recargar la página
         const lastTab = localStorage.getItem('activeTab');
         if (lastTab) {
             const tabElement = document.querySelector(`[data-bs-target="${lastTab}"]`);
-            // Si la pestaña guardada existe Y NO es la primera (que ya se cargó), la mostramos.
-            // El evento 'shown.bs.tab' de arriba se encargará de inicializar su tabla.
             if (tabElement && lastTab !== '#difuntos') {
                 new bootstrap.Tab(tabElement).show();
             }

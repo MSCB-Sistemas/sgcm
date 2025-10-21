@@ -119,7 +119,7 @@ class OperacionController extends Control
             $datos_pdf['fecha_fallecimiento'] = date('d/m/Y', strtotime($datos_pdf['fecha_fallecimiento']));
             $datos_pdf['fecha_pago'] = date('d/m/Y', strtotime($datos_pdf['fecha_pago']));
 
-            $templatePath = __DIR__ . '/../../../docs/AUTORIZACIONTRASLADOINTERNO.html';
+            $templatePath = __DIR__ . '/../../docs/AUTORIZACIONTRASLADOINTERNO.html';
             
             PdfHelper::generarPlantilla($templatePath, $datos_pdf, "Traslado-{$id_difunto}.pdf");
         } else {
@@ -151,7 +151,7 @@ class OperacionController extends Control
             $datos_pdf['fecha_fallecimiento'] = date('d/m/Y', strtotime($datos_pdf['fecha_fallecimiento']));
             $datos_pdf['fecha_operacion'] = date('d/m/Y', strtotime($fecha_operacion));
         
-            $templatePath = __DIR__ . '/../../../docs/AUTORIZACIONTRASLADOEXTERNO.html';
+            $templatePath = __DIR__ . '/../../docs/AUTORIZACIONTRASLADOEXTERNO.html';
             PdfHelper::generarPlantilla($templatePath, $datos_pdf, "TrasladoExterno-{$id_difunto}.pdf");
             exit;
         } else {
@@ -189,7 +189,7 @@ class OperacionController extends Control
                 $datos_pdf['fecha_operacion'] = date('d/m/Y', strtotime($fecha_operacion));
                 $datos_pdf['fecha_vencimiento'] = date('d/m/Y', strtotime($vencimiento));
     
-                $templatePath = __DIR__ . '/../../../docs/AUTORIZACIONPERSONASBAJOSRECURSOS.html';
+                $templatePath = __DIR__ . '/../../docs/AUTORIZACIONPERSONASBAJOSRECURSOS.html';
                 PdfHelper::generarPlantilla($templatePath, $datos_pdf, "IngresoBR-{$id_difunto}.pdf");
                 exit;
             } else {
@@ -229,7 +229,7 @@ class OperacionController extends Control
         $datos_pdf['fecha_vencimiento'] = $datos_pdf['fecha_vencimiento'] ? date('d \d\e F \d\e Y', strtotime($datos_pdf['fecha_vencimiento'])) : 'No registra pagos';
         $datos_pdf['fecha_pago'] = date('d \d\e F \d\e Y');
 
-        $templatePath = __DIR__ . '/../../../docs/LIBREDEUDA.html';
+        $templatePath = __DIR__ . '/../../docs/LIBREDEUDA.html';
         PdfHelper::generarPlantilla($templatePath, $datos_pdf, "LibreDeuda-{$id_parcela}.pdf");
         exit;
     }
@@ -267,7 +267,7 @@ class OperacionController extends Control
             $datos_pdf['fecha_fallecimiento'] = date('d/m/Y', strtotime($datos_pdf['fecha_fallecimiento']));
             $datos_pdf['fecha_pago'] = date('d/m/Y', strtotime($datos_pdf['fecha_pago']));
 
-            $templatePath = __DIR__ . '/../../../docs/AUTORIZACIONINGRESO.html';
+            $templatePath = __DIR__ . '/../../docs/AUTORIZACIONINGRESO.html';
             
             PdfHelper::generarPlantilla($templatePath, $datos_pdf, "Comprobante-Ingreso-{$id_difunto}.pdf");
             exit;

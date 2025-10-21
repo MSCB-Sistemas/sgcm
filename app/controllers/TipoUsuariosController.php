@@ -48,11 +48,7 @@ class TipoUsuariosController extends Control
     public function save()
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            if (isset($_POST['rol'])) {
-                $rol = trim($_POST['rol']);
-            } else {
-                $rol = '';
-            }
+            $rol = trim($_POST['rol']);
             $errores = [];
 
             if (empty($rol))
@@ -98,11 +94,7 @@ class TipoUsuariosController extends Control
     public function update($id)
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            if (isset($_POST['rol'])) {
-                $rol = trim($_POST['rol']);
-            } else {
-                $rol = '';
-            }
+            $rol = trim($_POST['rol']);
             $errores = [];
 
             if (empty($rol))

@@ -17,17 +17,14 @@
             <?php endif; ?>
 
             <?php
-            // Campos con htmlspecialchars
             $campos_html = ['numero_ubicacion', 'hilera', 'seccion', 'fraccion', 'nivel'];
 
-            // Campos directos con nombres personalizados
             $campos_directos = [
                 'id_tipo_parcela' => 'id_tipo_parcela_selected',
                 'id_deudo' => 'id_deudo_selected',
                 'id_orientacion' => 'id_orientacion_selected'
             ];
 
-            // Asignación de campos con htmlspecialchars
             foreach ($campos_html as $campo) {
                 if (isset($datos['values'][$campo])) {
                     $$campo = htmlspecialchars($datos['values'][$campo]);
@@ -36,7 +33,6 @@
                 }
             }
 
-            // Asignación de campos directos con variables renombradas
             foreach ($campos_directos as $campo => $variable) {
                 if (isset($datos['values'][$campo])) {
                     $$variable = $datos['values'][$campo];
@@ -173,16 +169,12 @@
     </div>
 </div>
 
-<!-- Agrega este script para la validación del formulario -->
 <script>
-// Ejemplo de validación de Bootstrap
 (function () {
   'use strict'
 
-  // Selecciona todos los formularios a los que queremos aplicar estilos de validación de Bootstrap
   var forms = document.querySelectorAll('.needs-validation')
 
-  // Bucle sobre ellos y evitar el envío
   Array.prototype.slice.call(forms)
     .forEach(function (form) {
       form.addEventListener('submit', function (event) {

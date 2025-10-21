@@ -48,11 +48,7 @@ class TipoParcelaController extends Control
     public function save()
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            if (isset($_POST['nombre_parcela'])) {
-                $nombre_parcela = trim($_POST['nombre_parcela']);
-            } else {
-                $nombre_parcela = '';
-            }
+            $nombre_parcela = trim($_POST['nombre_parcela']);
             $errores = [];
 
             if (empty($nombre_parcela))
@@ -98,11 +94,7 @@ class TipoParcelaController extends Control
     public function update($id)
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            if (isset($_POST['nombre_parcela'])) {
-                $nombre_parcela = trim($_POST['nombre_parcela']);
-            } else {
-                $nombre_parcela = '';
-            }
+            $nombre_parcela = trim($_POST['nombre_parcela']);
             $errores = [];
 
             if (empty($nombre_parcela))

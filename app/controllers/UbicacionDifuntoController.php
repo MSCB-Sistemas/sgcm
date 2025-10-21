@@ -72,21 +72,10 @@ class UbicacionDifuntoController extends Control{
     public function save()
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            if (isset($_POST["difunto"])) {
-                $difunto = $_POST["difunto"];
-            } else {
-                $difunto = "";
-            }
-            if (isset($_POST["parcela"])) {
-                $parcela = $_POST["parcela"];
-            } else {
-                $parcela = "";
-            }
-            if (isset($_POST["fecha_ingreso"])) {
-                $fecha_ingreso = $_POST["fecha_ingreso"];
-            } else {
-                $fecha_ingreso = "";
-            }
+            $difunto = $_POST["difunto"];
+            $parcela = $_POST["parcela"];
+            $fecha_ingreso = $_POST["fecha_ingreso"];
+
             if (isset($_POST["fecha_retiro"])) {
                 $fecha_retiro = $_POST["fecha_retiro"];
             } else {
@@ -94,13 +83,13 @@ class UbicacionDifuntoController extends Control{
             }
             $errores = [];
 
-            if(empty($difunto)){
+            if (empty($difunto)) {
                 $errores[] = "El difunto es obligatorio";
             }
-            if(empty($parcela)){
+            if (empty($parcela)) {
                 $errores[] = "La parcela es obligatoria";
             }
-            if(empty($fecha_ingreso)){
+            if (empty($fecha_ingreso)) {
                 $errores[] = "La fecha de ingreso es obligatoria";
             }
 
@@ -155,21 +144,9 @@ class UbicacionDifuntoController extends Control{
     public function update($id)
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            if (isset($_POST["parcela"])) {
-                $parcela = $_POST["parcela"];
-            } else {
-                $parcela = '';
-            }
-            if (isset($_POST["difunto"])) {
-                $difunto = $_POST["difunto"];
-            } else {
-                $difunto = '';
-            }
-            if (isset($_POST["fecha_ingreso"])) {
-                $fecha_ingreso = $_POST["fecha_ingreso"];
-            } else {
-                $fecha_ingreso = "";
-            }
+            $parcela = $_POST["parcela"];
+            $difunto = $_POST["difunto"];
+            $fecha_ingreso = $_POST["fecha_ingreso"];
             if (isset($_POST["fecha_retiro"])) {
                 $fecha_retiro = $_POST["fecha_retiro"];
             } else {

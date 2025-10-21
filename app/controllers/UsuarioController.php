@@ -73,21 +73,9 @@ class UsuarioController extends Control{
             $this->redirect('usuario'); 
         }
 
-        if (isset($_POST["usuario"])) {
-            $usuario = trim($_POST["usuario"]);
-        } else {
-            $usuario = '';
-        }
-        if (isset($_POST["nombre"])) {
-            $nombre = trim($_POST["nombre"]);
-        } else {
-            $nombre = '';
-        }
-        if (isset($_POST["apellido"])) {
-            $apellido = trim($_POST["apellido"]);
-        } else {
-            $apellido = '';
-        }
+        $usuario = trim($_POST["usuario"]);
+        $nombre = trim($_POST["nombre"]);
+        $apellido = trim($_POST["apellido"]);
         if (isset($_POST["cargo"])) {
             $cargo = trim($_POST["cargo"]);
         } else {
@@ -108,16 +96,8 @@ class UsuarioController extends Control{
         } else {
             $email = '';
         }
-        if (isset($_POST["password"])) {
-            $contrasenia = trim($_POST["password"]);
-        } else {
-            $contrasenia = '';
-        }
-        if (isset($_POST["tipo_usuario"])) {
-            $tipoUsuario = $_POST["tipo_usuario"];
-        } else {
-            $tipoUsuario = '';
-        }
+        $contrasenia = trim($_POST["password"]);
+        $tipoUsuario = $_POST["tipo_usuario"];
         
         $errores = [];
 
@@ -186,21 +166,9 @@ class UsuarioController extends Control{
             $this->redirect('usuario'); 
         }
 
-        if (isset($_POST["usuario"])) {
-            $usuario = trim($_POST["usuario"]);
-        } else {
-            $usuario = '';
-        }
-        if (isset($_POST["nombre"])) {
-            $nombre = trim($_POST["nombre"]);
-        } else {
-            $nombre = '';
-        }
-        if (isset($_POST["apellido"])) {
-            $apellido = trim($_POST["apellido"]);
-        } else {
-            $apellido = '';
-        }
+        $usuario = trim($_POST["usuario"]);
+        $nombre = trim($_POST["nombre"]);
+        $apellido = trim($_POST["apellido"]);
         if (isset($_POST["cargo"])) {
             $cargo = trim($_POST["cargo"]);
         } else {
@@ -221,17 +189,12 @@ class UsuarioController extends Control{
         } else {
             $sector = '';
         }
-        if (isset($_POST["tipo_usuario"])) {
-            $tipoUsuario = $_POST["tipo_usuario"];
-        } else {
-            $tipoUsuario = '';
-        }
+        $tipoUsuario = $_POST["tipo_usuario"];
 
         $errores = [];
         if (empty($usuario))        $errores[] = "El usuario es obligatorio.";
         if (empty($nombre))         $errores[] = "El nombre es obligatorio.";
         if (empty($apellido))       $errores[] = "El apellido es obligatorio.";
-        
         if (empty($tipoUsuario))    $errores[] = "Debe seleccionar un tipo de usuario.";
         if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) $errores[] = "Email inválido.";
 
@@ -330,11 +293,7 @@ class UsuarioController extends Control{
             $this->redirect('usuario'); 
         }
 
-        if (isset($_POST["password"])) {
-            $contrasenia = trim($_POST["password"]);
-        } else {
-            $contrasenia = '';
-        }
+        $contrasenia = trim($_POST["password"]);
 
         $errores = [];
         if (empty($contrasenia)) 
