@@ -119,7 +119,7 @@ $iconFor = [
   'nacionalidades'  => ['bi'   => 'flag'],
   'tipoParcela'     => ['bi'   => 'columns-gap'],
   'tipoUsuario'     => ['bi'   => 'person-gear'],
-  'tipoOperacion'   => ['bi'   => 'person-gear'],
+  'tipoOperacion'   => ['bi'   => 'tags-fill'],
   'pago'            => ['bi'   => 'credit-card'],
 ];
 
