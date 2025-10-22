@@ -256,8 +256,12 @@ class DeudoController extends Control
         if (intval($_POST['start'])) { $start = intval($_POST['start']); } else { $start = 0; }
         if (intval($_POST['length'])) { $length = intval($_POST['length']); } else { $length = 10; }
         if ($_POST['search']['value']) { $search = $_POST['search']['value']; } else { $search = ''; }
-        if ($_POST['order'][0]['column']) { $orderColumnIndex = $_POST['order'][0]['column']; } else { $orderColumnIndex = 0; }
-        if ($_POST['order'][0]['dir']) { $orderDir = $_POST['order'][0]['dir']; } else { $orderDir = 'asc'; }
+
+        $orderColumnIndex = 0;
+        $orderDir = 'asc';
+
+        if (isset($_POST['order'][0]['column'])) { $orderColumnIndex = $_POST['order'][0]['column']; } else { $orderColumnIndex = 0; }
+        if (isset($_POST['order'][0]['dir'])) { $orderDir = $_POST['order'][0]['dir']; } else { $orderDir = 'asc'; }
 
         $columns = ['id_deudo', 'dni', 'nombre', 'apellido', 'telefono', 'email', 'domicilio', 'localidad', 'codigo_postal'];
 
