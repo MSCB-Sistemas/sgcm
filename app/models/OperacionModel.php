@@ -93,43 +93,40 @@ class OperacionModel
 
     public function getDatosParaPdfTraslado($id_difunto, $id_pago)
     {
-        $sql = "
-            SELECT 
-                d.nombre AS difunto_nombre, 
-                d.apellido AS difunto_apellido, 
-                d.fecha_fallecimiento,
-                
-                de.nombre AS deudo_nombre, 
-                de.apellido AS deudo_apellido,
-                
-                p.fecha_pago,
-                
-                po.id_parcela AS origen_id_parcela,
-                po.hilera AS origen_hilera,
-                po.seccion AS origen_seccion,
-                tpo.nombre_parcela AS origen_tipo_parcela,
-                
-                pd.id_parcela AS destino_id_parcela,
-                pd.hilera AS destino_hilera,
-                pd.seccion AS destino_seccion,
-                tpd.nombre_parcela AS destino_tipo_parcela
+        $sql = "SELECT 
+                    CONCAT(d.apellido, ', ', d.nombre) AS difunto, 
+                    d.fecha_fallecimiento,
+                    
+                    CONCAT(de.apellido, ', ', de.nombre) AS responsable_tramite,
+                    
+                    p.id_pago,
+                    p.fecha_pago,
+                    
+                    po.id_parcela AS id_parcela,
+                    po.hilera AS hilera,
+                    po.seccion AS seccion,
+                    tpo.nombre_parcela AS tipo_parcela,
+                    
+                    pd.id_parcela AS id_parcela_2,
+                    pd.hilera AS hilera_2,
+                    pd.seccion AS seccion_2,
+                    tpd.nombre_parcela AS tipo_parcela_2
 
-            FROM pago p
-            JOIN deudo de ON p.id_deudo = de.id_deudo
-            JOIN difunto d ON d.id_difunto = :id_difunto
-            
-            JOIN ubicacion_difunto uo ON uo.id_difunto = d.id_difunto AND uo.fecha_retiro IS NOT NULL
-            JOIN parcela po ON po.id_parcela = uo.id_parcela
-            JOIN tipo_parcela tpo ON tpo.id_tipo_parcela = po.id_tipo_parcela
-            
-            JOIN ubicacion_difunto ud ON ud.id_difunto = d.id_difunto AND ud.fecha_retiro IS NULL
-            JOIN parcela pd ON pd.id_parcela = ud.id_parcela
-            JOIN tipo_parcela tpd ON tpd.id_tipo_parcela = pd.id_tipo_parcela
+                FROM pago p
+                JOIN deudo de ON p.id_deudo = de.id_deudo
+                JOIN difunto d ON d.id_difunto = :id_difunto
+                
+                JOIN ubicacion_difunto uo ON uo.id_difunto = d.id_difunto AND uo.fecha_retiro IS NOT NULL
+                JOIN parcela po ON po.id_parcela = uo.id_parcela
+                JOIN tipo_parcela tpo ON tpo.id_tipo_parcela = po.id_tipo_parcela
+                
+                JOIN ubicacion_difunto ud ON ud.id_difunto = d.id_difunto AND ud.fecha_retiro IS NULL
+                JOIN parcela pd ON pd.id_parcela = ud.id_parcela
+                JOIN tipo_parcela tpd ON tpd.id_tipo_parcela = pd.id_tipo_parcela
 
-            WHERE p.id_pago = :id_pago
-            ORDER BY uo.fecha_retiro DESC 
-            LIMIT 1
-        ";
+                WHERE p.id_pago = :id_pago
+                ORDER BY uo.fecha_retiro DESC 
+                LIMIT 1";
         
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['id_difunto' => $id_difunto, 'id_pago' => $id_pago]);
@@ -146,19 +143,20 @@ class OperacionModel
                     CONCAT(de.apellido, ', ', de.nombre) as responsable_tramite,
                     de.dni as dni_responsable,
                     p.vinculo_familiar,
-                    (SELECT CONCAT(par.id_parcela, ' | ', tp.nombre_parcela, ' | Sec: ', par.seccion, ' | Hil: ', par.hilera) 
-                    FROM ubicacion_difunto ud 
-                    JOIN parcela par ON ud.id_parcela = par.id_parcela
-                    JOIN tipo_parcela tp ON par.id_tipo_parcela = tp.id_tipo_parcela
-                    WHERE ud.id_difunto = d.id_difunto AND ud.fecha_retiro IS NOT NULL ORDER BY ud.fecha_retiro DESC LIMIT 1) as parcela_origen_full,
-                    (SELECT CONCAT(par.id_parcela, ' | ', tp.nombre_parcela, ' | Sec: ', par.seccion, ' | Hil: ', par.hilera) 
-                    FROM ubicacion_difunto ud 
-                    JOIN parcela par ON ud.id_parcela = par.id_parcela
-                    JOIN tipo_parcela tp ON par.id_tipo_parcela = tp.id_tipo_parcela
-                    WHERE ud.id_difunto = d.id_difunto AND ud.fecha_retiro IS NULL ORDER BY ud.fecha_ingreso DESC LIMIT 1) as parcela_destino_full
+                    
+                    par.id_parcela,
+                    tp.nombre_parcela as tipo_parcela, 
+                    par.seccion,
+                    par.hilera
+
                 FROM pago p
                 JOIN deudo de ON p.id_deudo = de.id_deudo
                 JOIN difunto d ON d.id_difunto = :id_difunto
+                
+                JOIN ubicacion_difunto ud ON ud.id_difunto = d.id_difunto AND ud.fecha_retiro IS NULL
+                JOIN parcela par ON ud.id_parcela = par.id_parcela
+                JOIN tipo_parcela tp ON par.id_tipo_parcela = tp.id_tipo_parcela
+
                 WHERE p.id_pago = :id_pago";
         
         $stmt = $this->db->prepare($sql);
