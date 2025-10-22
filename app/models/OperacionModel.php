@@ -167,15 +167,22 @@ class OperacionModel
     public function getDatosParaPdfTrasladoExterno($id_difunto, $id_parcela)
     {
         $sql = "SELECT 
-                    d.nombre AS difunto_nombre, d.apellido AS difunto_apellido, d.dni AS difunto_dni, d.fecha_fallecimiento,
-                    de.nombre AS deudo_nombre, de.apellido AS deudo_apellido, de.dni AS deudo_dni,
-                    p.numero_ubicacion, p.hilera, p.seccion, p.fraccion, p.nivel,
-                    tp.nombre_parcela
-                FROM difunto d
-                JOIN deudo de ON d.id_deudo = de.id_deudo
-                JOIN parcela p ON p.id_parcela = :id_parcela
-                JOIN tipo_parcela tp ON p.id_tipo_parcela = tp.id_tipo_parcela
-                WHERE d.id_difunto = :id_difunto";
+                CONCAT(d.apellido, ', ', d.nombre) AS difunto, 
+                d.fecha_fallecimiento,
+                
+                CONCAT(de.apellido, ', ', de.nombre) AS responsable_tramite,
+                de.dni AS dni_responsable,
+                
+                p.id_parcela,
+                p.hilera, 
+                p.seccion,
+                tp.nombre_parcela AS tipo_parcela
+
+            FROM difunto d
+            JOIN deudo de ON d.id_deudo = de.id_deudo 
+            JOIN parcela p ON p.id_parcela = :id_parcela
+            JOIN tipo_parcela tp ON p.id_tipo_parcela = tp.id_tipo_parcela
+            WHERE d.id_difunto = :id_difunto";
                 
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['id_difunto' => $id_difunto, 'id_parcela' => $id_parcela]);
