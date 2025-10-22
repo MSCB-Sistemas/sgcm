@@ -36,7 +36,7 @@
     <div class="tab-pane fade" id="morosos" role="tabpanel">
         <?php if (!empty($datos['deudores_morosos'])): ?>
             <table class="table table-bordered table-striped" id="tabla-morosos">
-                <thead class="th-custom">
+                <thead class="table-light">
                     <tr>
                         <th>Parcela</th>
                         <th>DNI</th>

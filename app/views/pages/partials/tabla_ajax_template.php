@@ -19,7 +19,7 @@ $configKey = $config['configKey'];
         </div>
     </div>
 
-    <table class="table table-bordered table-striped datatable-ajax" 
+    <table class="table table-hover align-middle mb-0 datatable-ajax" 
            id="tabla-<?= $tabId ?>" 
            style="width:100%"
            data-ajax-url="<?= $ajaxUrl ?>"

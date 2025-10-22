@@ -16,8 +16,8 @@
         <?php endif; ?>
     </div>
 
-    <div class="shadow-rounded">
-        <table class="table table-hover align-middle mb-0" id="tablaABM" style="min-width: 400px;">
+    <div class="table-responsive-lg shadow-rounded">
+        <table class="table table-hover align-middle mb-0" id="tablaABM" style="min-width: 800px;">
             <thead class="table-light">
                 <tr>
                     <?php foreach ($datos['columnas'] as $col): ?>
