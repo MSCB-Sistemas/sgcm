@@ -36,7 +36,7 @@ class EstadisticasController extends Control {
             'tabId' => 'morosos',
             'configKey' => 'morosos',
             'ajaxUrl' => URL . '/estadisticas/ajaxDeudosMorosos',
-            'columnHeaders' => ['Parcela', 'DNI', 'Nombre', 'Apellido', 'Fecha de pago', 'Fecha Vencimiento', 'Monto', 'Acciones'],
+            'columnHeaders' => ['Parcela', 'DNI', 'Nombre', 'Apellido', 'Vencimiento', 'Monto', 'Días de mora', 'Acciones'],
         ];
 
         $datos = [

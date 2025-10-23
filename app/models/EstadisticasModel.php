@@ -235,7 +235,13 @@ class EstadisticasModel extends Control
         ];
 
         $sql_base = "FROM pago p INNER JOIN deudo d ON p.id_deudo = d.id_deudo";
-        $where_base = " WHERE p.fecha_vencimiento < :fecha_actual";
+
+        $where_base = " WHERE p.id_pago IN (
+                            -- This subquery finds the most recent payment ID for each combination.
+                            SELECT MAX(p_inner.id_pago)
+                            FROM pago p_inner
+                            GROUP BY p_inner.id_deudo, p_inner.id_parcela
+                        ) AND p.fecha_vencimiento < :fecha_actual";
 
         $stmt_total = $this->db->prepare("SELECT COUNT(p.id_pago) {$sql_base}{$where_base}");
         $stmt_total->bindParam(':fecha_actual', $fecha_actual, PDO::PARAM_STR);
@@ -281,17 +287,18 @@ class EstadisticasModel extends Control
         }
         
         if (isset($params['start']) && $params['length'] != -1) {
-            $stmt_final->bindParam(':start', $params['start'], PDO::PARAM_INT);
-            $stmt_final->bindParam(':length', $params['length'], PDO::PARAM_INT);
+            $stmt_final->bindValue(':start', (int) $params['start'], PDO::PARAM_INT);
+            $stmt_final->bindValue(':length', (int) $params['length'], PDO::PARAM_INT);
         }
         
         $stmt_final->execute();
         $data = $stmt_final->fetchAll(PDO::FETCH_ASSOC);
 
         return [
-            'recordsTotal' => intval($recordsTotal),
+            "draw"            => intval($params['draw']),
+            'recordsTotal'    => intval($recordsTotal),
             'recordsFiltered' => intval($recordsFiltered),
-            'data' => $data
+            'data'            => $data
         ];
     }
 }

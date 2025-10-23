@@ -150,8 +150,54 @@
                 { data: 'fecha_venta' }, { data: 'fecha_vencimiento' }
             ],
             'morosos': [
-                { data: 'id_parcela' }, { data: 'dni' }, { data: 'nombre_titular' },
-                { data: 'apellido_titular' }, { data: 'fecha_venta' }, { data: 'fecha_vencimiento' }, { data: 'monto' }
+                { data: 'id_parcela' }, 
+                { data: 'dni' }, 
+                { data: 'nombre' },
+                { data: 'apellido' },
+                { 
+                    data: 'fecha_vencimiento',
+                    render: function(data, type, row) {
+                        if (!data) return '';
+                        const date = new Date(data);
+                        return `<span class="text-danger fw-bold">${date.toLocaleDateString('es-AR')}</span>`;
+                    }
+                }, 
+                { 
+                    data: 'total',
+                    render: function(data, type, row) {
+                        return `$${parseFloat(data).toFixed(2)}`;
+                    }
+                },
+                { 
+                    data: 'fecha_vencimiento',
+                    title: "Días de mora",
+                    orderable: false,
+                    render: function(data, type, row) {
+                        if (!data) return '';
+                        const fechaVencimiento = new Date(data);
+                        const hoy = new Date();
+                        const diffTime = hoy - fechaVencimiento;
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        return `<span class="badge bg-danger">${diffDays > 0 ? diffDays : 0} día/s</span>`;
+                    }
+                },
+                {
+                    data: null,
+                    title: "Acciones",
+                    orderable: false,
+                    render: function(data, type, row) {
+                        const nombreCompleto = `${row.apellido}, ${row.nombre}`;
+                        return `<button type="button" class="btn btn-sm btn-success registrar-pago-btn" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#pagoModal"
+                                    data-deudor-id="${row.id_deudo}"
+                                    data-parcela-id="${row.id_parcela}"
+                                    data-deudor-nombre="${nombreCompleto}"
+                                    data-vencimiento-anterior="${row.fecha_vencimiento}">
+                                    <i class="bi bi-cash-coin"></i> Registrar Pago
+                                </button>`;
+                    }
+                }
             ]
         };
 

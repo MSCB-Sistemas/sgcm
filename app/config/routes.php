@@ -11,7 +11,7 @@ return [
     'estadisticas'                          => ['EstadisticasController','index',                      'ver_estadisticas'],
     'estadisticas/ajaxTraslados'            => ['EstadisticasController','ajaxTraslados',              'ver_estadisticas'],
     'estadisticas/ajaxParcelasVendidas'     => ['EstadisticasController','ajaxParcelasVendidas',       'ver_estadisticas'],
-    'estadisticas/ajaxDeudosMorosos'        => ['EstadisticasController','ajaxParcelasVendidas',       'ver_estadisticas'],
+    'estadisticas/ajaxDeudosMorosos'        => ['EstadisticasController','ajaxDeudosMorosos',          'ver_estadisticas'],
 
 // ABM (rutas “index” con sus permisos)
     // Usuario 
