@@ -35,7 +35,7 @@
 
     <div class="tab-pane fade" id="morosos" role="tabpanel">
         <?php if (!empty($datos['deudores_morosos'])): ?>
-            <table class="table table-bordered table-striped" id="tabla-morosos">
+            <table class="table table-striped" id="tabla-morosos">
                 <thead class="table-light">
                     <tr>
                         <th>Parcela</th>
@@ -303,8 +303,6 @@
                 pagoModal.querySelector('#fecha_vencimiento').value = nuevoVencimiento;
             });
         }
-
-        $('#tabla-morosos').DataTable({ dom: 'Bfrtip', buttons: ['copy', 'csv', 'excel', 'pdf', 'print'], language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' }, pageLength: 8 });
 
         const tablaDifuntos = document.getElementById('tabla-difuntos');
         if (tablaDifuntos) {
