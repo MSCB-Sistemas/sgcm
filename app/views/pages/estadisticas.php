@@ -31,113 +31,10 @@
 
     $config = $datos['configTraslados'];
     include 'partials/tabla_ajax_template.php';
+
+    $config = $datos['configMorosos'];
+    include 'partials/tabla_ajax_template.php';
     ?>
-
-    <div class="tab-pane fade" id="morosos" role="tabpanel">
-        <?php if (!empty($datos['deudores_morosos'])): ?>
-            <table class="table table-striped" id="tabla-morosos">
-                <thead class="table-light">
-                    <tr>
-                        <th>Parcela</th>
-                        <th>DNI</th>
-                        <th>Nombre</th>
-                        <th>Apellido</th>
-                        <th>Vencimiento</th>
-                        <th>Monto</th>
-                        <th>Días de mora</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($datos['deudores_morosos'] as $index => $moroso) : ?>
-                        <tr class="fila-moroso" data-estado="activo">
-                            <td>
-                                <?php
-                                    if (isset($moroso['id_parcela'])) {
-                                        echo htmlspecialchars($moroso['id_parcela']);
-                                    } else {
-                                        echo '';
-                                    }
-                                ?>
-                            </td>
-                            <td>
-                                <?php
-                                    if (isset($moroso['dni'])) {
-                                        echo htmlspecialchars($moroso['dni']);
-                                    } else {
-                                        echo '';
-                                    }
-                                ?>
-                            </td>
-                            <td>
-                                <?php
-                                    if (isset($moroso['nombre'])) {
-                                        echo htmlspecialchars($moroso['nombre']);
-                                    } else {
-                                        echo '';
-                                    }
-                                ?>
-                            </td>
-                            <td>
-                                <?php
-                                    if (isset($moroso['apellido'])) {
-                                        echo htmlspecialchars($moroso['apellido']);
-                                    } else {
-                                        echo '';
-                                    }
-                                ?>
-                            </td>
-                            
-                            <td class="text-danger fw-bold">
-                                <?= date('d/m/Y', strtotime($moroso['fecha_vencimiento'])) ?>
-                            </td>
-
-                            <td>
-                                $<?= number_format($moroso['total'], 2) ?>
-                            </td>
-
-                            <td>
-                                <?php 
-                                    $fechaVencimiento = new DateTime($moroso['fecha_vencimiento']);
-                                    $hoy = new DateTime();
-                                    $dias_mora = $hoy->diff($fechaVencimiento)->days;
-                                    echo '<span class="badge bg-danger">' . $dias_mora . ' día/s</span>'; 
-                                ?>
-                            </td>
-                            
-                            <td class="text-center">
-                                <button type="button" class="btn btn-sm btn-success registrar-pago-btn" 
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#pagoModal"
-                                        data-deudor-id="<?= $moroso['id_deudo'] ?>"
-                                        data-parcela-id="<?= $moroso['id_parcela'] ?>"
-                                        data-deudor-nombre="<?php
-                                            $nombre_completo = ''; 
-                                            
-                                            if (isset($moroso['apellido'])) {
-                                                $nombre_completo .= $moroso['apellido'];
-                                            }
-
-                                            $nombre_completo .= ', ';
-
-                                            if (isset($moroso['nombre'])) {
-                                                $nombre_completo .= $moroso['nombre'];
-                                            }
-
-                                            echo htmlspecialchars($nombre_completo);
-                                        ?>"
-                                        data-vencimiento-anterior="<?= $moroso['fecha_vencimiento'] ?>">
-                                    <i class="bi bi-cash-coin"></i> Registrar Pago
-                                </button>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        <?php else: ?>
-            <p class="text-muted text-center">No hay deudores morosos.</p>
-        <?php endif; ?>
-    </div>
 
     <div class="tab-pane fade" id="estadisticas" role="tabpanel">
         <div class="row">
@@ -251,6 +148,10 @@
                 { data: 'id_parcela' }, { data: 'tipo_parcela' }, { data: 'nombre_titular' },
                 { data: 'apellido_titular' }, { data: 'dni' }, { data: 'monto' },
                 { data: 'fecha_venta' }, { data: 'fecha_vencimiento' }
+            ],
+            'morosos': [
+                { data: 'id_parcela' }, { data: 'dni' }, { data: 'nombre_titular' },
+                { data: 'apellido_titular' }, { data: 'fecha_venta' }, { data: 'fecha_vencimiento' }, { data: 'monto' }
             ]
         };
 
@@ -279,8 +180,6 @@
             });
             $(filterIds.join(', ')).on('change', () => dt.ajax.reload());
         }
-
-        $('#tabla-morosos').DataTable({ dom: 'Bfrtip', buttons: ['copy', 'csv', 'excel', 'pdf', 'print'], language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' }, pageLength: 8 });
 
         const pagoModal = document.getElementById('pagoModal');
         if (pagoModal) {

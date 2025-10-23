@@ -29,18 +29,19 @@ class EstadisticasModel extends Control
         }
     }
 
-    public function getDeudosMorosos()
+    public function getTotalDeudosMorosos()
     {
         $fecha_actual = date('Y-m-d');
 
-        $stmt = $this->db->prepare("SELECT p.*, d.dni, d.nombre, d.apellido FROM pago p
+        $stmt = $this->db->prepare("SELECT COUNT(*) 
+                                        FROM pago p
                                         INNER JOIN deudo d ON p.id_deudo = d.id_deudo
-                                        WHERE p.fecha_vencimiento < :fecha_actual
-                                        ORDER BY p.id_parcela ASC");
+                                        WHERE p.fecha_vencimiento < :fecha_actual");
+        
         $stmt->bindParam(":fecha_actual", $fecha_actual, PDO::PARAM_STR);
         $stmt->execute();
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return (int) $stmt->fetchColumn();
     }
 
     public function getTotalParcelasOcupadas()
@@ -217,6 +218,80 @@ class EstadisticasModel extends Control
             "recordsTotal"    => intval($total_general),
             "recordsFiltered" => intval($total_filtrado),
             "data"            => $datos
+        ];
+    }
+
+    public function getDeudosMorososAjax($params)
+    {
+        $fecha_actual = date('Y-m-d');
+        
+        $columnas = [
+            'p.id_parcela',
+            'd.dni',
+            'd.nombre',
+            'd.apellido',
+            'p.fecha_vencimiento',
+            'p.total'
+        ];
+
+        $sql_base = "FROM pago p INNER JOIN deudo d ON p.id_deudo = d.id_deudo";
+        $where_base = " WHERE p.fecha_vencimiento < :fecha_actual";
+
+        $stmt_total = $this->db->prepare("SELECT COUNT(p.id_pago) {$sql_base}{$where_base}");
+        $stmt_total->bindParam(':fecha_actual', $fecha_actual, PDO::PARAM_STR);
+        $stmt_total->execute();
+        $recordsTotal = $stmt_total->fetchColumn();
+
+        $where_busqueda = "";
+        if (!empty($params['search']['value'])) {
+            $valor_busqueda = '%' . $params['search']['value'] . '%';
+            $where_busqueda .= " AND (";
+            $where_busqueda .= " p.id_parcela LIKE :busqueda";
+            $where_busqueda .= " OR d.dni LIKE :busqueda";
+            $where_busqueda .= " OR d.nombre LIKE :busqueda";
+            $where_busqueda .= " OR d.apellido LIKE :busqueda";
+            $where_busqueda .= " )";
+        }
+
+        $stmt_filtrado = $this->db->prepare("SELECT COUNT(p.id_pago) {$sql_base}{$where_base}{$where_busqueda}");
+        $stmt_filtrado->bindParam(':fecha_actual', $fecha_actual, PDO::PARAM_STR);
+        if (!empty($params['search']['value'])) {
+            $stmt_filtrado->bindParam(':busqueda', $valor_busqueda, PDO::PARAM_STR);
+        }
+        $stmt_filtrado->execute();
+        $recordsFiltered = $stmt_filtrado->fetchColumn();
+
+        $sql_final = "SELECT p.id_parcela, p.id_deudo, p.fecha_vencimiento, p.total, d.dni, d.nombre, d.apellido {$sql_base}{$where_base}{$where_busqueda}";
+
+        if (isset($params['order']) && count($params['order'])) {
+            $columna_orden = $columnas[$params['order'][0]['column']];
+            $direccion_orden = $params['order'][0]['dir'] === 'asc' ? 'ASC' : 'DESC';
+            $sql_final .= " ORDER BY {$columna_orden} {$direccion_orden}";
+        }
+
+        if (isset($params['start']) && $params['length'] != -1) {
+            $sql_final .= " LIMIT :start, :length";
+        }
+
+        $stmt_final = $this->db->prepare($sql_final);
+        $stmt_final->bindParam(':fecha_actual', $fecha_actual, PDO::PARAM_STR);
+        
+        if (!empty($params['search']['value'])) {
+            $stmt_final->bindParam(':busqueda', $valor_busqueda, PDO::PARAM_STR);
+        }
+        
+        if (isset($params['start']) && $params['length'] != -1) {
+            $stmt_final->bindParam(':start', $params['start'], PDO::PARAM_INT);
+            $stmt_final->bindParam(':length', $params['length'], PDO::PARAM_INT);
+        }
+        
+        $stmt_final->execute();
+        $data = $stmt_final->fetchAll(PDO::FETCH_ASSOC);
+
+        return [
+            'recordsTotal' => intval($recordsTotal),
+            'recordsFiltered' => intval($recordsFiltered),
+            'data' => $data
         ];
     }
 }

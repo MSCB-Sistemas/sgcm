@@ -32,15 +32,20 @@ class EstadisticasController extends Control {
             'columnHeaders' => ['Parcela', 'Tipo', 'Titular', 'Apellido', 'DNI', 'Monto', 'Fecha Venta', 'Fecha Vencimiento'],
         ];
 
-        $deudores_morosos = $this->model->getDeudosMorosos();
+        $configMorosos = [
+            'tabId' => 'morosos',
+            'configKey' => 'morosos',
+            'ajaxUrl' => URL . '/estadisticas/ajaxDeudosMorosos',
+            'columnHeaders' => ['Parcela', 'DNI', 'Nombre', 'Apellido', 'Fecha de pago', 'Fecha Vencimiento', 'Monto', 'Acciones'],
+        ];
 
         $datos = [
             'title' => 'Estadísticas',            
             'configDifuntos' => $configDifuntos,
             'configTraslados' => $configTraslados,
             'configVendidas' => $configVendidas,
-            'deudores_morosos' => $deudores_morosos,
-            'total_morosos' => count($deudores_morosos),
+            'configMorosos' => $configMorosos,
+            'total_morosos' => $this->model->getTotalDeudosMorosos(),
             'total_difuntos' => $this->model->getTotalDifuntos(),
             'total_parcelas' => $this->model->getTotalParcelasOcupadas(),
             'total_traslados' => $this->model->getTotalTraslados(),
@@ -64,6 +69,16 @@ class EstadisticasController extends Control {
     {
         $params = $_POST;
         $datos = $this->model->getParcelasVendidasAjax($params);
+        
+        header('Content-Type: application/json');
+        echo json_encode($datos);
+        exit;
+    }
+
+    public function ajaxDeudosMorosos()
+    {
+        $params = $_POST;
+        $datos = $this->model->getDeudosMorososAjax($params);
         
         header('Content-Type: application/json');
         echo json_encode($datos);
