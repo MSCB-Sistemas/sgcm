@@ -6,7 +6,7 @@ $configKey = $config['configKey'];
 ?>
 
 <div class="tab-pane fade" id="<?= $tabId ?>" role="tabpanel">
-    <div class="filtro-box mb-4">
+    <!-- <div class="filtro-box mb-4">
         <div class="row g-3">
             <div class="col-md-3">
                 <label for="fecha_inicio_<?= $tabId ?>" class="form-label">Desde</label>
@@ -17,7 +17,7 @@ $configKey = $config['configKey'];
                 <input type="date" class="form-control" id="fecha_fin_<?= $tabId ?>">
             </div>
         </div>
-    </div>
+    </div> -->
 
     <table class="table table-hover align-middle mb-0 datatable-ajax" 
            id="tabla-<?= $tabId ?>" 

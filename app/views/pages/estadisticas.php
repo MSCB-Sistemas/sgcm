@@ -1,6 +1,9 @@
 <link rel="stylesheet" href="<?= URL . '/public/css/estadisticas.css' ?>">
 <ul class="nav nav-tabs" id="myTab" role="tablist">
     <li class="nav-item">
+        <button class="nav-link" id="vendidas-tab" data-bs-toggle="tab" data-bs-target="#vendidas" type="button" role="tab">Parcelas Vendidas</button>
+    </li>
+    <li class="nav-item">
         <button class="nav-link active" id="difuntos-tab" data-bs-toggle="tab" data-bs-target="#difuntos" type="button" role="tab">Padrón difuntos</button>
     </li>
     <li class="nav-item">
@@ -14,22 +17,19 @@
         <button class="nav-link" id="traslados-tab" data-bs-toggle="tab" data-bs-target="#traslados" type="button" role="tab">Traslados</button>
     </li>
     <li class="nav-item">
-        <button class="nav-link" id="vendidas-tab" data-bs-toggle="tab" data-bs-target="#vendidas" type="button" role="tab">Parcelas Vendidas</button>
-    </li>
-    <li class="nav-item">
         <button class="nav-link" id="estadisticas-tab" data-bs-toggle="tab" data-bs-target="#estadisticas" type="button" role="tab">Estadísticas</button>
     </li>
 </ul>
 
 <div class="tab-content mt-4">
     <?php
+    $config = $datos['configVendidas'];
+    include 'partials/tabla_ajax_template.php';
+
     $config = $datos['configDifuntos'];
     include 'partials/tabla_ajax_template.php';
 
     $config = $datos['configTraslados'];
-    include 'partials/tabla_ajax_template.php';
-
-    $config = $datos['configVendidas'];
     include 'partials/tabla_ajax_template.php';
     ?>
 
@@ -225,6 +225,8 @@
 </div>
 
 <script>
+    let lastClickedButton;
+
     document.addEventListener('DOMContentLoaded', function() {
         const dataTablesConfigs = {
             'difuntos': [
@@ -284,6 +286,8 @@
         if (pagoModal) {
             pagoModal.addEventListener('show.bs.modal', function (event) {
                 const button = event.relatedTarget;
+                lastClickedButton = button;
+
                 const deudorId = button.getAttribute('data-deudor-id');
                 const parcelaId = button.getAttribute('data-parcela-id');
                 const deudorNombre = button.getAttribute('data-deudor-nombre');
@@ -303,6 +307,36 @@
                 pagoModal.querySelector('#fecha_vencimiento').value = nuevoVencimiento;
             });
         }
+
+        $('#pagoModal form').on('submit', function(e) {
+            e.preventDefault();
+
+            const form = $(this);
+            const url = form.attr('action');
+            const data = form.serialize();
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: data,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        $('#pagoModal').modal('hide');
+
+                        const table = $('#tabla-morosos').DataTable();
+                        const rowToRemove = $(lastClickedButton).closest('tr');
+
+                        table.row(rowToRemove).remove().draw();
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('Ocurrio un error al procesar el pago. Intente nuevamente.');
+                }
+            });
+        });
 
         const tablaDifuntos = document.getElementById('tabla-difuntos');
         if (tablaDifuntos) {

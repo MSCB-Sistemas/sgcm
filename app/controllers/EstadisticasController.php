@@ -15,14 +15,14 @@ class EstadisticasController extends Control {
             'configKey' => 'difuntos',
             'ajaxUrl' => URL . '/difunto/ajax',
             'columnHeaders' => ['Fecha Fall.', 'Nombre', 'Apellido', 'Edad', 'DNI', 'Deudo', 'Estado Civil', 'Nacionalidad', 'Sexo', 'Domicilio', 'Localidad', 'Cód. Postal'],
-            'isActive' => true,
         ];
 
         $configTraslados = [
             'tabId' => 'traslados',
             'configKey' => 'traslados',
             'ajaxUrl' => URL . '/estadisticas/ajaxTraslados', 
-            'columnHeaders' => ['Nombre', 'Apellido', 'DNI', 'Fecha Fall.', 'Fecha Traslado', 'Movimiento']
+            'columnHeaders' => ['Nombre', 'Apellido', 'DNI', 'Fecha Fall.', 'Fecha Traslado', 'Movimiento'],
+            'isActive' => true,
         ];
 
         $configVendidas = [

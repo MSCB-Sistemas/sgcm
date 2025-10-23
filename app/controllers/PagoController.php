@@ -1,12 +1,14 @@
 <?php
-class PagoController extends Control {
+class PagoController extends Control
+{
     private PagoModel $model;
     private DeudoModel $deudoModel;
     private ParcelaModel $parcelaModel;
     private UsuarioModel $usuarioModel;
     private TipoOperacionModel $tipoOperacionModel;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->requireLogin();
         $this->model        = $this->loadModel("PagoModel");
         $this->deudoModel   = $this->loadModel("DeudoModel");
@@ -15,14 +17,15 @@ class PagoController extends Control {
         $this->tipoOperacionModel = $this->loadModel("TipoOperacionModel");
     }
 
-    public function index() {
+    public function index()
+    {
         $puedeCrear         = $this->can('crear_pago');
         $puedeEditar        = $this->can('editar_pago');
         $puedeEliminar      = $this->can('eliminar_pago');
 
         $datos = [
             'title' => 'Lista de pagos',
-            'urlCrear'=> URL . 'pago/create',
+            'urlCrear' => URL . 'pago/create',
             'ajaxUrl' => URL . 'pago/ajax',
             'baseUrl' => URL . 'pago/',
             'columnas' => ['ID', 'Deudo', 'Parcela', 'Operacion', 'Fecha de pago', 'Fecha de vencimiento', 'Importe', 'Recargo', 'Total', 'Vinculo familiar', 'Responsable de tramite', 'Usuario'],
@@ -31,29 +34,27 @@ class PagoController extends Control {
                 ['data' => 'nombre_deudo'],
                 ['data' => 'parcela'],
                 ['data' => 'id_tipo_operacion'],
-                ['data' => 'fecha_pago', 'render' => function($data) {
-                    if ($data){
+                ['data' => 'fecha_pago', 'render' => function ($data) {
+                    if ($data) {
                         return date('d/m/Y', strtotime($data));
-                    }
-                    else{
+                    } else {
                         return '-';
                     }
                 }],
-                ['data' => 'fecha_vencimiento', 'render' => function($data) {
-                    if ($data){
+                ['data' => 'fecha_vencimiento', 'render' => function ($data) {
+                    if ($data) {
                         return date('d/m/Y', strtotime($data));
-                    }
-                    else{
+                    } else {
                         return '-';
                     }
                 }],
-                ['data' => 'importe', 'render' => function($data) {
+                ['data' => 'importe', 'render' => function ($data) {
                     return '$ ' . number_format($data, 2);
                 }],
-                ['data' => 'recargo', 'render' => function($data) {
+                ['data' => 'recargo', 'render' => function ($data) {
                     return '$ ' . number_format($data, 2);
                 }],
-                ['data' => 'total', 'render' => function($data) {
+                ['data' => 'total', 'render' => function ($data) {
                     return '$ ' . number_format($data, 2);
                 }],
                 ['data' => 'vinculo_familiar'],
@@ -68,7 +69,8 @@ class PagoController extends Control {
         $this->loadView('partials/tablaAbmAjax', $datos);
     }
 
-    public function create() {
+    public function create()
+    {
         $deudos = $this->deudoModel->getAllDeudos();
         $parcelas = $this->parcelaModel->getAllParcelas();
         $usuarios = $this->usuarioModel->getAllUsuarios();
@@ -91,7 +93,8 @@ class PagoController extends Control {
     }
 
 
-    public function save() {
+    public function save()
+    {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return $this->index();
         }
@@ -162,20 +165,21 @@ class PagoController extends Control {
         if ($nuevo_ingreso) {
             $is_ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
 
-           if ($is_ajax) {
-               header('Content-Type: application/json');
-               echo json_encode(['success' => true, 'newItem' => ['id' => $nuevo_ingreso, 'text' => "Pago #$nuevo_ingreso"]]);
-               exit;
-           } else {
-               header("Location: " . URL . "pago");
-               exit;
-           }
-       } else {
-           die("Error al guardar el pago");
-       }
+            if ($is_ajax) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => true, 'newItem' => ['id' => $nuevo_ingreso, 'text' => "Pago #$nuevo_ingreso"]]);
+                exit;
+            } else {
+                header("Location: " . URL . "pago");
+                exit;
+            }
+        } else {
+            die("Error al guardar el pago");
+        }
     }
 
-    public function edit($id) {
+    public function edit($id)
+    {
 
         $pago = $this->model->getPago($id);
         $deudos = $this->deudoModel->getAllDeudos();
@@ -202,13 +206,14 @@ class PagoController extends Control {
                 'responsable_tramite' => $pago['responsable_tramite']
             ],
             'errores' => [],
-            'deudos'=> $deudos,
-            'parcelas'=> $parcelas,
-            'tipo_operaciones'=> $tipo_operaciones
+            'deudos' => $deudos,
+            'parcelas' => $parcelas,
+            'tipo_operaciones' => $tipo_operaciones
         ]);
     }
 
-    public function update($id) {
+    public function update($id)
+    {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $deudo = $_POST['id_deudo'];
             $parcela = $_POST['parcela'];
@@ -239,15 +244,15 @@ class PagoController extends Control {
                 $pago = [
                     'id_pago' => $id,
                     'id_deudo' => $deudo,
-                    'id_parcela'=> $parcela,
-                    'id_tipo_operacion'=> $tipo_operacion,
-                    'fecha_pago'=> $fecha_pago,
+                    'id_parcela' => $parcela,
+                    'id_tipo_operacion' => $tipo_operacion,
+                    'fecha_pago' => $fecha_pago,
                     'fecha_vencimiento' => $fecha_vencimiento,
                     'importe' => $importe,
-                    'recargo'=> $recargo,
-                    'total'=> $total,
-                    'vinculo_familiar'=> $vinculo_familiar,
-                    'responsable_tramite'=> $responsable_tramite,
+                    'recargo' => $recargo,
+                    'total' => $total,
+                    'vinculo_familiar' => $vinculo_familiar,
+                    'responsable_tramite' => $responsable_tramite,
                 ];
 
                 $deudos = $this->deudoModel->getAllDeudos();
@@ -259,15 +264,15 @@ class PagoController extends Control {
                     'action' => URL . 'pago/update/' . $id,
                     'values' => $pago,
                     'errores' => $errores,
-                    'deudos'=> $deudos,
-                    'parcelas'=> $parcelas,
-                    'tipo_operaciones'=> $tipo_operaciones
+                    'deudos' => $deudos,
+                    'parcelas' => $parcelas,
+                    'tipo_operaciones' => $tipo_operaciones
                 ]);
                 return;
             }
 
             if ($this->model->updatePago(
-                $id, 
+                $id,
                 $deudo,
                 $parcela,
                 $tipo_operacion,
@@ -279,8 +284,7 @@ class PagoController extends Control {
                 $vinculo_familiar,
                 $responsable_tramite,
                 $usuario
-            )) 
-            {
+            )) {
                 header("Location: " . URL . "pago");
                 exit;
             } else {
@@ -299,10 +303,12 @@ class PagoController extends Control {
         }
     }
 
-    public function ajax() {
+    public function ajax()
+    {
         header('Content-Type: application/json; charset=utf-8');
-        
-        function getPost($key, $default = '') {
+
+        function getPost($key, $default = '')
+        {
             if (isset($_POST[$key])) {
                 return $_POST[$key];
             } else {
@@ -310,7 +316,8 @@ class PagoController extends Control {
             }
         }
 
-        function getNestedPost($keys, $default = '') {
+        function getNestedPost($keys, $default = '')
+        {
             $value = $_POST;
             foreach ($keys as $key) {
                 if (!isset($value[$key])) {
@@ -329,9 +336,18 @@ class PagoController extends Control {
         $orderDir           = getNestedPost(['order', 0, 'dir'], 'asc');
 
         $columns = [
-            'id_pago', 'nombre_deudo', 'tipo_operacion', 'parcela', 'fecha_pago', 
-            'fecha_vencimiento', 'importe', 'recargo', 'total', 'vinculo_familiar', 
-            'responsable_tramite', 'usuario'
+            'id_pago',
+            'nombre_deudo',
+            'tipo_operacion',
+            'parcela',
+            'fecha_pago',
+            'fecha_vencimiento',
+            'importe',
+            'recargo',
+            'total',
+            'vinculo_familiar',
+            'responsable_tramite',
+            'usuario'
         ];
 
         if (isset($columns[$orderColumnIndex])) {
@@ -353,23 +369,23 @@ class PagoController extends Control {
 
         foreach ($data as &$fila) {
             $id  = $fila['id_pago'];
-            $url = rtrim(URL,'/') . '/pago';
-    
+            $url = rtrim(URL, '/') . '/pago';
+
             $acciones = '';
-    
+
             if ($this->can('editar_pago')) {
-                $acciones .= '<a href="'.$url.'/edit/'.$id.'" class="btn btn-sm btn-primary">Editar</a> '
-                           . '</form> ';
+                $acciones .= '<a href="' . $url . '/edit/' . $id . '" class="btn btn-sm btn-primary">Editar</a> '
+                    . '</form> ';
             }
-    
+
             if ($this->can('eliminar_pago')) {
-                $acciones .= '<form action="'.$url.'/delete/'.$id.'" method="post" style="display:inline" onsubmit="return confirm(\'¿Eliminar este pago?\');">'
-                           . '<button class="btn btn-sm btn-danger">Eliminar</button>'
-                           . '</form>';
+                $acciones .= '<form action="' . $url . '/delete/' . $id . '" method="post" style="display:inline" onsubmit="return confirm(\'¿Eliminar este pago?\');">'
+                    . '<button class="btn btn-sm btn-danger">Eliminar</button>'
+                    . '</form>';
             }
-    
+
             $fila['acciones'] = $acciones;
-        }  
+        }
 
         echo json_encode([
             "draw"              => intval($draw),
@@ -382,39 +398,73 @@ class PagoController extends Control {
 
     public function registrarPagoMantenimiento()
     {
+        header('Content-Type: application/json');
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: ' . URL . '/estadisticas');
+            http_response_code(405);
+            echo json_encode(['success' => false, 'message' => 'Metodo no avalado.']);
             exit;
         }
 
-        if ($_POST['deudo_id']) { $deudo_id = $_POST['deudo_id']; } else { $deudo_id = null; }
-        if ($_POST['parcela_id']) { $parcela_id = $_POST['parcela_id']; } else { $parcela_id = null; }     
-        if ($_POST['monto']) { $monto = $_POST['monto']; } else { $monto = 0; }
-        if ($_POST['fecha_pago']) { $fecha_pago = $_POST['fecha_pago']; } else { $fecha_pago = date('Y-m-d'); }
-        if ($_POST['fecha_vencimiento']) { $fecha_vencimiento_nueva = $_POST['fecha_vencimiento']; } else {$fecha_vencimiento_nueva = null; }
-        $usuario_id = $_SESSION['usuario_id'];
-        $tipo_operacion_id = 1;
+        try {
 
-        if (!$deudo_id || !$parcela_id || !$fecha_vencimiento_nueva || !is_numeric($monto)) {
-            die("Error: Faltan datos esenciales o el monto no es válido.");
+            if ($_POST['deudo_id']) {
+                $deudo_id = $_POST['deudo_id'];
+            } else {
+                $deudo_id = null;
+            }
+            if ($_POST['parcela_id']) {
+                $parcela_id = $_POST['parcela_id'];
+            } else {
+                $parcela_id = null;
+            }
+            if ($_POST['monto']) {
+                $monto = $_POST['monto'];
+            } else {
+                $monto = 0;
+            }
+            if ($_POST['fecha_pago']) {
+                $fecha_pago = $_POST['fecha_pago'];
+            } else {
+                $fecha_pago = date('Y-m-d');
+            }
+            if ($_POST['fecha_vencimiento']) {
+                $fecha_vencimiento_nueva = $_POST['fecha_vencimiento'];
+            } else {
+                $fecha_vencimiento_nueva = null;
+            }
+
+            $usuario_id = $_SESSION['usuario_id'];
+            $tipo_operacion_id = 1;
+
+            if (empty($deudo_id) || empty($parcela_id) || empty($fecha_vencimiento_nueva) || !is_numeric($monto)) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'message' => 'Faltan datos esenciales o el monto no es válido.']);
+                exit;
+            }
+
+            $pagoExitoso = $this->model->insertarPagoMantenimiento(
+                $deudo_id,
+                $parcela_id,
+                $tipo_operacion_id,
+                $fecha_pago,
+                $fecha_vencimiento_nueva,
+                $monto,
+                $usuario_id
+            );
+
+            if ($pagoExitoso) {
+                echo json_encode(['success' => true, 'message' => 'Pago registrado con éxito.']);
+                exit;
+            } else {
+                http_response_code(500);
+                echo json_encode(['success' => false, 'message' => 'Error al guardar el pago en la base de datos.']);
+            }
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => 'Ocurrió un error inesperado: ' . $e->getMessage()]);
         }
 
-        $pagoExitoso = $this->model->insertarPagoMantenimiento(
-            $deudo_id,
-            $parcela_id,
-            $tipo_operacion_id,
-            $fecha_pago,
-            $fecha_vencimiento_nueva,
-            $monto,
-            $usuario_id
-        );
-
-        if ($pagoExitoso) {
-            header('Location: ' . URL . '/estadisticas#morosos');
-            exit;
-        } else {
-            die("Error al guardar el pago en la base de datos.");
-        }
+        exit;
     }
 }
-?>
