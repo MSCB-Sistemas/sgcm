@@ -1,6 +1,9 @@
 <link rel="stylesheet" href="<?= URL . '/public/css/estadisticas.css' ?>">
 <ul class="nav nav-tabs" id="myTab" role="tablist">
     <li class="nav-item">
+        <button class="nav-link" id="vendidas-tab" data-bs-toggle="tab" data-bs-target="#vendidas" type="button" role="tab">Parcelas Vendidas</button>
+    </li>
+    <li class="nav-item">
         <button class="nav-link active" id="difuntos-tab" data-bs-toggle="tab" data-bs-target="#difuntos" type="button" role="tab">Padrón difuntos</button>
     </li>
     <li class="nav-item">
@@ -14,130 +17,24 @@
         <button class="nav-link" id="traslados-tab" data-bs-toggle="tab" data-bs-target="#traslados" type="button" role="tab">Traslados</button>
     </li>
     <li class="nav-item">
-        <button class="nav-link" id="vendidas-tab" data-bs-toggle="tab" data-bs-target="#vendidas" type="button" role="tab">Parcelas Vendidas</button>
-    </li>
-    <li class="nav-item">
         <button class="nav-link" id="estadisticas-tab" data-bs-toggle="tab" data-bs-target="#estadisticas" type="button" role="tab">Estadísticas</button>
     </li>
 </ul>
 
 <div class="tab-content mt-4">
     <?php
+    $config = $datos['configVendidas'];
+    include 'partials/tabla_ajax_template.php';
+
     $config = $datos['configDifuntos'];
     include 'partials/tabla_ajax_template.php';
 
     $config = $datos['configTraslados'];
     include 'partials/tabla_ajax_template.php';
 
-    $config = $datos['configVendidas'];
+    $config = $datos['configMorosos'];
     include 'partials/tabla_ajax_template.php';
     ?>
-
-    <div class="tab-pane fade" id="morosos" role="tabpanel">
-        <?php if (!empty($datos['deudores_morosos'])): ?>
-            <table class="table table-bordered table-striped" id="tabla-morosos">
-                <thead class="table-light">
-                    <tr>
-                        <th>Parcela</th>
-                        <th>DNI</th>
-                        <th>Nombre</th>
-                        <th>Apellido</th>
-                        <th>Vencimiento</th>
-                        <th>Monto</th>
-                        <th>Días de mora</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($datos['deudores_morosos'] as $index => $moroso) : ?>
-                        <tr class="fila-moroso" data-estado="activo">
-                            <td>
-                                <?php
-                                    if (isset($moroso['id_parcela'])) {
-                                        echo htmlspecialchars($moroso['id_parcela']);
-                                    } else {
-                                        echo '';
-                                    }
-                                ?>
-                            </td>
-                            <td>
-                                <?php
-                                    if (isset($moroso['dni'])) {
-                                        echo htmlspecialchars($moroso['dni']);
-                                    } else {
-                                        echo '';
-                                    }
-                                ?>
-                            </td>
-                            <td>
-                                <?php
-                                    if (isset($moroso['nombre'])) {
-                                        echo htmlspecialchars($moroso['nombre']);
-                                    } else {
-                                        echo '';
-                                    }
-                                ?>
-                            </td>
-                            <td>
-                                <?php
-                                    if (isset($moroso['apellido'])) {
-                                        echo htmlspecialchars($moroso['apellido']);
-                                    } else {
-                                        echo '';
-                                    }
-                                ?>
-                            </td>
-                            
-                            <td class="text-danger fw-bold">
-                                <?= date('d/m/Y', strtotime($moroso['fecha_vencimiento'])) ?>
-                            </td>
-
-                            <td>
-                                $<?= number_format($moroso['total'], 2) ?>
-                            </td>
-
-                            <td>
-                                <?php 
-                                    $fechaVencimiento = new DateTime($moroso['fecha_vencimiento']);
-                                    $hoy = new DateTime();
-                                    $dias_mora = $hoy->diff($fechaVencimiento)->days;
-                                    echo '<span class="badge bg-danger">' . $dias_mora . ' día/s</span>'; 
-                                ?>
-                            </td>
-                            
-                            <td class="text-center">
-                                <button type="button" class="btn btn-sm btn-success registrar-pago-btn" 
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#pagoModal"
-                                        data-deudor-id="<?= $moroso['id_deudo'] ?>"
-                                        data-parcela-id="<?= $moroso['id_parcela'] ?>"
-                                        data-deudor-nombre="<?php
-                                            $nombre_completo = ''; 
-                                            
-                                            if (isset($moroso['apellido'])) {
-                                                $nombre_completo .= $moroso['apellido'];
-                                            }
-
-                                            $nombre_completo .= ', ';
-
-                                            if (isset($moroso['nombre'])) {
-                                                $nombre_completo .= $moroso['nombre'];
-                                            }
-
-                                            echo htmlspecialchars($nombre_completo);
-                                        ?>"
-                                        data-vencimiento-anterior="<?= $moroso['fecha_vencimiento'] ?>">
-                                    <i class="bi bi-cash-coin"></i> Registrar Pago
-                                </button>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        <?php else: ?>
-            <p class="text-muted text-center">No hay deudores morosos.</p>
-        <?php endif; ?>
-    </div>
 
     <div class="tab-pane fade" id="estadisticas" role="tabpanel">
         <div class="row">
@@ -225,6 +122,8 @@
 </div>
 
 <script>
+    let lastClickedButton;
+
     document.addEventListener('DOMContentLoaded', function() {
         const dataTablesConfigs = {
             'difuntos': [
@@ -249,6 +148,56 @@
                 { data: 'id_parcela' }, { data: 'tipo_parcela' }, { data: 'nombre_titular' },
                 { data: 'apellido_titular' }, { data: 'dni' }, { data: 'monto' },
                 { data: 'fecha_venta' }, { data: 'fecha_vencimiento' }
+            ],
+            'morosos': [
+                { data: 'id_parcela' }, 
+                { data: 'dni' }, 
+                { data: 'nombre' },
+                { data: 'apellido' },
+                { 
+                    data: 'fecha_vencimiento',
+                    render: function(data, type, row) {
+                        if (!data) return '';
+                        const date = new Date(data);
+                        return `<span class="text-danger fw-bold">${date.toLocaleDateString('es-AR')}</span>`;
+                    }
+                }, 
+                { 
+                    data: 'total',
+                    render: function(data, type, row) {
+                        return `$${parseFloat(data).toFixed(2)}`;
+                    }
+                },
+                { 
+                    data: 'fecha_vencimiento',
+                    title: "Días de mora",
+                    orderable: false,
+                    render: function(data, type, row) {
+                        if (!data) return '';
+                        const fechaVencimiento = new Date(data);
+                        const hoy = new Date();
+                        const diffTime = hoy - fechaVencimiento;
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        return `<span class="badge bg-danger">${diffDays > 0 ? diffDays : 0} día/s</span>`;
+                    }
+                },
+                {
+                    data: null,
+                    title: "Acciones",
+                    orderable: false,
+                    render: function(data, type, row) {
+                        const nombreCompleto = `${row.apellido}, ${row.nombre}`;
+                        return `<button type="button" class="btn btn-sm btn-success registrar-pago-btn" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#pagoModal"
+                                    data-deudor-id="${row.id_deudo}"
+                                    data-parcela-id="${row.id_parcela}"
+                                    data-deudor-nombre="${nombreCompleto}"
+                                    data-vencimiento-anterior="${row.fecha_vencimiento}">
+                                    <i class="bi bi-cash-coin"></i> Registrar Pago
+                                </button>`;
+                    }
+                }
             ]
         };
 
@@ -278,12 +227,12 @@
             $(filterIds.join(', ')).on('change', () => dt.ajax.reload());
         }
 
-        $('#tabla-morosos').DataTable({ dom: 'Bfrtip', buttons: ['copy', 'csv', 'excel', 'pdf', 'print'], language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' }, pageLength: 8 });
-
         const pagoModal = document.getElementById('pagoModal');
         if (pagoModal) {
             pagoModal.addEventListener('show.bs.modal', function (event) {
                 const button = event.relatedTarget;
+                lastClickedButton = button;
+
                 const deudorId = button.getAttribute('data-deudor-id');
                 const parcelaId = button.getAttribute('data-parcela-id');
                 const deudorNombre = button.getAttribute('data-deudor-nombre');
@@ -304,7 +253,35 @@
             });
         }
 
-        $('#tabla-morosos').DataTable({ dom: 'Bfrtip', buttons: ['copy', 'csv', 'excel', 'pdf', 'print'], language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' }, pageLength: 8 });
+        $('#pagoModal form').on('submit', function(e) {
+            e.preventDefault();
+
+            const form = $(this);
+            const url = form.attr('action');
+            const data = form.serialize();
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: data,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        $('#pagoModal').modal('hide');
+
+                        const table = $('#tabla-morosos').DataTable();
+                        const rowToRemove = $(lastClickedButton).closest('tr');
+
+                        table.row(rowToRemove).remove().draw();
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('Ocurrio un error al procesar el pago. Intente nuevamente.');
+                }
+            });
+        });
 
         const tablaDifuntos = document.getElementById('tabla-difuntos');
         if (tablaDifuntos) {
