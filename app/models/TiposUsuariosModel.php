@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
-require_once __DIR__ . '/AuditoriaHelper.php';
+require_once __DIR__ . '/../helpers/AuditoriaHelper.php';
 require_once 'Database.php';
 
 /**
@@ -60,11 +60,11 @@ class TiposUsuariosModel {
         $stmt->execute($parametros);
         
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Tipo Usuarios Model",      // Modelo
-            "Insert"                    // Accion
+            $_SESSION['usuario_id'],   
+            $sql,                     
+            $parametros,             
+            "Tipo Usuarios Model",     
+            "Insert"                
         );
         return $this->db->lastInsertId();
     }
@@ -88,12 +88,13 @@ class TiposUsuariosModel {
         $stmt->execute($parametros);
 
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Tipo Usuarios Model",      // Modelo
-            "Update"                    // Accion
+            $_SESSION['usuario_id'],    
+            $sql,                    
+            $parametros,           
+            "Tipo Usuarios Model",     
+            "Update"                    
         );
+
         return $stmt->rowCount() > 0;
     }
 
@@ -111,11 +112,11 @@ class TiposUsuariosModel {
         $stmt->execute($parametros);
         
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Tipo Usuarios Model",      // Modelo
-            "Delete"                    // Accion
+            $_SESSION['usuario_id'], 
+            $sql,                     
+            $parametros,               
+            "Tipo Usuarios Model", 
+            "Delete"               
         );
         return $stmt->rowCount() > 0;
     }

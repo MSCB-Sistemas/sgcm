@@ -1,5 +1,5 @@
 <?php 
-require_once 'Database.php';
+require_once '/../models/Database.php';
 
 class AuditoriaHelper {
     public static function log(

@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
-require_once __DIR__ . '/AuditoriaHelper.php';
+require_once __DIR__ . '/../helpers/AuditoriaHelper.php';
 require_once 'Database.php';
 
 class DeudoModel
@@ -80,6 +80,7 @@ class DeudoModel
             "Deudo Model",
             "Insert"
         );
+
         return (int) $this->db->lastInsertId();
     }
 
@@ -122,6 +123,7 @@ class DeudoModel
             "Deudo Model",
             "Update"
         );
+
         return $stmt->rowCount() > 0;
     }
 
@@ -139,6 +141,7 @@ class DeudoModel
             "Deudo Model",
             "Delete"
         );
+        
         return $stmt->rowCount() > 0;
     }
 

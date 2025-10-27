@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
-require_once __DIR__ . '/AuditoriaHelper.php';
+require_once __DIR__ . '/../helpers/AuditoriaHelper.php';
 require_once 'Database.php';
 
 /**
@@ -24,7 +24,7 @@ class TipoParcelaModel {
 
     /**
      * Obtiene todos los tipos de parcelas
-     * @return array Lista de tipos de parcelas>>>>>>> submain
+     * @return array Lista de tipos de parcelas
      */
     public function getAllTiposParcelas(): array
     {
@@ -59,12 +59,13 @@ class TipoParcelaModel {
         $stmt->execute($parametros);
         
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Tipo Parcela Model",             // Modelo
-            "Insert"                    // Accion
+            $_SESSION['usuario_id'],   
+            $sql,                     
+            $parametros,             
+            "Tipo Parcela Model",           
+            "Insert"                  
         );
+        
         return $this->db->lastInsertId();
     }
 
@@ -86,12 +87,13 @@ class TipoParcelaModel {
         $stmt->execute($parametros);
 
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Tipo Parcela Model",       // Modelo
-            "Update"                    // Accion
+            $_SESSION['usuario_id'],  
+            $sql,            
+            $parametros,             
+            "Tipo Parcela Model",      
+            "Update"               
         );
+
         return $stmt->rowCount() > 0;
     }
 
@@ -108,12 +110,13 @@ class TipoParcelaModel {
         $stmt->execute($parametros);
         
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Tipo Parcela Model",       // Modelo
-            "Delete"                    // Accion
+            $_SESSION['usuario_id'],  
+            $sql,                    
+            $parametros,         
+            "Tipo Parcela Model",     
+            "Delete"                
         );
+
         return $stmt->rowCount() > 0;
     }
 }

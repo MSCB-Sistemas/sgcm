@@ -1,7 +1,7 @@
 <?php
 // Carga la configuración del sistema y la clase para conectar a la base de datos
 require_once __DIR__ . '/../config/config.php';
-require_once __DIR__ . '/AuditoriaHelper.php';
+require_once __DIR__ . '/../helpers/AuditoriaHelper.php';
 require_once 'Database.php';
 
 /**
@@ -61,11 +61,11 @@ class OrientacionModel {
         $stmt->execute($parametros);
         
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Orientacion Model",             // Modelo
-            "Insert"                    // Accion
+            $_SESSION['usuario_id'],    
+            $sql,                      
+            $parametros,              
+            "Orientacion Model",            
+            "Insert"               
         );
         return $this->db->lastInsertId();
     }
@@ -91,11 +91,11 @@ class OrientacionModel {
         $stmt->execute($parametros);
 
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Orientacion Model",             // Modelo
-            "Update"                    // Accion
+            $_SESSION['usuario_id'],   
+            $sql,                    
+            $parametros,              
+            "Orientacion Model",          
+            "Update"              
         );
         return $stmt->rowCount() > 0;
     }
@@ -114,11 +114,11 @@ class OrientacionModel {
         $stmt->execute($parametros);
         
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Orientacion Model",             // Modelo
-            "Delete"                    // Accion
+            $_SESSION['usuario_id'],    
+            $sql,                    
+            $parametros,         
+            "Orientacion Model",       
+            "Delete"               
         );
         return $stmt->rowCount() > 0;
     }

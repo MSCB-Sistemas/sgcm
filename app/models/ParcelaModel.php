@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
-require_once __DIR__ . '/AuditoriaHelper.php';
+require_once __DIR__ . '/../helpers/AuditoriaHelper.php';
 require_once 'Database.php';
 
 /**
@@ -142,6 +142,7 @@ class ParcelaModel
             "Parcela Model",             
             "Update"              
         );
+
         return $stmt->rowCount() > 0;
     }
 
@@ -165,6 +166,7 @@ class ParcelaModel
             "Parcela Model",            
             "Delete"                    
         );
+
         return $stmt->rowCount() > 0;
     }
 

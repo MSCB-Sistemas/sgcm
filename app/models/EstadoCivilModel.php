@@ -1,7 +1,6 @@
 <?php
-
 require_once __DIR__ . '/../config/config.php';
-require_once __DIR__ . '/AuditoriaHelper.php';
+require_once __DIR__ . '/../helpers/AuditoriaHelper.php';
 require_once 'Database.php';
 
 /*
@@ -60,12 +59,13 @@ class EstadoCivilModel {
         $stmt->execute($parametros);
 
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Estado Civil Model",         // Modelo
-            "Insert"                    // Accion
+            $_SESSION['usuario_id'],   
+            $sql,                      
+            $parametros,             
+            "Estado Civil Model",      
+            "Insert"                   
         );
+
         return $this->db->lastInsertId();
     }
 
@@ -89,11 +89,11 @@ class EstadoCivilModel {
         $stmt->execute($parametros);
 
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Estado Civil Model",         // Modelo
-            "Update"                    // Accion
+            $_SESSION['usuario_id'],   
+            $sql,                     
+            $parametros,           
+            "Estado Civil Model",     
+            "Update"                 
         );
         return $stmt->rowCount() > 0;
     }
@@ -111,11 +111,11 @@ class EstadoCivilModel {
         $stmt->execute($parametros);
         
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Estado Civil Model",         // Modelo
-            "Delete"                    // Accion
+            $_SESSION['usuario_id'],   
+            $sql,                 
+            $parametros,       
+            "Estado Civil Model",        
+            "Delete"                 
         );
         return $stmt->rowCount() > 0;
     }

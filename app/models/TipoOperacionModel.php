@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
-require_once __DIR__ . '/AuditoriaHelper.php';
+require_once __DIR__ . '/../helpers/AuditoriaHelper.php';
 require_once 'Database.php';
 
 class TipoOperacionModel {
@@ -60,6 +60,7 @@ class TipoOperacionModel {
             "Tipo Operacion Model",       
             "Update"             
         );
+
         return $stmt->rowCount() > 0;
     }
 
@@ -77,6 +78,7 @@ class TipoOperacionModel {
             "Tipo Operacion Model",      
             "Delete"               
         );
+
         return $stmt->rowCount() > 0;
     }
 }
