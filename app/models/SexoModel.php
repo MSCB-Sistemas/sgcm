@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
-require_once __DIR__ . '/AuditoriaHelper.php';
+require_once __DIR__ . '/../helpers/AuditoriaHelper.php';
 require_once 'Database.php';
 
 /*
@@ -60,11 +60,11 @@ class SexoModel {
         $stmt->execute($parametros);
 
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Genero/Sexo Model",             // Modelo
-            "Insert"                    // Accion
+            $_SESSION['usuario_id'],    
+            $sql,                     
+            $parametros,       
+            "Genero/Sexo Model",          
+            "Insert"                 
         );
         return $this->db->lastInsertId();
     }
@@ -87,11 +87,11 @@ class SexoModel {
         $stmt->execute($parametros);
 
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Genero/Sexo Model",        // Modelo
-            "Update"                    // Accion
+            $_SESSION['usuario_id'],   
+            $sql,                       
+            $parametros,             
+            "Genero/Sexo Model",     
+            "Update"                  
         );
         return $stmt->rowCount() > 0;
     }
@@ -109,11 +109,11 @@ class SexoModel {
         $stmt->execute($parametros);
         
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Genero/Sexo Model",        // Modelo
-            "Delete"                    // Accion
+            $_SESSION['usuario_id'],   
+            $sql,                      
+            $parametros,           
+            "Genero/Sexo Model",       
+            "Delete"                   
         );
         return $stmt->rowCount() > 0;
     }

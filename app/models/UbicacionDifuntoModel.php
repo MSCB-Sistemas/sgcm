@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
-require_once __DIR__ . '/AuditoriaHelper.php';
+require_once __DIR__ . '/../helpers/AuditoriaHelper.php';
 require_once 'Database.php';
 
 /**
@@ -71,11 +71,11 @@ class UbicacionDifuntoModel {
         $stmt->execute($parametros);
 
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Ubicacion Difunto Model",    // Modelo
-            "Insert"                    // Accion
+            $_SESSION['usuario_id'],    
+            $sql,                       
+            $parametros,             
+            "Ubicacion Difunto Model",  
+            "Insert"                   
         );
         return $this->db->lastInsertId();
     }
@@ -107,12 +107,13 @@ class UbicacionDifuntoModel {
         $stmt->execute($parametros);
 
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Ubicacion Difunto Model",    // Modelo
-            "Update"                    // Accion
+            $_SESSION['usuario_id'],   
+            $sql,                       
+            $parametros,              
+            "Ubicacion Difunto Model",    
+            "Update"                  
         );
+
         return $stmt->rowCount() > 0;
     }
 
@@ -130,12 +131,13 @@ class UbicacionDifuntoModel {
         $stmt->execute($parametros);
         
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Ubicacion Difunto Model",    // Modelo
-            "Delete"                    // Accion
+            $_SESSION['usuario_id'],  
+            $sql,                   
+            $parametros,         
+            "Ubicacion Difunto Model", 
+            "Delete"                  
         );
+        
         return $stmt->rowCount() > 0;
     }
 }

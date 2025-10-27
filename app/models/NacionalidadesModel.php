@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
-require_once __DIR__ . '/AuditoriaHelper.php';
+require_once __DIR__ . '/../helpers/AuditoriaHelper.php';
 require_once 'Database.php';
 
 /**
@@ -60,11 +60,11 @@ class NacionalidadesModel {
         $stmt->execute($parametros);
         
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Nacionalidades Model",             // Modelo
-            "Insert"                    // Accion
+            $_SESSION['usuario_id'],  
+            $sql,                      
+            $parametros,        
+            "Nacionalidades Model",          
+            "Insert"                 
         );
         return (int) $this->db->lastInsertId();
     }
@@ -88,11 +88,11 @@ class NacionalidadesModel {
         $stmt->execute($parametros);
         
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Nacionalidades Model",             // Modelo
-            "Update"                    // Accion
+            $_SESSION['usuario_id'],  
+            $sql,                      
+            $parametros,            
+            "Nacionalidades Model",    
+            "Update"                 
         );
         return $stmt->rowCount() > 0;
     }
@@ -111,11 +111,11 @@ class NacionalidadesModel {
         $stmt->execute($parametros);
         
         AuditoriaHelper::log(
-            $_SESSION['usuario_id'],    // usuario actual
-            $sql,                       // Query SQL ejecutada
-            $parametros,                // Parámetros
-            "Nacionalidades Model",             // Modelo
-            "Delete"                    // Accion
+            $_SESSION['usuario_id'],  
+            $sql,                     
+            $parametros,               
+            "Nacionalidades Model",       
+            "Delete"                 
         );
         return $stmt->rowCount() > 0;
     }

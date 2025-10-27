@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
-require_once __DIR__ . '/AuditoriaHelper.php';
+require_once __DIR__ . '/../helpers/AuditoriaHelper.php';
 require_once 'Database.php';
 
 /**
@@ -140,6 +140,7 @@ class PagoModel {
             "Pago Model",         
             "Update"  
         );
+
         return $stmt->rowCount() > 0;
     }
 
@@ -163,6 +164,7 @@ class PagoModel {
             "Pago Model",         
             "Delete"              
         );
+        
         return $stmt->rowCount() > 0;
     }
 
@@ -308,15 +310,25 @@ class PagoModel {
             
             $stmt = $this->db->prepare($sql);
 
-            $stmt->bindParam(':deudo', $deudo_id, PDO::PARAM_INT);
-            $stmt->bindParam(':parcela', $parcela_id, PDO::PARAM_INT);
-            $stmt->bindParam(':tipo_op', $tipo_operacion_id, PDO::PARAM_INT);
-            $stmt->bindParam(':fecha_pago', $fecha_pago);
-            $stmt->bindParam(':fecha_venc', $fecha_vencimiento);
-            $stmt->bindParam(':importe', $importe);
-            $stmt->bindParam(':recargo', $recargo);
-            $stmt->bindParam(':total', $total);
-            $stmt->bindParam(':usuario', $usuario_id, PDO::PARAM_INT);
+            $parametros = [
+                ':deudo'       => $deudo_id,
+                ':parcela'     => $parcela_id,
+                ':tipo_op'     => $tipo_operacion_id,
+                ':fecha_pago'  => $fecha_pago,
+                ':fecha_venc'  => $fecha_vencimiento,
+                ':importe'     => $importe,
+                ':recargo'     => $recargo,
+                ':total'       => $total,
+                ':usuario'     => $usuario_id
+            ];
+
+            AuditoriaHelper::log(
+                $_SESSION['usuario_id'],
+                $sql,
+                $parametros(),
+                "Deudo Model",
+                "Delete"
+            );
 
             return $stmt->execute();
 

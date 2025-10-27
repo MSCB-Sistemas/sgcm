@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
-require_once __DIR__ . '/AuditoriaHelper.php';
+require_once __DIR__ . '/../helpers/AuditoriaHelper.php';
 require_once 'Database.php';
 
 class UsuarioModel {
@@ -200,6 +200,7 @@ class UsuarioModel {
             "Usuario Model",        
             "Password Update"      
         );
+
         return $stmt->rowCount() > 0;
     }
 

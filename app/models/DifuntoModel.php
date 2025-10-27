@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
-require_once __DIR__ . '/AuditoriaHelper.php';
+require_once __DIR__ . '/../helpers/AuditoriaHelper.php';
 require_once 'Database.php';
 
 class DifuntoModel
@@ -41,7 +41,9 @@ class DifuntoModel
                 LEFT JOIN sexo s ON d.id_sexo = s.id_sexo
                 LEFT JOIN estado_civil ec ON d.id_estado_civil = ec.id_estado_civil
                 LEFT JOIN nacionalidades n ON d.id_nacionalidad = n.id_nacionalidad");
+
         $stmt->execute();
+        
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -108,6 +110,7 @@ class DifuntoModel
             "Difunto Model",
             "Insert"
         );
+
         return $this->db->lastInsertId();
     }
 
@@ -160,6 +163,7 @@ class DifuntoModel
             "Difunto Model",
             "Update"
         );
+
         return $stmt->rowCount() > 0;
     }
 
@@ -182,6 +186,7 @@ class DifuntoModel
             "Difunto Model",
             "Update"
         );
+        
         return $stmt->rowCount() > 0;
     }
 
