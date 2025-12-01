@@ -38,7 +38,7 @@ class AuthController extends Control
                 $_SESSION['usuario_apellido']   = $usuario['apellido'];
                 $_SESSION['usuario_tipo']       = $usuario['id_tipo_usuario'];
 
-                $permisos = $this->permisoModel->getPermisosPorRol($usuario['id_usuario']);
+                $permisos = $this->permisoModel->getPermisosPorRol($usuario['id_tipo_usuario']);
 
                 if ($permisos !== null) {
                     $_SESSION['usuario_permisos'] = $permisos;
