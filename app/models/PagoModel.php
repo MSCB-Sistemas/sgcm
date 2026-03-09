@@ -325,12 +325,12 @@ class PagoModel {
             AuditoriaHelper::log(
                 $_SESSION['usuario_id'],
                 $sql,
-                $parametros(),
+                $parametros,
                 "Deudo Model",
-                "Delete"
+                "Insert de pago mantenimiento"
             );
 
-            return $stmt->execute();
+            return $stmt->execute($parametros);
 
         } catch (PDOException $e) {
             error_log("Error en insertarPagoMantenimiento: " . $e->getMessage());
