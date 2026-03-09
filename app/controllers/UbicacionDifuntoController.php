@@ -35,9 +35,6 @@ class UbicacionDifuntoController extends Control{
                 if ($puedeEditar) 
                 {
                     $html .= '<a href="'.$url.'/edit/'.$id.'" class="btn btn-sm btn-primary">Editar</a> ';
-                    $html .= '<form action="'.$url.'/activate/'.$id.'" method="post" style="display:inline">'
-                          .  '<button class="btn btn-sm btn-success" onclick="return confirm(\'¿Activar este usuario?\');">Activar</button>'
-                          .  '</form> ';
                 }
                 if ($puedeEliminar) {
                     $html .= '<form action="'.$url.'/delete/'.$id.'" method="post" style="display:inline" onsubmit="return confirm(\'¿Eliminar este usuario?\');">'
@@ -46,7 +43,7 @@ class UbicacionDifuntoController extends Control{
                 }
                 return $html;
             },
-            'puedeCrear'      => $puedeCrear,   // por si tu partial muestra el botón “Nuevo”
+            'puedeCrear'      => $puedeCrear,
             'errores'         => [],
         ];
 

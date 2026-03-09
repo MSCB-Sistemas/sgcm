@@ -320,8 +320,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     return res.json();
                 })
                 .then(data => {
-                    // Aquí va tu lógica completa para construir el HTML del acordeón
-                    // (La he extraído de tu código anterior)
                     let pagosHtml = `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePagos">Pagos Asociados (${data.pagos.length})</button></h2><div id="collapsePagos" class="accordion-collapse collapse show"><div class="accordion-body p-0">`;
                     if (data.pagos.length > 0) {
                         pagosHtml += `<table class="table table-sm table-striped mb-0"><thead><tr><th>Fecha Pago</th><th>Vencimiento</th><th>Total</th><th>Deudo</th></tr></thead><tbody>`;
