@@ -237,19 +237,21 @@ class OperacionController extends Control
     private function procesarIngreso($data)
     {
         $errores = [];
-        $id_difunto       = $data['id_difunto_in'] ?? null;
-        $id_parcela       = $data['id_parcela_in'] ?? null;
-        $id_deudo         = $data['id_deudo_in'] ?? null;
+        $id_difunto       = $data['id_difunto_in'] ?? '';
+        $id_parcela       = $data['id_parcela_in'] ?? '';
+        $id_deudo         = $data['id_deudo_in'] ?? '';
         $fecha_operacion  = $data['fecha_ingreso_in'] ?? date('Y-m-d');
-        $importe          = $data['importe_in'] ?? null;
-        $vencimiento      = $data['fecha_vencimiento_in'] ?? null;
+        $importe          = $data['importe_in'] ?? '';
+        $vencimiento      = $data['fecha_vencimiento_in'] ?? '';
 
-        if (!$id_difunto || !$id_parcela || !$id_deudo || !is_numeric($importe) || !$vencimiento) {
-            $errores[] = "Para un Ingreso, todos los campos son obligatorios.";
-        } else {
-            if ($this->model->verificarParcelaOcupada($id_parcela)) {
-                $errores[] = "La parcela seleccionada ya está ocupada.";
-            }
+        if (empty($id_difunto)) $errores[] = "Debe seleccionar un difunto válido de la lista.";
+        if (empty($id_parcela)) $errores[] = "Debe seleccionar una parcela válida de la lista.";
+        if (empty($id_deudo))   $errores[] = "Debe seleccionar un deudo responsable.";
+        if (!is_numeric($importe) || $importe <= 0) $errores[] = "El importe debe ser un número mayor a 0.";
+        if (empty($vencimiento)) $errores[] = "La fecha de vencimiento es obligatoria.";
+
+        if ($this->model->verificarParcelaOcupada($id_parcela)) {
+            $errores[] = "La parcela seleccionada ya está ocupada.";
         }
         
         if (!empty($errores)) {
