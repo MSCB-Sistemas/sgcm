@@ -1,6 +1,9 @@
 <link rel="stylesheet" href="<?= URL . '/public/css/estadisticas.css' ?>">
 <ul class="nav nav-tabs" id="myTab" role="tablist">
     <li class="nav-item">
+        <button class="nav-link" id="pagos-por-difunto-tab" data-bs-toggle="tab" data-bs-target="#pagos_por_difunto" type="button" role="tab">Pagos por Difunto</button>
+    </li>
+    <li class="nav-item">
         <button class="nav-link" id="vendidas-tab" data-bs-toggle="tab" data-bs-target="#vendidas" type="button" role="tab">Parcelas Vendidas</button>
     </li>
     <li class="nav-item">
@@ -23,6 +26,9 @@
 
 <div class="tab-content mt-4">
     <?php
+    $config = $datos['configPagosPorDifunto'];
+    include 'partials/tabla_ajax_template.php';
+
     $config = $datos['configVendidas'];
     include 'partials/tabla_ajax_template.php';
 
@@ -126,6 +132,37 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         const dataTablesConfigs = {
+            'pagos_por_difunto': [
+                { data: 'id_pago' },
+                { 
+                    data: null,
+                    render: function(data, type, row) {
+                        return `${row.difunto_apellido}, ${row.difunto_nombre}`;
+                    }
+                },
+                { data: 'id_parcela' },
+                { 
+                    data: null,
+                    render: function(data, type, row) {
+                        return `${row.deudo_apellido}, ${row.deudo_nombre}`;
+                    }
+                },
+                { 
+                    data: 'total',
+                    render: function(data) {
+                        return `$${parseFloat(data).toFixed(2)}`;
+                    }
+                },
+                { 
+                    data: 'fecha_pago',
+                    render: function(data) {
+                        if(!data) return '';
+                        const fecha = new Date(data);
+                        return fecha.toLocaleDateString('es-AR');
+                    }
+                }
+            ],
+
             'difuntos': [
                 { data: 'fecha_fallecimiento' }, { data: 'nombre' }, { data: 'apellido' },
                 { data: 'edad' }, { data: 'dni' }, { data: 'nombre_deudo' },
@@ -267,18 +304,36 @@
                 dataType: 'json',
                 success: function(response) {
                     if (response.success) {
-                        $('#pagoModal').modal('hide');
+                        const modalEl = document.getElementById('pagoModal');
+                        const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Tab(modalEl);
+                        modalInstance.hide();
 
                         const table = $('#tabla-morosos').DataTable();
-                        const rowToRemove = $(lastClickedButton).closest('tr');
+                        if (lastClickedButton) {
+                            const rowToRemove = $(lastClickedButton).closest('tr');
+                            table.row(rowToRemove).remove().draw(false);
+                        }
 
-                        table.row(rowToRemove).remove().draw();
+                        const badge = $('#morosos-tab .badge');
+                        if (badge.length) {
+                            const info = table.page.info();
+                            const nuevoTotal = info.recordsDisplay; 
+
+                            if (nuevoTotal > 0) {
+                                badge.text(nuevoTotal);
+                            } else {
+                                badge.remove();
+                            }
+                        }
+
+                        alert('Pago registrado correctamente.');
                     } else {
                         alert('Error: ' + response.message);
                     }
                 },
-                error: function() {
-                    alert('Ocurrio un error al procesar el pago. Intente nuevamente.');
+                error: function(xhr) {
+                    console.error(xhr.responseText);
+                    alert('Ocurrió un error al procesar el pago. Intente nuevamente.');
                 }
             });
         });
