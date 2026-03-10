@@ -33,6 +33,8 @@ return [
     'difunto/edit'    => ['DifuntoController',    'edit',         'editar_difunto'],
     'difunto/update'  => ['DifuntoController',    'update',       'editar_difunto'],
     'difunto/delete'  => ['DifuntoController',    'delete',       'eliminar_difunto'],
+    'difunto/verificar' => ['DifuntoController',    'verificar',    '__login__'],
+    'difunto/ajax'    => [DifuntoController::class, 'ajax',          '__login__'],
 
     // Estado civil
     'estadoCivil'         => ['EstadoCivilController', 'index',   'ver_estado_civil'],
