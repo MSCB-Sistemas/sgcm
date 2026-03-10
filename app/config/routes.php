@@ -8,15 +8,11 @@ return [
     'home'            => ['HomeController',       'index',        '__login__'],
     
 // Listados / estadísticas
-<<<<<<< Updated upstream:mvc_cementerio/app/config/routes.php
-    'estadisticas'    => ['EstadisticasController','index',       'ver_estadisticas'],
-=======
     'estadisticas'                          => ['EstadisticasController','index',                      'ver_estadisticas'],
     'estadisticas/ajaxTraslados'            => ['EstadisticasController','ajaxTraslados',              'ver_estadisticas'],
     'estadisticas/ajaxParcelasVendidas'     => ['EstadisticasController','ajaxParcelasVendidas',       'ver_estadisticas'],
     'estadisticas/ajaxDeudosMorosos'        => ['EstadisticasController','ajaxDeudosMorosos',          'ver_estadisticas'],
     'estadisticas/ajaxPagosPorDifunto'      => ['EstadisticasController','ajaxPagosPorDifunto',        'ver_estadisticas'],
->>>>>>> Stashed changes:app/config/routes.php
 
 // ABM (rutas “index” con sus permisos)
     // Usuario 
