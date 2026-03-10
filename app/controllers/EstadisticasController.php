@@ -10,6 +10,13 @@ class EstadisticasController extends Control {
 
     public function index()
     {
+        $configPagosPorDifunto = [
+            'tabId' => 'pagos_por_difunto',
+            'configKey' => 'pagos_por_difunto',
+            'ajaxUrl' => URL . '/estadisticas/ajaxPagosPorDifunto',
+            'columnHeaders' => ['ID Pago', 'Difunto', 'Parcela', 'Deudo Responsable', 'Monto', 'Fecha Pago'],
+        ];
+
         $configDifuntos = [
             'tabId' => 'difuntos',
             'configKey' => 'difuntos',
@@ -40,7 +47,8 @@ class EstadisticasController extends Control {
         ];
 
         $datos = [
-            'title' => 'Estadísticas',            
+            'title' => 'Estadísticas',
+            'configPagosPorDifunto' => $configPagosPorDifunto,       
             'configDifuntos' => $configDifuntos,
             'configTraslados' => $configTraslados,
             'configVendidas' => $configVendidas,
@@ -79,6 +87,16 @@ class EstadisticasController extends Control {
     {
         $params = $_POST;
         $datos = $this->model->getDeudosMorososAjax($params);
+        
+        header('Content-Type: application/json');
+        echo json_encode($datos);
+        exit;
+    }
+
+    public function ajaxPagosPorDifunto()
+    {
+        $params = $_POST;
+        $datos = $this->model->getPagosPorDifuntoAjax($params);
         
         header('Content-Type: application/json');
         echo json_encode($datos);
