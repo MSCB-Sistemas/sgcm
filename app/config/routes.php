@@ -8,10 +8,15 @@ return [
     'home'            => ['HomeController',       'index',        '__login__'],
     
 // Listados / estadísticas
+<<<<<<< Updated upstream:mvc_cementerio/app/config/routes.php
+    'estadisticas'    => ['EstadisticasController','index',       'ver_estadisticas'],
+=======
     'estadisticas'                          => ['EstadisticasController','index',                      'ver_estadisticas'],
     'estadisticas/ajaxTraslados'            => ['EstadisticasController','ajaxTraslados',              'ver_estadisticas'],
     'estadisticas/ajaxParcelasVendidas'     => ['EstadisticasController','ajaxParcelasVendidas',       'ver_estadisticas'],
     'estadisticas/ajaxDeudosMorosos'        => ['EstadisticasController','ajaxDeudosMorosos',          'ver_estadisticas'],
+    'estadisticas/ajaxPagosPorDifunto'      => ['EstadisticasController','ajaxPagosPorDifunto',        'ver_estadisticas'],
+>>>>>>> Stashed changes:app/config/routes.php
 
 // ABM (rutas “index” con sus permisos)
     // Usuario 
@@ -32,8 +37,6 @@ return [
     'difunto/edit'    => ['DifuntoController',    'edit',         'editar_difunto'],
     'difunto/update'  => ['DifuntoController',    'update',       'editar_difunto'],
     'difunto/delete'  => ['DifuntoController',    'delete',       'eliminar_difunto'],
-    'difunto/verificar' => ['DifuntoController',    'verificar',    '__login__'],
-    'difunto/ajax'    => [DifuntoController::class, 'ajax',          '__login__'],
 
     // Estado civil
     'estadoCivil'         => ['EstadoCivilController', 'index',   'ver_estado_civil'],
@@ -44,13 +47,12 @@ return [
     'estadoCivil/delete'  => ['EstadoCivilController', 'delete',  'eliminar_estado_civil'],
 
     // Parcela
-    'parcela'                    => ['ParcelaController','index',            'ver_parcela'],
-    'parcela/create'             => ['ParcelaController','create',           'crear_parcela'],
-    'parcela/save'               => ['ParcelaController','save',             'crear_parcela'],
-    'parcela/edit'               => ['ParcelaController','edit',             'editar_parcela'],
-    'parcela/update'             => ['ParcelaController','update',           'editar_parcela'],
-    'parcela/delete'             => ['ParcelaController','delete',           'eliminar_parcela'],
-    'parcela/obtenerInfoParcela' => ['ParcelaController', 'obtenerInfoParcela', 'ver_parcela'],
+    'parcela'         => ['ParcelaController','index',            'ver_parcela'],
+    'parcela/create'  => ['ParcelaController','create',           'crear_parcela'],
+    'parcela/save'    => ['ParcelaController','save',             'crear_parcela'],
+    'parcela/edit'    => ['ParcelaController','edit',             'editar_parcela'],
+    'parcela/update'  => ['ParcelaController','update',           'editar_parcela'],
+    'parcela/delete'  => ['ParcelaController','delete',           'eliminar_parcela'],
 
     // Sexo
     'sexo'            => ['SexoController', 'index',              'ver_sexo'],
@@ -60,14 +62,6 @@ return [
     'sexo/update'     => ['SexoController', 'update',             'editar_sexo'],
     'sexo/delete'     => ['SexoController', 'delete',             'eliminar_sexo'],
 
-    // Tipo Operacion
-    'tipoOperacion'            => ['TipoOperacionController', 'index',              'ver_tipo_operacion'],
-    'tipoOperacion/create'     => ['TipoOperacionController', 'create',             'crear_tipo_operacion'],
-    'tipoOperacion/save'       => ['TipoOperacionController', 'save',               'crear_tipo_operacion'],
-    'tipoOperacion/edit'       => ['TipoOperacionController', 'edit',               'editar_tipo_operacion'],
-    'tipoOperacion/update'     => ['TipoOperacionController', 'update',             'editar_tipo_operacion'],
-    'tipoOperacion/delete'     => ['TipoOperacionController', 'delete',             'eliminar_tipo_operacion'],
-
     // Pago
     'pago'            => ['PagoController', 'index',              'ver_pago'],
     'pago/create'     => ['PagoController', 'create',             'crear_pago'],
@@ -75,8 +69,6 @@ return [
     'pago/edit'       => ['PagoController', 'edit',               'editar_pago'],
     'pago/update'     => ['PagoController', 'update',             'editar_pago'],
     'pago/delete'     => ['PagoController', 'delete',             'eliminar_pago'],
-    'pago/ajax'      => [PagoController::class, 'ajax',          '__login__'],
-    'pago/registrarPagoMantenimiento'     => ['PagoController', 'registrarPagoMantenimiento',             'crear_pago'],
 
     // TipoParcela
     'tipoParcela'         => ['TipoParcelaController', 'index',   'ver_tipo_parcela'],
@@ -101,8 +93,7 @@ return [
     'deudo/edit'      => ['DeudoController', 'edit',              'editar_deudo'],
     'deudo/update'    => ['DeudoController', 'update',            'editar_deudo'],
     'deudo/delete'    => ['DeudoController', 'delete',            'eliminar_deudo'],
-    'deudo/verificar' => ['DeudoController',    'verificar',    '__login__'],
-    'deudo/ajax'      => [DeudoController::class, 'ajax', '__login__'],
+
 
     // Nacionalidades
     'nacionalidades'         => ['NacionalidadesController','index', 'ver_nacionalidad'],
@@ -128,15 +119,6 @@ return [
     'ubicacion/update'  => ['UbicacionDifuntoController','update', 'editar_ubicacion'],
     'ubicacion/delete'  => ['UbicacionDifuntoController','delete', 'eliminar_ubicacion'],
 
-    // Operacion
-    'operacion'        => ['OperacionController', 'index',       'ver_operacion'],
-    'operacion/create' => ['OperacionController', 'create',      'crear_operacion'],
-    'operacion/save'   => ['OperacionController', 'save',        'crear_operacion'],
-    'operacion/edit'   => ['OperacionController', 'edit',        'editar_operacion'],
-    'operacion/update' => ['OperacionController', 'update',      'editar_operacion'],
-    'operacion/delete' => ['OperacionController', 'delete',      'eliminar_operacion'],
-
-    // Errores
     'error-permisos' => ['ErrorController', 'permisosError', '__public__'],
 ];
 
