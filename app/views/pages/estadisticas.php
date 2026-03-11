@@ -163,12 +163,21 @@
                 },
                 { 
                     data: 'fecha_vencimiento',
-                    render: data => {
+                    render: (data, type, row) => {
                         if (!data || data === '0000-00-00') return 'N/A';
+                        
                         const fecha = new Date(data);
                         const hoy = new Date();
-                        const esVencido = fecha < hoy;
-                        return `<span class="${esVencido ? 'text-danger fw-bold' : ''}">${fecha.toLocaleDateString('es-AR')}</span>`;
+                        const fechaFormateada = fecha.toLocaleDateString('es-AR');
+
+                        const esActual = (row.id_pago == row.ultimo_pago_id);
+                        const esVencido = (fecha < hoy);
+
+                        if (esActual && esVencido) {
+                            return `<span class="text-danger fw-bold" title="Deuda pendiente">${fechaFormateada}</span>`;
+                        }
+
+                        return `<span>${fechaFormateada}</span>`;
                     }
                 }
             ],
