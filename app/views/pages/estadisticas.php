@@ -4,7 +4,11 @@
         <button class="nav-link active" id="integral-tab" data-bs-toggle="tab" data-bs-target="#reporte_integral" type="button" role="tab">Reporte General de Pagos</button>
     </li>
     <li class="nav-item">
-        <button class="nav-link" id="morosos-tab" data-bs-toggle="tab" data-bs-target="#morosos" type="button" role="tab">Deudores Morosos</button>
+        <button class="nav-link" id="morosos-tab" data-bs-toggle="tab" data-bs-target="#morosos" type="button" role="tab">Deudores Morosos
+            <?php if (!empty($datos['total_morosos']) && $datos['total_morosos'] > 0): ?>
+                <span class="badge bg-danger ms-1"><?= $datos['total_morosos'] ?></span>
+            <?php endif; ?>
+        </button>
     </li>
     <li class="nav-item">
         <button class="nav-link" id="traslados-tab" data-bs-toggle="tab" data-bs-target="#traslados" type="button" role="tab">Traslados</button>
