@@ -1,14 +1,14 @@
 <link rel="stylesheet" href="<?= URL . '/public/css/estadisticas.css' ?>">
 <ul class="nav nav-tabs" id="myTab" role="tablist">
     <li class="nav-item">
-        <button class="nav-link" id="pagos-por-difunto-tab" data-bs-toggle="tab" data-bs-target="#pagos_por_difunto" type="button" role="tab">Pagos por Difunto</button>
+        <button class="nav-link active" id="pagos-por-difunto-tab" data-bs-toggle="tab" data-bs-target="#pagos_por_difunto" type="button" role="tab">Pagos por Difunto</button>
     </li>
-    <li class="nav-item">
-        <button class="nav-link" id="vendidas-tab" data-bs-toggle="tab" data-bs-target="#vendidas" type="button" role="tab">Parcelas Vendidas</button>
-    </li>
-    <li class="nav-item">
+    <!-- <li class="nav-item">
+        <button class="nav-link" id="vendidas-tab" data-bs-toggle="tab" data-bs-target="#vendidas" type="button" role="tab">Historico Parcelas Vendidas</button>
+    </li> -->
+    <!-- <li class="nav-item">
         <button class="nav-link active" id="difuntos-tab" data-bs-toggle="tab" data-bs-target="#difuntos" type="button" role="tab">Padrón difuntos</button>
-    </li>
+    </li> -->
     <li class="nav-item">
         <button class="nav-link" id="morosos-tab" data-bs-toggle="tab" data-bs-target="#morosos" type="button" role="tab">Deudores Morosos
             <?php if (!empty($datos['total_morosos']) && $datos['total_morosos'] > 0): ?>
@@ -29,11 +29,11 @@
     $config = $datos['configPagosPorDifunto'];
     include 'partials/tabla_ajax_template.php';
 
-    $config = $datos['configVendidas'];
-    include 'partials/tabla_ajax_template.php';
+    // $config = $datos['configVendidas'];
+    // include 'partials/tabla_ajax_template.php';
 
-    $config = $datos['configDifuntos'];
-    include 'partials/tabla_ajax_template.php';
+    // $config = $datos['configDifuntos'];
+    // include 'partials/tabla_ajax_template.php';
 
     $config = $datos['configTraslados'];
     include 'partials/tabla_ajax_template.php';
