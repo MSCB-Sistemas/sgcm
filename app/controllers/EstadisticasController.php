@@ -10,18 +10,11 @@ class EstadisticasController extends Control {
 
     public function index()
     {
-        $configPagosPorDifunto = [
-            'tabId' => 'pagos_por_difunto',
-            'configKey' => 'pagos_por_difunto',
-            'ajaxUrl' => URL . '/estadisticas/ajaxPagosPorDifunto',
-            'columnHeaders' => ['ID Pago', 'Difunto', 'Parcela', 'Deudo Responsable', 'Monto', 'Fecha Pago'],
-        ];
-
-        $configDifuntos = [
-            'tabId' => 'difuntos',
-            'configKey' => 'difuntos',
-            'ajaxUrl' => URL . '/difunto/ajax',
-            'columnHeaders' => ['Fecha Fall.', 'Nombre', 'Apellido', 'Edad', 'DNI', 'Deudo', 'Estado Civil', 'Nacionalidad', 'Sexo', 'Domicilio', 'Localidad', 'Cód. Postal'],
+        $configIntegral = [
+            'tabId' => 'reporte_integral',
+            'configKey' => 'integral',
+            'ajaxUrl' => URL . '/estadisticas/ajaxReporteIntegral',
+            'columnHeaders' => ['ID Pago', 'Difunto', 'Parcela (ID)', 'Ubicación Detallada', 'Deudo', 'Monto', 'Fecha Pago', 'Vencimiento'],
         ];
 
         $configTraslados = [
@@ -32,13 +25,6 @@ class EstadisticasController extends Control {
             'isActive' => true,
         ];
 
-        $configVendidas = [
-            'tabId' => 'vendidas',
-            'configKey' => 'vendidas',
-            'ajaxUrl' => URL . '/estadisticas/ajaxParcelasVendidas',
-            'columnHeaders' => ['Parcela', 'Tipo', 'Titular', 'Apellido', 'DNI', 'Monto', 'Fecha Venta', 'Fecha Vencimiento'],
-        ];
-
         $configMorosos = [
             'tabId' => 'morosos',
             'configKey' => 'morosos',
@@ -47,12 +33,10 @@ class EstadisticasController extends Control {
         ];
 
         $datos = [
-            'title' => 'Estadísticas',
-            'configPagosPorDifunto' => $configPagosPorDifunto,       
-            'configDifuntos' => $configDifuntos,
+            'title' => 'Estadísticas y Reportes',
+            'configIntegral' => $configIntegral,
+            'configMorosos' => $configMorosos, 
             'configTraslados' => $configTraslados,
-            'configVendidas' => $configVendidas,
-            'configMorosos' => $configMorosos,
             'total_morosos' => $this->model->getTotalDeudosMorosos(),
             'total_difuntos' => $this->model->getTotalDifuntos(),
             'total_parcelas' => $this->model->getTotalParcelasOcupadas(),
@@ -102,5 +86,10 @@ class EstadisticasController extends Control {
         echo json_encode($datos);
         exit;
     }
+
+    public function ajaxReporteIntegral() {
+        header('Content-Type: application/json');
+        echo json_encode($this->model->getReporteIntegralAjax($_POST));
+        exit;
+    }
 }
-?>

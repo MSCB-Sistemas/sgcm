@@ -335,5 +335,58 @@ class EstadisticasModel extends Control
             "data"            => $data
         ];
     }
+
+    public function getReporteIntegralAjax($params)
+    {
+        $columnas = [
+            'p.id_pago', 'dif.apellido', 'p.id_parcela', 'deu.apellido', 
+            'p.total', 'p.fecha_pago', 'p.fecha_vencimiento'
+        ];
+
+        $sql_base = "
+            FROM pago p
+            INNER JOIN deudo deu ON p.id_deudo = deu.id_deudo
+            INNER JOIN parcela par ON p.id_parcela = par.id_parcela
+            INNER JOIN tipo_parcela tp ON par.id_tipo_parcela = tp.id_tipo_parcela
+            LEFT JOIN ubicacion_difunto ud ON par.id_parcela = ud.id_parcela 
+                AND (ud.fecha_retiro IS NULL OR ud.fecha_retiro = '0000-00-00')
+            LEFT JOIN difunto dif ON ud.id_difunto = dif.id_difunto
+        ";
+
+        $where = " WHERE 1=1 ";
+        $pdo_params = [];
+
+        if (!empty($params['search']['value'])) {
+            $search = '%' . $params['search']['value'] . '%';
+            $where .= " AND (dif.nombre LIKE ? OR dif.apellido LIKE ? OR deu.apellido LIKE ? OR p.id_parcela LIKE ? OR tp.nombre_parcela LIKE ?)";
+            array_push($pdo_params, $search, $search, $search, $search, $search);
+        }
+
+        $stmt_total = $this->db->prepare("SELECT COUNT(*) as total " . $sql_base . $where);
+        $stmt_total->execute($pdo_params);
+        $total = $stmt_total->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
+
+        $col_idx = intval($params['order'][0]['column']);
+        $order_by = " ORDER BY " . ($columnas[$col_idx] ?? 'p.id_pago') . " " . $params['order'][0]['dir'];
+        $limit = " LIMIT " . intval($params['start']) . ", " . intval($params['length']);
+
+        $sql = "SELECT p.id_pago, p.id_parcela, p.total, p.fecha_pago, p.fecha_vencimiento,
+                    deu.nombre as deudo_nombre, deu.apellido as deudo_apellido,
+                    dif.nombre as difunto_nombre, dif.apellido as difunto_apellido,
+                    tp.nombre_parcela as tipo_nombre,
+                    par.seccion, par.hilera, par.numero_ubicacion, par.nivel,
+                    (SELECT MAX(id_pago) FROM pago WHERE id_parcela = p.id_parcela) as ultimo_pago_id " 
+                . $sql_base . $where . $order_by . $limit;
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($pdo_params);
+        
+        return [
+            "draw"            => intval($params['draw']),
+            "recordsTotal"    => intval($total),
+            "recordsFiltered" => intval($total),
+            "data"            => $stmt->fetchAll(PDO::FETCH_ASSOC)
+        ];
+    }
 }    
 ?>

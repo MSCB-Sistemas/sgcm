@@ -1,20 +1,10 @@
 <link rel="stylesheet" href="<?= URL . '/public/css/estadisticas.css' ?>">
 <ul class="nav nav-tabs" id="myTab" role="tablist">
     <li class="nav-item">
-        <button class="nav-link active" id="pagos-por-difunto-tab" data-bs-toggle="tab" data-bs-target="#pagos_por_difunto" type="button" role="tab">Pagos por Difunto</button>
+        <button class="nav-link active" id="integral-tab" data-bs-toggle="tab" data-bs-target="#reporte_integral" type="button" role="tab">Reporte General de Pagos</button>
     </li>
-    <!-- <li class="nav-item">
-        <button class="nav-link" id="vendidas-tab" data-bs-toggle="tab" data-bs-target="#vendidas" type="button" role="tab">Historico Parcelas Vendidas</button>
-    </li> -->
-    <!-- <li class="nav-item">
-        <button class="nav-link active" id="difuntos-tab" data-bs-toggle="tab" data-bs-target="#difuntos" type="button" role="tab">Padrón difuntos</button>
-    </li> -->
     <li class="nav-item">
-        <button class="nav-link" id="morosos-tab" data-bs-toggle="tab" data-bs-target="#morosos" type="button" role="tab">Deudores Morosos
-            <?php if (!empty($datos['total_morosos']) && $datos['total_morosos'] > 0): ?>
-                <span class="badge bg-danger ms-1"><?= $datos['total_morosos'] ?></span>
-            <?php endif; ?>
-        </button>
+        <button class="nav-link" id="morosos-tab" data-bs-toggle="tab" data-bs-target="#morosos" type="button" role="tab">Deudores Morosos</button>
     </li>
     <li class="nav-item">
         <button class="nav-link" id="traslados-tab" data-bs-toggle="tab" data-bs-target="#traslados" type="button" role="tab">Traslados</button>
@@ -26,15 +16,9 @@
 
 <div class="tab-content mt-4">
     <?php
-    $config = $datos['configPagosPorDifunto'];
+    $config = $datos['configIntegral'];
     include 'partials/tabla_ajax_template.php';
-
-    // $config = $datos['configVendidas'];
-    // include 'partials/tabla_ajax_template.php';
-
-    // $config = $datos['configDifuntos'];
-    // include 'partials/tabla_ajax_template.php';
-
+    
     $config = $datos['configTraslados'];
     include 'partials/tabla_ajax_template.php';
 
@@ -132,15 +116,34 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         const dataTablesConfigs = {
-            'pagos_por_difunto': [
-                { data: 'id_pago' },
+            'integral': [
+                { 
+                    data: 'id_pago',
+                    render: function(data, type, row) {
+                        if (row.id_pago == row.ultimo_pago_id) {
+                            return `<span class="badge bg-success" title="Último pago registrado">#${data} - ACTUAL</span>`;
+                        }
+                        return `<span class="text-muted">#${data} (Histórico)</span>`;
+                    }
+                },
                 { 
                     data: null,
                     render: function(data, type, row) {
-                        return `${row.difunto_apellido}, ${row.difunto_nombre}`;
+                        return row.difunto_nombre ? 
+                            `${row.difunto_apellido}, ${row.difunto_nombre}` : 
+                            '<span class="text-muted small">Sin difunto</span>';
                     }
                 },
                 { data: 'id_parcela' },
+                { 
+                    data: null,
+                    render: function(data, type, row) {
+                        let ubi = `<strong>${row.tipo_nombre || 'S/T'}</strong><br>`;
+                        ubi += `<small>Sec: ${row.seccion || '-'} | Hil: ${row.hilera || '-'} | N°: ${row.numero_ubicacion || '-'}</small>`;
+                        if(row.nivel) ubi += `<br><small class="text-muted">Nivel: ${row.nivel}</small>`;
+                        return ubi;
+                    }
+                },
                 { 
                     data: null,
                     render: function(data, type, row) {
@@ -149,25 +152,25 @@
                 },
                 { 
                     data: 'total',
-                    render: function(data) {
-                        return `$${parseFloat(data).toFixed(2)}`;
-                    }
+                    render: data => `<span class="fw-bold text-success">$${parseFloat(data).toFixed(2)}</span>`
                 },
                 { 
                     data: 'fecha_pago',
-                    render: function(data) {
-                        if(!data) return '';
+                    render: data => {
+                        if(!data || data === '0000-00-00 00:00:00') return 'N/A';
+                        return new Date(data).toLocaleDateString('es-AR');
+                    }
+                },
+                { 
+                    data: 'fecha_vencimiento',
+                    render: data => {
+                        if (!data || data === '0000-00-00') return 'N/A';
                         const fecha = new Date(data);
-                        return fecha.toLocaleDateString('es-AR');
+                        const hoy = new Date();
+                        const esVencido = fecha < hoy;
+                        return `<span class="${esVencido ? 'text-danger fw-bold' : ''}">${fecha.toLocaleDateString('es-AR')}</span>`;
                     }
                 }
-            ],
-
-            'difuntos': [
-                { data: 'fecha_fallecimiento' }, { data: 'nombre' }, { data: 'apellido' },
-                { data: 'edad' }, { data: 'dni' }, { data: 'nombre_deudo' },
-                { data: 'estado_civil' }, { data: 'nacionalidad' }, { data: 'sexo' },
-                { data: 'domicilio' }, { data: 'localidad' }, { data: 'codigo_postal' }
             ],
             'traslados': [
                 { data: 'nombre' }, { data: 'apellido' }, { data: 'dni' },
@@ -180,11 +183,6 @@
                         return `<strong>${origen}</strong> → <strong>${destino}</strong>`;
                     }
                 }
-            ],
-            'vendidas': [
-                { data: 'id_parcela' }, { data: 'tipo_parcela' }, { data: 'nombre_titular' },
-                { data: 'apellido_titular' }, { data: 'dni' }, { data: 'monto' },
-                { data: 'fecha_venta' }, { data: 'fecha_vencimiento' }
             ],
             'morosos': [
                 { data: 'id_parcela' }, 
