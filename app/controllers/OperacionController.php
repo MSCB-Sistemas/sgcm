@@ -36,6 +36,7 @@ class OperacionController extends Control
             'action' => URL . 'operacion/save',
             'tipo_operaciones' => $this->tipoOperacionModel->getAllTipoOperaciones(),
             'parcelas' => $this->parcelaModel->getAllParcelas(),
+            //'parcelasOcupadas' => $this->model->getParcelasOcupadas(),
             'deudos' => $this->deudoModel->getAllDeudos(),
             'difuntos' => $this->difuntoModel->getAllDifuntos(),
             'sexos'            => $this->sexoModel->getAllSexos(),
@@ -167,6 +168,7 @@ class OperacionController extends Control
         $id_deudo   = $data['id_deudo_br'];
         $vencimiento = $data['fecha_vencimiento_br'];
         $fecha_operacion = date('Y-m-d');
+        
 
         if (!$id_difunto || !$id_parcela || !$id_deudo) $errores[] = "Debe seleccionar difunto, deudo y parcela.";
         if (empty($vencimiento)) $errores[] = "Debe especificar una fecha de vencimiento.";

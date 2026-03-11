@@ -102,6 +102,9 @@
                         <div class="input-group">
                             <input list="parcelas" id="parcela_search_br" class="form-control" placeholder="Buscar parcela...">
                             <input type="hidden" name="id_parcela_br" id="id_parcela_br"> 
+                             <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modalParcela">
+                                <i class="bi bi-plus"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
