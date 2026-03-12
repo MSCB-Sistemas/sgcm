@@ -95,6 +95,9 @@
                         <div class="input-group">
                             <input list="difuntos" id="difunto_search_br" class="form-control" placeholder="Buscar difunto...">
                             <input type="hidden" name="id_difunto_br" id="id_difunto_br"> 
+                            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modalDifunto">
+                                <i class="bi bi-plus"></i>
+                            </button>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -125,7 +128,7 @@
                     <div class="col-md-6">
                         <label class="form-label">Parcela a verificar</label>
                         <div class="input-group">
-                            <input list="parcelas" id="parcela_search_ld" class="form-control" placeholder="Buscar parcela...">
+                            <input list="parcelasOcupadas" id="parcela_search_ld" class="form-control" placeholder="Buscar parcela...">
                             <input type="hidden" name="id_parcela_ld" id="id_parcela_ld"> 
                         </div>
                     </div>
@@ -166,7 +169,43 @@
 </div>
 
 <datalist id="parcelas">
-    <?php foreach ($datos['parcelas'] as $p): ?>
+    <?php foreach ($datos['parcelasDisponibles'] as $p): ?>
+        <?php 
+            $texto_parcela = "ID: ";
+            
+            if (isset($p['id_parcela'])) {
+                $texto_parcela .= $p['id_parcela'];
+            } else {
+                $texto_parcela .= '';
+            }
+
+            $texto_parcela .= " | Ubic: ";
+            if (isset($p['numero_ubicacion'])) {
+                $texto_parcela .= $p['numero_ubicacion'];
+            } else {
+                $texto_parcela .= 'S/N';
+            }
+            
+            $texto_parcela .= " | Sec: ";
+            if (isset($p['seccion'])) {
+                $texto_parcela .= $p['seccion'];
+            } else {
+                $texto_parcela .= 'S/S';
+            }
+
+            $texto_parcela .= " | Hil: ";
+            if (isset($p['hilera'])) {
+                $texto_parcela .= $p['hilera'];
+            } else {
+                $texto_parcela .= 'S/H';
+            }
+        ?>
+        <option value="<?= htmlspecialchars($texto_parcela) ?>" data-id="<?= $p['id_parcela'] ?>">
+    <?php endforeach; ?>
+</datalist>
+
+<datalist id="parcelasOcupadas">
+    <?php foreach ($datos['parcelasOcupadas'] as $p): ?>
         <?php 
             $texto_parcela = "ID: ";
             
@@ -361,6 +400,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const modalEl = document.getElementById(modalId);
         if (!form || !modalEl) return;
 
+        let inputActivo = null;
+
+        modalEl.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+
+            if (button) {
+                const container = button.closest('.input-group') || button.parentElement;
+                inputActivo = container ? container.querySelector('input[list]') : null;
+            }
+        });
+
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(form);
@@ -380,6 +430,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         option.value = data.newItem.text;
                         option.dataset.id = data.newItem.id;
                         datalist.appendChild(option);
+
+                        if (inputActivo) {
+                            inputActivo.value = data.newItem.text;
+                            inputActivo.dataset.id = data.newItem.id;
+                        }
                     }
                     
                     const modal = bootstrap.Modal.getInstance(modalEl);
