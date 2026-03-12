@@ -209,7 +209,7 @@ class DeudoController extends Control
 
             if (!empty($errores)) {
                 $this->loadView("deudos/DeudosForm", [
-                    'title'   => 'Editar Deudo',
+                    'title'   => 'Editar ',
                     'action'  => URL . 'deudo/update/' . $id,
                     'values'  => $datos,
                     'errores' => $errores,

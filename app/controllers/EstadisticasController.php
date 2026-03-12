@@ -21,7 +21,7 @@ class EstadisticasController extends Control {
             'tabId' => 'difuntos',
             'configKey' => 'difuntos',
             'ajaxUrl' => URL . '/difunto/ajax',
-            'columnHeaders' => ['Fecha Fall.', 'Nombre', 'Apellido', 'Edad', 'DNI', 'Deudo', 'Estado Civil', 'Nacionalidad', 'Sexo', 'Domicilio', 'Localidad', 'Cód. Postal'],
+            'columnHeaders' => ['Fecha Fall.', 'Nombre', 'Apellido', 'Edad', 'DNI', '', 'Estado Civil', 'Nacionalidad', 'Sexo', 'Domicilio', 'Localidad', 'Cód. Postal'],
         ];
 
         $configTraslados = [
