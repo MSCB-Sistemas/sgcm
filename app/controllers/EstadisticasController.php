@@ -57,15 +57,15 @@ class EstadisticasController extends Control {
         exit;
     }
 
-    public function ajaxParcelasVendidas()
-    {
-        $params = $_POST;
-        $datos = $this->model->getParcelasVendidasAjax($params);
+    // public function ajaxParcelasVendidas()
+    // {
+    //     $params = $_POST;
+    //     $datos = $this->model->getParcelasVendidasAjax($params);
         
-        header('Content-Type: application/json');
-        echo json_encode($datos);
-        exit;
-    }
+    //     header('Content-Type: application/json');
+    //     echo json_encode($datos);
+    //     exit;
+    // }
 
     public function ajaxDeudosMorosos()
     {
@@ -77,15 +77,15 @@ class EstadisticasController extends Control {
         exit;
     }
 
-    public function ajaxPagosPorDifunto()
-    {
-        $params = $_POST;
-        $datos = $this->model->getPagosPorDifuntoAjax($params);
+    // public function ajaxPagosPorDifunto()
+    // {
+    //     $params = $_POST;
+    //     $datos = $this->model->getPagosPorDifuntoAjax($params);
         
-        header('Content-Type: application/json');
-        echo json_encode($datos);
-        exit;
-    }
+    //     header('Content-Type: application/json');
+    //     echo json_encode($datos);
+    //     exit;
+    // }
 
     public function ajaxReporteIntegral() {
         header('Content-Type: application/json');
