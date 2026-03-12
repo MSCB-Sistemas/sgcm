@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="<?= URL . '/public/css/estadisticas.css' ?>">
 <ul class="nav nav-tabs" id="myTab" role="tablist">
     <li class="nav-item">
-        <button class="nav-link active" id="integral-tab" data-bs-toggle="tab" data-bs-target="#reporte_integral" type="button" role="tab">Reporte General de Pagos</button>
+        <button class="nav-link" id="integral-tab" data-bs-toggle="tab" data-bs-target="#reporte_integral" type="button" role="tab">Reporte General de Pagos</button>
     </li>
     <li class="nav-item">
         <button class="nav-link" id="morosos-tab" data-bs-toggle="tab" data-bs-target="#morosos" type="button" role="tab">Deudores Morosos
@@ -123,65 +123,88 @@
             'integral': [
                 { 
                     data: 'id_pago',
-                    render: function(data, type, row) {
-                        if (row.id_pago == row.ultimo_pago_id) {
-                            return `<span class="badge bg-success" title="Último pago registrado">#${data} - ACTUAL</span>`;
-                        }
-                        return `<span class="text-muted">#${data} (Histórico)</span>`;
+                    title: '# ID',
+                    render: (data, type, row) => {
+                        const esActual = (row.id_pago == row.ultimo_pago_id);
+                        return esActual 
+                            ? `<span class="badge bg-success" title="Último pago">#${data} - ACTUAL</span>`
+                            : `<span class="text-muted small">#${data} (Histórico)</span>`;
                     }
                 },
                 { 
                     data: null,
+                    title: 'Sujetos (Deudo / Difunto)',
                     render: function(data, type, row) {
-                        return row.difunto_nombre ? 
-                            `${row.difunto_apellido}, ${row.difunto_nombre}` : 
-                            '<span class="text-muted small">Sin difunto</span>';
-                    }
-                },
-                { data: 'id_parcela' },
-                { 
-                    data: null,
-                    render: function(data, type, row) {
-                        let ubi = `<strong>${row.tipo_nombre || 'S/T'}</strong><br>`;
-                        ubi += `<small>Sec: ${row.seccion || '-'} | Hil: ${row.hilera || '-'} | N°: ${row.numero_ubicacion || '-'}</small>`;
-                        if(row.nivel) ubi += `<br><small class="text-muted">Nivel: ${row.nivel}</small>`;
-                        return ubi;
+                        const difunto = row.difunto_nombre 
+                            ? `<small class="text-muted"><i class="bi bi-person"></i> Dif: ${row.difunto_apellido}, ${row.difunto_nombre}</small>`
+                            : '<small class="text-muted italic text-opacity-50">Sin difunto asociado</small>';
+                        
+                        return `<div>
+                                    <div class="fw-bold text-primary">${row.deudo_apellido}, ${row.deudo_nombre}</div>
+                                    ${difunto}
+                                </div>`;
                     }
                 },
                 { 
                     data: null,
+                    title: 'Ubicación / Parcela',
                     render: function(data, type, row) {
-                        return `${row.deudo_apellido}, ${row.deudo_nombre}`;
+                        return `<div class="lh-sm">
+                                    <span class="badge border text-dark bg-light mb-1">${row.tipo_nombre || 'S/T'}</span><br>
+                                    <small class="text-secondary">ID interno: ${row.id_parcela}</small><br>
+                                    <small class="text-muted">Seccion: ${row.seccion || '-'} Hilera: ${row.hilera || '-'} Nivel: ${row.numero_ubicacion || '-'}</small>
+                                </div>`;
                     }
                 },
                 { 
                     data: 'total',
-                    render: data => `<span class="fw-bold text-success">$${parseFloat(data).toFixed(2)}</span>`
-                },
-                { 
-                    data: 'fecha_pago',
-                    render: data => {
-                        if(!data || data === '0000-00-00 00:00:00') return 'N/A';
-                        return new Date(data).toLocaleDateString('es-AR');
+                    title: 'Monto y Pago',
+                    render: (data, type, row) => {
+                        const fecha = (!row.fecha_pago || row.fecha_pago === '0000-00-00 00:00:00') 
+                            ? 'N/A' 
+                            : new Date(row.fecha_pago).toLocaleDateString('es-AR');
+                        
+                        return `<div class="text-end">
+                                    <span class="fw-bold text-success d-block">$${parseFloat(data).toFixed(2)}</span>
+                                    <small class="text-muted" title="Fecha de pago">${fecha}</small>
+                                </div>`;
                     }
                 },
                 { 
                     data: 'fecha_vencimiento',
+                    title: 'Estado de Deuda',
                     render: (data, type, row) => {
-                        if (!data || data === '0000-00-00') return 'N/A';
+                        if (!data || data === '0000-00-00') return '<span class="text-muted">N/A</span>';
                         
-                        const fecha = new Date(data);
+                        const fechaVenc = new Date(data);
                         const hoy = new Date();
-                        const fechaFormateada = fecha.toLocaleDateString('es-AR');
-
                         const esActual = (row.id_pago == row.ultimo_pago_id);
-                        const esVencido = (fecha < hoy);
+                        const estaVencido = (fechaVenc < hoy);
+                        const fechaFormateada = fechaVenc.toLocaleDateString('es-AR');
 
-                        if (esActual && esVencido) {
-                            return `<span class="text-danger fw-bold" title="Deuda pendiente">${fechaFormateada}</span>`;
+                        if (esActual && estaVencido) {
+                            return `<div class="text-center">
+                                        <span class="badge bg-danger mb-1">VENCIDO</span><br>
+                                        <span class="text-danger fw-bold small">${fechaFormateada}</span>
+                                    </div>`;
                         }
 
-                        return `<span>${fechaFormateada}</span>`;
+                        return `<div class="text-center">
+                                    <span class="text-muted small">${fechaFormateada}</span>
+                                </div>`;
+                    }
+                },
+                {
+                    data: 'archivo_pago',
+                    title: 'Archivo',
+                    orderable: false,
+                    render: function(data, type, row) {
+                        if (data) {
+                            return `<a href="<?= URL ?>/public/uploads/${data}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                        <i class="bi bi-file-earmark-pdf"></i> Ver Archivo
+                                    </a>`;
+                        }
+                        return '<span class="text-muted">No disponible</span>';
                     }
                 }
             ],
@@ -199,50 +222,38 @@
             ],
             'morosos': [
                 { data: 'id_parcela' }, 
-                { data: 'dni' }, 
-                { data: 'nombre' },
-                { data: 'apellido' },
+                { data: 'dni' },        
+                { data: 'nombre' },     
+                { data: 'apellido' },   
                 { 
-                    data: 'fecha_vencimiento',
-                    render: function(data, type, row) {
+                    data: 'fecha_vencimiento', 
+                    render: function(data) {
                         if (!data) return '';
-                        const date = new Date(data);
-                        return `<span class="text-danger fw-bold">${date.toLocaleDateString('es-AR')}</span>`;
+                        return `<span class="text-danger fw-bold">${new Date(data).toLocaleDateString('es-AR')}</span>`;
                     }
                 }, 
                 { 
-                    data: 'total',
-                    render: function(data, type, row) {
-                        return `$${parseFloat(data).toFixed(2)}`;
-                    }
+                    data: 'total', 
+                    render: data => `$${parseFloat(data).toFixed(2)}`
                 },
                 { 
-                    data: 'fecha_vencimiento',
-                    title: "Días de mora",
+                    data: 'fecha_vencimiento', 
                     orderable: false,
-                    render: function(data, type, row) {
-                        if (!data) return '';
-                        const fechaVencimiento = new Date(data);
-                        const hoy = new Date();
-                        const diffTime = hoy - fechaVencimiento;
-                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                        return `<span class="badge bg-danger">${diffDays > 0 ? diffDays : 0} día/s</span>`;
+                    render: function(data) {
+                        const diff = Math.ceil((new Date() - new Date(data)) / (1000 * 60 * 60 * 24));
+                        return `<span class="badge bg-danger">${diff > 0 ? diff : 0} día/s</span>`;
                     }
                 },
                 {
-                    data: null,
-                    title: "Acciones",
+                    data: null, 
                     orderable: false,
                     render: function(data, type, row) {
-                        const nombreCompleto = `${row.apellido}, ${row.nombre}`;
                         return `<button type="button" class="btn btn-sm btn-success registrar-pago-btn" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#pagoModal"
-                                    data-deudor-id="${row.id_deudo}"
-                                    data-parcela-id="${row.id_parcela}"
-                                    data-deudor-nombre="${nombreCompleto}"
+                                    data-bs-toggle="modal" data-bs-target="#pagoModal"
+                                    data-deudor-id="${row.id_deudo}" data-parcela-id="${row.id_parcela}"
+                                    data-deudor-nombre="${row.apellido}, ${row.nombre}"
                                     data-vencimiento-anterior="${row.fecha_vencimiento}">
-                                    <i class="bi bi-cash-coin"></i> Registrar Pago
+                                    <i class="bi bi-cash-coin"></i> Registrar
                                 </button>`;
                     }
                 }
@@ -319,7 +330,7 @@
                         const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Tab(modalEl);
                         modalInstance.hide();
 
-                        const table = $('#tabla-morosos').DataTable();
+                        const table = $('#morosos .datatable-ajax').DataTable();
                         if (lastClickedButton) {
                             const rowToRemove = $(lastClickedButton).closest('tr');
                             table.row(rowToRemove).remove().draw(false);

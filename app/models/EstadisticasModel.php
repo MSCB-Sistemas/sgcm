@@ -29,23 +29,17 @@ class EstadisticasModel extends Control
         }
     }
 
-    public function getTotalDeudosMorosos()
-    {
-        try {
-            $sql = "SELECT COUNT(*) 
-                    FROM pago p
-                    INNER JOIN (
-                        SELECT id_parcela, MAX(fecha_vencimiento) as ultimo_vencimiento
-                        FROM pago
-                        GROUP BY id_parcela
-                    ) sub ON p.id_parcela = sub.id_parcela AND p.fecha_vencimiento = sub.ultimo_vencimiento
-                    WHERE p.fecha_vencimiento < CURRENT_DATE";
-
-            $stmt = $this->db->query($sql);
-            return (int) $stmt->fetchColumn();
-        } catch (PDOException $e) {
-            return 0;
-        }
+    // En EstadisticasModel.php
+    public function getTotalDeudosMorosos() {
+        $sql = "SELECT COUNT(*) 
+                FROM pago p
+                INNER JOIN (
+                    SELECT id_parcela, MAX(id_pago) as max_id 
+                    FROM pago GROUP BY id_parcela
+                ) sub ON p.id_pago = sub.max_id
+                WHERE p.fecha_vencimiento < CURRENT_DATE";
+        $stmt = $this->db->query($sql);
+        return (int) $stmt->fetchColumn();
     }
 
     public function getTotalParcelasOcupadas()
@@ -229,29 +223,35 @@ class EstadisticasModel extends Control
     {
         $columnas = ['p.id_parcela', 'd.dni', 'd.nombre', 'd.apellido', 'p.fecha_vencimiento', 'p.total'];
 
-        $sql_base = "
+        $sql_base_morosos = "
             FROM pago p
             INNER JOIN deudo d ON p.id_deudo = d.id_deudo
             INNER JOIN (
-                SELECT id_parcela, MAX(fecha_vencimiento) as ultimo_vencimiento
-                FROM pago
-                GROUP BY id_parcela
-            ) sub ON p.id_parcela = sub.id_parcela AND p.fecha_vencimiento = sub.ultimo_vencimiento
-            WHERE p.fecha_vencimiento < CURRENT_DATE
+                /* Obtenemos el último pago solo de deudos con difuntos activos en esa parcela */
+                SELECT p2.id_parcela, MAX(p2.id_pago) as max_id_pago
+                FROM pago p2
+                INNER JOIN ubicacion_difunto ud ON p2.id_parcela = ud.id_parcela 
+                    AND p2.id_deudo = (SELECT id_deudo FROM difunto WHERE id_difunto = ud.id_difunto)
+                WHERE (ud.fecha_retiro IS NULL OR ud.fecha_retiro = '0000-00-00')
+                GROUP BY p2.id_parcela
+            ) sub ON p.id_pago = sub.max_id_pago
+            WHERE p.fecha_vencimiento <= CURRENT_DATE
         ";
 
-        $where = "";
-        $pdo_params = [];
+        $stmt_total_real = $this->db->query("SELECT COUNT(*) " . $sql_base_morosos);
+        $recordsTotal = $stmt_total_real->fetchColumn() ?? 0;
 
+        $where_search = "";
+        $pdo_params = [];
         if (!empty($params['search']['value'])) {
             $search = '%' . $params['search']['value'] . '%';
-            $where = " AND (d.nombre LIKE ? OR d.apellido LIKE ? OR d.dni LIKE ? OR p.id_parcela LIKE ?)";
+            $where_search = " AND (d.nombre LIKE ? OR d.apellido LIKE ? OR d.dni LIKE ? OR p.id_parcela LIKE ?)";
             array_push($pdo_params, $search, $search, $search, $search);
         }
 
-        $stmt_total = $this->db->prepare("SELECT COUNT(*) as total " . $sql_base . $where);
-        $stmt_total->execute($pdo_params);
-        $total = $stmt_total->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
+        $stmt_filtrado = $this->db->prepare("SELECT COUNT(*) " . $sql_base_morosos . $where_search);
+        $stmt_filtrado->execute($pdo_params);
+        $recordsFiltered = $stmt_filtrado->fetchColumn() ?? 0;
 
         $col_idx = intval($params['order'][0]['column']);
         $col_dir = ($params['order'][0]['dir'] === 'asc') ? 'ASC' : 'DESC';
@@ -262,7 +262,7 @@ class EstadisticasModel extends Control
         $limit = " LIMIT $start, $length";
 
         $sql = "SELECT p.id_pago, p.id_deudo, p.id_parcela, d.dni, d.nombre, d.apellido, p.fecha_vencimiento, p.total " 
-            . $sql_base . $where . $order_by . $limit;
+            . $sql_base_morosos . $where_search . $order_by . $limit;
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute($pdo_params);
@@ -270,8 +270,8 @@ class EstadisticasModel extends Control
 
         return [
             "draw"            => intval($params['draw']),
-            "recordsTotal"    => intval($total),
-            "recordsFiltered" => intval($total),
+            "recordsTotal"    => intval($recordsTotal),
+            "recordsFiltered" => intval($recordsFiltered),
             "data"            => $data
         ];
     }

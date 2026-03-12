@@ -14,7 +14,7 @@ class EstadisticasController extends Control {
             'tabId' => 'reporte_integral',
             'configKey' => 'integral',
             'ajaxUrl' => URL . '/estadisticas/ajaxReporteIntegral',
-            'columnHeaders' => ['ID Pago', 'Difunto', 'Parcela (ID)', 'Ubicación Detallada', 'Deudo', 'Monto', 'Fecha Pago', 'Vencimiento'],
+            'columnHeaders' => ['ID Pago', 'Difunto', 'Parcela (ID)', 'Ubicación Detallada', 'Deudo', 'Archivo'],
         ];
 
         $configTraslados = [
