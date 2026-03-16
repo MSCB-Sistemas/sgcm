@@ -95,9 +95,7 @@
                         <div class="input-group">
                             <input list="difuntos" id="difunto_search_br" class="form-control" placeholder="Buscar difunto...">
                             <input type="hidden" name="id_difunto_br" id="id_difunto_br"> 
-                            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modalDifunto">
-                                <i class="bi bi-plus"></i>
-                            </button>
+                            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modalDifunto"><i class="bi bi-plus"></i></button>
                         </div>
                     </div>
                     <div class="col-md-6">

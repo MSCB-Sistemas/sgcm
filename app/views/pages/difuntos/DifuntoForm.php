@@ -42,26 +42,71 @@
                     <!-- Primera columna -->
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="deudo" class="form-label fw-bold">Deudo</label>
-                            <select class="form-select" id="deudo" name="deudo" required>
-                                <option value="">Seleccione...</option>
-                                <?php foreach ($datos['deudos'] as $n): ?>
-                                    <?php
-                                    $selected = '';
-                                    if ($id_deudo == $n['id_deudo']) {
-                                        $selected = 'selected';
-                                    }
-                                    ?>
-                                    <option value="<?= $n['id_deudo'] ?>" <?= $selected ?>>
-                                        <?= htmlspecialchars($n['nombre']) ?>
-                                    </option>
-                                <?php endforeach ?>
-                            </select>
-                            <div class="invalid-feedback">
-                                Por favor seleccione un deudo
-                            </div>
-                        </div>
-                        
+                        <label for="deudo_search" class="form-label">Deudo</label>
+                <input list="deudos" id="deudo_search" name="deudo_search" class="form-control" placeholder="Buscar deudo..." autocomplete="off" required>
+                <input type="hidden" name="id_deudo" id="id_deudo">
+
+                <datalist id="deudos">
+                    <?php foreach ($datos['deudos'] as $d): ?>
+                        <option value="<?= htmlspecialchars($d['dni'] . ' - ' . $d['apellido'] . ' ' . $d['nombre']) ?>" data-id="<?= $d['id_deudo'] ?>">
+                    <?php endforeach; ?>
+                </datalist>
+                <!-- SCRIPT PARA QUE FUNCIONE EL DATALIST Y ENVIE LA ID CORRECTA -->
+                <script>
+    const input = document.getElementById('deudo_search');
+    const hidden = document.getElementById('id_deudo');
+    const options = Array.from(document.querySelectorAll('#deudos option'));
+
+    // Guardamos tanto el texto como el ID en la memoria inicial
+    let lastValidValue = input.value.trim(); 
+    let lastValidId = hidden.value; 
+
+    // EVENTO 1: Mientras el usuario escribe o selecciona de la lista
+    input.addEventListener('input', () => {
+        const val = input.value.trim();
+        let valid = false;
+        let newId = '';
+
+        options.some(opt => {
+            // Comparamos asegurando que no haya espacios fantasma en la base de datos
+            if (opt.value.trim() === val) {
+                valid = true;
+                newId = opt.dataset.id;
+                return true; 
+            }
+        });
+
+        if (valid) {
+            // ¡Match exacto! Actualizamos ID, memoria de texto y limpiamos errores
+            hidden.value = newId;
+            lastValidId = newId;
+            lastValidValue = val; 
+            input.setCustomValidity(""); 
+        } else {
+            // Mientras escribe mal, mantenemos el ID viejo pero marcamos el error rojo
+            hidden.value = lastValidId;
+            input.setCustomValidity("Debe seleccionar un deudo de la lista");
+        }
+    });
+
+    // EVENTO 2: Cuando hace clic afuera (blur)
+    input.addEventListener('blur', () => {
+        const val = input.value.trim();
+        const isValid = options.some(opt => opt.value.trim() === val);
+
+        if (!isValid) {
+            // AUTO-CORRECCIÓN: Si hizo clic afuera y lo que dejó no es válido,
+            // le restauramos el último texto correcto que había elegido.
+            input.value = lastValidValue;
+            hidden.value = lastValidId;
+            
+            // Le sacamos el error rojo (ya que lo arreglamos por él)
+            // Si lastValidValue estaba vacío, el 'required' del HTML hará su trabajo normal.
+            input.setCustomValidity(""); 
+        }
+    });
+</script>
+                </div>        
                         <div class="mb-3">
                             <label for="nombre" class="form-label fw-bold">Nombre</label>
                             <input type="text" class="form-control" id="nombre" name="nombre" 

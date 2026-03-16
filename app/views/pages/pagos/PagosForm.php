@@ -59,21 +59,79 @@
                                     data-id="<?= $d['id_deudo'] ?>">
                                 <?php endforeach; ?>
                             </datalist>
+                             <!-- Scrip -->
                         </div>
+                               
+                            
 
                         <div class="mb-3">
-                            <label for="parcela" class="form-label fw-bold">Parcela</label>
-                            <select class="form-select" id="parcela" name="parcela" required>
-                                <option value="">Seleccione...</option>
+                            <label for="parcela_search" class="form-label">Parcela</label>
+                            <input list="parcelas" id="parcela_search" name="parcela_search" class="form-control" placeholder="Buscar parcela..." autocomplete="off" required>
+                            <input type="hidden" name="id_parcela" id="id_parcela">
+
+                            <datalist id="parcelas">
                                 <?php foreach ($datos['parcelas'] as $p): ?>
-                                    <option value="<?= $p['id_parcela'] ?>">
-                                        <?= htmlspecialchars($p['id_parcela'] . ' - ' . $p['id_tipo_parcela'] . ' - ' . $p['numero_ubicacion'] . ' - | ' . $p['hilera'] . ' | ' . $p['seccion'] . ' | ' . $p['fraccion'] . ' | ' . $p['nivel'] . ' |') ?>
-                                    </option>
-                                <?php endforeach ?>
-                            </select>
-                            <div class="invalid-feedback">
-                                Por favor seleccione una parcela
-                            </div>
+                                
+                                    <option value="<?= htmlspecialchars($p['id_parcela'] . ' - ' . $p['id_tipo_parcela'] .
+                                     ' - ' . $p['numero_ubicacion'] . ' - | ' . $p['hilera'] . ' | ' .
+                                      $p['seccion'] . ' | ' . $p['fraccion'] . ' | ' . $p['nivel'] . ' |') ?>">
+                                <?php endforeach; ?>
+                            </datalist>
+                            <!-- SCRIPT PARA QUE FUNCIONE EL DATALIST Y ENVIE LA ID CORRECTA -->
+                            <script>
+                                const input = document.getElementById('parcela_search');
+                                const hidden = document.getElementById('id_parcela');
+                                const options = Array.from(document.querySelectorAll('#parcelas option'));
+
+                                // Guardamos tanto el texto como el ID en la memoria inicial
+                                let lastValidValue = input.value.trim(); 
+                                let lastValidId = hidden.value; 
+
+                                // EVENTO 1: Mientras el usuario escribe o selecciona de la lista
+                                input.addEventListener('input', () => {
+                                    const val = input.value.trim();
+                                    let valid = false;
+                                    let newId = '';
+
+                                    options.some(opt => {
+                                        // Comparamos asegurando que no haya espacios fantasma en la base de datos
+                                        if (opt.value.trim() === val) {
+                                            valid = true;
+                                            newId = opt.dataset.id;
+                                            return true; 
+                                        }
+                                    });
+
+                                    if (valid) {
+                                        // ¡Match exacto! Actualizamos ID, memoria de texto y limpiamos errores
+                                        hidden.value = newId;
+                                        lastValidId = newId;
+                                        lastValidValue = val; 
+                                        input.setCustomValidity(""); 
+                                    } else {
+                                        // Mientras escribe mal, mantenemos el ID viejo pero marcamos el error rojo
+                                        hidden.value = lastValidId;
+                                        input.setCustomValidity("Debe seleccionar una parcela de la lista");
+                                    }
+                                });
+
+                                // EVENTO 2: Cuando hace clic afuera (blur)
+                                input.addEventListener('blur', () => {
+                                    const val = input.value.trim();
+                                    const isValid = options.some(opt => opt.value.trim() === val);
+
+                                    if (!isValid) {
+                                        // AUTO-CORRECCIÓN: Si hizo clic afuera y lo que dejó no es válido,
+                                        // le restauramos el último texto correcto que había elegido.
+                                        input.value = lastValidValue;
+                                        hidden.value = lastValidId;
+                                        
+                                        // Le sacamos el error rojo (ya que lo arreglamos por él)
+                                        // Si lastValidValue estaba vacío, el 'required' del HTML hará su trabajo normal.
+                                        input.setCustomValidity(""); 
+                                    }
+                                });
+                            </script>
                         </div>
 
                         <div class="mb-3">
