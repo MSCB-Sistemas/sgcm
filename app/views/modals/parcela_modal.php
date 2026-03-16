@@ -31,7 +31,7 @@
                                 </div>
                             </div>
                             
-                            <div class="mb-3">
+                            <!-- <div class="mb-3">
                                 <label for="deudo_search_in_modal_parcela" class="form-label fw-bold">Deudo</label>
                                 <div class="input-group">
                                     <input list="deudos" id="deudo_search_in_modal_parcela" name="deudo_search" class="form-control" placeholder="Ingrese un deudo" autocomplete="off">
@@ -43,7 +43,7 @@
                                         data-id="<?= $d['id_deudo'] ?>">
                                     <?php endforeach; ?>
                                 </datalist>
-                            </div>
+                            </div> -->
                             
                             <div class="mb-3">
                                 <label for="numero_ubicacion" class="form-label fw-bold">Número ubicación</label>

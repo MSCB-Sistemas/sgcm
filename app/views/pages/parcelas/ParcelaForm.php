@@ -68,7 +68,7 @@
                             </div>
                         </div>
                         
-                        <div class="mb-3">
+                        <!-- <div class="mb-3">
                             <label for="deudo" class="form-label fw-bold">Deudo</label>
                             <select class="form-select" id="deudo" name="deudo">
                                 <option value="">Seleccione...</option>
@@ -85,7 +85,7 @@
                                     </option>
                                 <?php endforeach ?>
                             </select>
-                        </div>
+                        </div> -->
                         
                         <div class="mb-3">
                             <label for="numero_ubicacion" class="form-label fw-bold">Número ubicación</label>
@@ -102,6 +102,28 @@
                                    value="<?= $hilera ?>" required>
                             <div class="invalid-feedback">
                                 Por favor ingrese la hilera
+                            </div>
+                        </div>
+
+                        <div>
+                        <label for="orientacion" class="form-label fw-bold">Orientación</label>
+                            <select class="form-select" id="orientacion" name="orientacion" required>
+                                <option value="">Seleccione...</option>
+                                <?php foreach ($datos['orientaciones'] as $n): ?>
+                                    <?php
+                                    if ($id_orientacion_selected == $n['id_orientacion']) {
+                                        $selected_orientacion = 'selected';
+                                    } else {
+                                        $selected_orientacion = '';
+                                    }
+                                    ?>
+                                    <option value="<?= $n['id_orientacion'] ?>" <?= $selected_orientacion ?>>
+                                        <?= htmlspecialchars($n['descripcion']) ?>
+                                    </option>
+                                <?php endforeach ?>
+                            </select>
+                            <div class="invalid-feedback">
+                                Por favor seleccione una orientación
                             </div>
                         </div>
                     </div>
@@ -132,27 +154,7 @@
                                    value="<?= $nivel ?>">
                         </div>
                         
-                        <div class="mb-3">
-                            <label for="orientacion" class="form-label fw-bold">Orientación</label>
-                            <select class="form-select" id="orientacion" name="orientacion" required>
-                                <option value="">Seleccione...</option>
-                                <?php foreach ($datos['orientaciones'] as $n): ?>
-                                    <?php
-                                    if ($id_orientacion_selected == $n['id_orientacion']) {
-                                        $selected_orientacion = 'selected';
-                                    } else {
-                                        $selected_orientacion = '';
-                                    }
-                                    ?>
-                                    <option value="<?= $n['id_orientacion'] ?>" <?= $selected_orientacion ?>>
-                                        <?= htmlspecialchars($n['descripcion']) ?>
-                                    </option>
-                                <?php endforeach ?>
-                            </select>
-                            <div class="invalid-feedback">
-                                Por favor seleccione una orientación
-                            </div>
-                        </div>
+                        
                     </div>
                 </div>
                 
