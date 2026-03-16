@@ -66,23 +66,21 @@
         <h1 class="title">AUTORIZACIÓN DE SERVICIO PARA PERSONAS DE BAJOS RECURSOS</h1>
 
         <div class="address-section">
-            <p><strong>Señores:</strong> {deudo}</p>
+            <p><strong>Señores:</strong> {deudo_apellido}, {deudo_nombre}</p>
             <p><strong>DE:</strong> DIRECCIÓN DE SERVICIOS PÚBLICOS - ÁREA CEMENTERIO</p>
         </div>
-
         <p>
             Mediante la presente se autoriza a realizar el servicio de inhumación y traslado 
-            para los restos de quien en vida fuera <strong>{difunto}</strong>, 
-            de <strong>{edad_difunto}</strong> años de edad.
+            para los restos de quien en vida fuera <strong>{difunto_apellido}, {difunto_nombre}</strong>.
         </p>
         
         <p>
-            Dicho servicio se llevará a cabo en la <strong>Parcela N° {parcela}</strong>.
+            Dicho servicio se llevará a cabo en la <strong>Parcela N° {numero_ubicacion}, hilera {hilera}, sección {seccion}, fracción {fraccion}</strong>.
         </p>
 
         <div class="footer">
             <p>
-                Emitido en San Carlos de Bariloche, a los {fecha_pago}.
+                Emitido en San Carlos de Bariloche, a los {fecha_operacion}.
             </p>
             
             <div class="signature-line">
