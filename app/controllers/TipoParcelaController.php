@@ -23,8 +23,8 @@ class TipoParcelaController extends Control
                 $id     = $fila['id_tipo_parcela'];
                 $url    = URL . 'tipoParcela';
                 return '
-                <a href="' . $url . '/edit/' . $id . '" class="btn btn-sm btn-outline-primary">Editar</a>
-                <a href="' . $url . '/delete/' . $id . '" class="btn btn-sm btn-outline-primary">Eliminar</a>
+                <a href="' . $url . '/edit/' . $id . '" class="btn btn-sm btn-primary">Editar</a>
+                <a href="' . $url . '/delete/' . $id . '" class="btn btn-sm btn-danger">Eliminar</a>
                 ';
             },
             'errores' => [],

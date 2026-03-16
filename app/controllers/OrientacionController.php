@@ -18,8 +18,8 @@ class OrientacionController extends Control {
             'acciones'          =>  function($fila){
                 $id = $fila['id_orientacion'];
                 $url = URL . 'orientaciones';
-                return '<a href="' . $url . '/edit/' . $id . '" class="btn btn-sm btn-outline-primary">Editar</a>
-                <a href="' . $url . '/delete/' . $id . '" class="btn btn-sm btn-outline-primary">Eliminar</a>';
+                return '<a href="' . $url . '/edit/' . $id . '" class="btn btn-sm btn-primary">Editar</a>
+                <a href="' . $url . '/delete/' . $id . '" class="btn btn-sm btn-danger">Eliminar</a>';
             },
             'errores' => [],
         ];
