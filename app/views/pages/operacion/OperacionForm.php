@@ -162,6 +162,7 @@
                 </div>
                 <?php $prefix = 'in'; include __DIR__ . '/../partials/_campos_pago.php'; ?>
             </div>
+            <div id="accordionParcelaInfo" class="accordion mt-4 mb-3"></div>
         </form>
     </div>
 </div>
@@ -465,6 +466,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+
+    configurarAutocompletado('parcela_search_ld', 'id_parcela_ld', 'parcelasOcupadas');
     configurarAutocompletado('difunto_search_ti', 'id_difunto_ti', 'difuntos');
     configurarAutocompletado('parcela_search_ti', 'id_parcela_ti', 'parcelas');
     configurarAutocompletado('deudo_search_ti', 'id_deudo_ti', 'deudos');
@@ -472,7 +475,6 @@ document.addEventListener('DOMContentLoaded', function() {
     configurarAutocompletado('difunto_search_br', 'id_difunto_br', 'difuntos');
     configurarAutocompletado('parcela_search_br', 'id_parcela_br', 'parcelas');
     configurarAutocompletado('deudo_search_br', 'id_deudo_br', 'deudos');
-    configurarAutocompletado('parcela_search_ld', 'id_parcela_ld', 'parcelas');
     configurarAutocompletado('deudo_search_ld', 'id_deudo_ld', 'deudos');
     configurarAutocompletado('deudo_search_in_modal', 'id_deudo_in_modal', 'deudos');
     configurarAutocompletado('deudo_search_in_modal_parcela', 'id_deudo_in_modal_parcela', 'deudos');
