@@ -29,17 +29,24 @@ class EstadisticasModel extends Control
         }
     }
 
-    // En EstadisticasModel.php
     public function getTotalDeudosMorosos() {
-        $sql = "SELECT COUNT(*) 
-                FROM pago p
-                INNER JOIN (
-                    SELECT id_parcela, MAX(id_pago) as max_id 
-                    FROM pago GROUP BY id_parcela
-                ) sub ON p.id_pago = sub.max_id
-                WHERE p.fecha_vencimiento < CURRENT_DATE";
-        $stmt = $this->db->query($sql);
-        return (int) $stmt->fetchColumn();
+        try {
+            $sql = "SELECT COUNT(DISTINCT p.id_parcela) 
+                    FROM pago p
+                    INNER JOIN (
+                        SELECT id_parcela, MAX(id_pago) as max_id 
+                        FROM pago GROUP BY id_parcela
+                    ) sub ON p.id_pago = sub.max_id
+                    INNER JOIN ubicacion_difunto ud ON p.id_parcela = ud.id_parcela
+                    WHERE (ud.fecha_retiro IS NULL OR ud.fecha_retiro = '0000-00-00')
+                    AND p.fecha_vencimiento < CURRENT_DATE";
+            
+            $stmt = $this->db->query($sql);
+            return (int) $stmt->fetchColumn();
+        } catch (PDOException $e) {
+            error_log("Error en getTotalDeudosMorosos: " . $e->getMessage());
+            return 0;
+        }
     }
 
     public function getTotalParcelasOcupadas()
@@ -225,21 +232,16 @@ class EstadisticasModel extends Control
 
         $sql_base_morosos = "
             FROM pago p
-            INNER JOIN deudo d ON p.id_deudo = d.id_deudo
             INNER JOIN (
-                /* Obtenemos el último pago solo de deudos con difuntos activos en esa parcela */
-                SELECT p2.id_parcela, MAX(p2.id_pago) as max_id_pago
-                FROM pago p2
-                INNER JOIN ubicacion_difunto ud ON p2.id_parcela = ud.id_parcela 
-                    AND p2.id_deudo = (SELECT id_deudo FROM difunto WHERE id_difunto = ud.id_difunto)
-                WHERE (ud.fecha_retiro IS NULL OR ud.fecha_retiro = '0000-00-00')
-                GROUP BY p2.id_parcela
+                SELECT id_parcela, MAX(id_pago) as max_id_pago
+                FROM pago
+                GROUP BY id_parcela
             ) sub ON p.id_pago = sub.max_id_pago
-            WHERE p.fecha_vencimiento <= CURRENT_DATE
+            INNER JOIN deudo d ON p.id_deudo = d.id_deudo
+            INNER JOIN ubicacion_difunto ud ON p.id_parcela = ud.id_parcela
+            WHERE (ud.fecha_retiro IS NULL OR ud.fecha_retiro = '0000-00-00')
+            AND p.fecha_vencimiento < CURRENT_DATE
         ";
-
-        $stmt_total_real = $this->db->query("SELECT COUNT(*) " . $sql_base_morosos);
-        $recordsTotal = $stmt_total_real->fetchColumn() ?? 0;
 
         $where_search = "";
         $pdo_params = [];
@@ -248,6 +250,9 @@ class EstadisticasModel extends Control
             $where_search = " AND (d.nombre LIKE ? OR d.apellido LIKE ? OR d.dni LIKE ? OR p.id_parcela LIKE ?)";
             array_push($pdo_params, $search, $search, $search, $search);
         }
+
+        $stmt_total_real = $this->db->query("SELECT COUNT(*) " . $sql_base_morosos);
+        $recordsTotal = $stmt_total_real->fetchColumn() ?? 0;
 
         $stmt_filtrado = $this->db->prepare("SELECT COUNT(*) " . $sql_base_morosos . $where_search);
         $stmt_filtrado->execute($pdo_params);
