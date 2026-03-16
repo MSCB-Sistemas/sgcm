@@ -80,7 +80,11 @@ class ParcelaController extends Control
         }
 
         $tipo_parcela = $_POST['tipo_parcela'];
-        $id_deudo = $_POST['id_deudo'];
+        if (isset($_POST['deudo'])) {
+            $id_deudo = $_POST['deudo'];
+        } else {
+            $id_deudo = '';
+        }
         $nro_ubicacion = trim($_POST['numero_ubicacion']);
         $hilera = trim($_POST['hilera']);
         $seccion = trim($_POST['seccion']);
@@ -120,7 +124,7 @@ class ParcelaController extends Control
         if ($nuevo_ingreso) {
             if ($es_ajax) {
                 header('Content-Type: application/json');
-                $texto_parcela = "ID: $nuevo_ingreso (Ubic: $nro_ubicacion, Sec: $seccion)";
+                $texto_parcela = "ID: $nuevo_ingreso | Ubic: $nro_ubicacion | Sec: $seccion | Hil: $hilera";
                 echo json_encode([
                     'success' => true,
                     'newItem' => [
