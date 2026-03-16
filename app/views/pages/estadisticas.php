@@ -298,10 +298,24 @@
                 const vencimientoAnterior = button.getAttribute('data-vencimiento-anterior');
 
                 let nuevoVencimiento = '';
-                if (vencimientoAnterior) {
-                    const fechaAnterior = new Date(vencimientoAnterior);
-                    fechaAnterior.setFullYear(fechaAnterior.getFullYear() + 1);
-                    nuevoVencimiento = fechaAnterior.toISOString().split('T')[0];
+
+                const soloFecha = vencimientoAnterior.substring(0, 10);
+                const partes = soloFecha.split('-');
+
+                if (partes.length === 3) {
+                    let fecha = new Date(partes[0], partes[1] - 1, partes[2]);
+
+                    fecha.setFullYear(fecha.getFullYear() + 1);
+
+                    const y = fecha.getFullYear();
+                    const m = String(fecha.getMonth() + 1).padStart(2, '0');
+                    const d = String(fecha.getDate()).padStart(2, '0');
+
+                    nuevoVencimiento = `${y}-${m}-${d}`;
+                } else {
+                    let hoy = new Date();
+                    hoy.setFullYear(hoy.getFullYear() + 1);
+                    nuevoVencimiento = hoy.toISOString().split('T')[0];
                 }
                 
                 pagoModal.querySelector('#modalDeudorNombre').textContent = deudorNombre;
