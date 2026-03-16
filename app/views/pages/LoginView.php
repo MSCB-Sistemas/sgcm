@@ -4,7 +4,7 @@
         <div class="card shadow-lg border-0" style="width: 100%; max-width: 500px;">
             <div class="card-header bg-primary text-white text-center py-4">
                 <div class="d-flex justify-content-center align-items-center">
-                    <img src="<?= URL ?>/public/img/EscudoBariloche.png" alt="Escudo Bariloche" 
+                    <img src="<?= URL ?>/public/img/Logo-Muni_nuevo.png" alt="Escudo Bariloche" 
                         style="width: 80px; height: 80px; object-fit: contain;">
                     <div class="ms-3 text-start">
                         <h1 class="h2 fw-bold mb-0">Cementerio Municipal</h1>

@@ -1,13 +1,7 @@
 <link rel="stylesheet" href="<?= URL . '/public/css/estadisticas.css' ?>">
 <ul class="nav nav-tabs" id="myTab" role="tablist">
     <li class="nav-item">
-        <button class="nav-link" id="pagos-por-difunto-tab" data-bs-toggle="tab" data-bs-target="#pagos_por_difunto" type="button" role="tab">Pagos por Difunto</button>
-    </li>
-    <li class="nav-item">
-        <button class="nav-link" id="vendidas-tab" data-bs-toggle="tab" data-bs-target="#vendidas" type="button" role="tab">Parcelas Vendidas</button>
-    </li>
-    <li class="nav-item">
-        <button class="nav-link active" id="difuntos-tab" data-bs-toggle="tab" data-bs-target="#difuntos" type="button" role="tab">Padrón difuntos</button>
+        <button class="nav-link" id="integral-tab" data-bs-toggle="tab" data-bs-target="#reporte_integral" type="button" role="tab">Reporte General de Pagos</button>
     </li>
     <li class="nav-item">
         <button class="nav-link" id="morosos-tab" data-bs-toggle="tab" data-bs-target="#morosos" type="button" role="tab">Deudores Morosos
@@ -26,15 +20,9 @@
 
 <div class="tab-content mt-4">
     <?php
-    $config = $datos['configPagosPorDifunto'];
+    $config = $datos['configIntegral'];
     include 'partials/tabla_ajax_template.php';
-
-    $config = $datos['configVendidas'];
-    include 'partials/tabla_ajax_template.php';
-
-    $config = $datos['configDifuntos'];
-    include 'partials/tabla_ajax_template.php';
-
+    
     $config = $datos['configTraslados'];
     include 'partials/tabla_ajax_template.php';
 
@@ -132,42 +120,93 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         const dataTablesConfigs = {
-            'pagos_por_difunto': [
-                { data: 'id_pago' },
+            'integral': [
                 { 
-                    data: null,
-                    render: function(data, type, row) {
-                        return `${row.difunto_apellido}, ${row.difunto_nombre}`;
+                    data: 'id_pago',
+                    title: '# ID',
+                    render: (data, type, row) => {
+                        const esActual = (row.id_pago == row.ultimo_pago_id);
+                        return esActual 
+                            ? `<span class="badge bg-success" title="Último pago">#${data} - ACTUAL</span>`
+                            : `<span class="text-muted small">#${data} (Histórico)</span>`;
                     }
                 },
-                { data: 'id_parcela' },
                 { 
                     data: null,
+                    title: 'Sujetos (Deudo / Difunto)',
                     render: function(data, type, row) {
-                        return `${row.deudo_apellido}, ${row.deudo_nombre}`;
+                        const difunto = row.difunto_nombre 
+                            ? `<small class="text-muted"><i class="bi bi-person"></i> Dif: ${row.difunto_apellido}, ${row.difunto_nombre}</small>`
+                            : '<small class="text-muted italic text-opacity-50">Sin difunto asociado</small>';
+                        
+                        return `<div>
+                                    <div class="fw-bold text-primary">${row.deudo_apellido}, ${row.deudo_nombre}</div>
+                                    ${difunto}
+                                </div>`;
+                    }
+                },
+                { 
+                    data: null,
+                    title: 'Ubicación / Parcela',
+                    render: function(data, type, row) {
+                        return `<div class="lh-sm">
+                                    <span class="badge border text-dark bg-light mb-1">${row.tipo_nombre || 'S/T'}</span><br>
+                                    <small class="text-secondary">ID interno: ${row.id_parcela}</small><br>
+                                    <small class="text-muted">Seccion: ${row.seccion || '-'} Hilera: ${row.hilera || '-'} Nivel: ${row.numero_ubicacion || '-'}</small>
+                                </div>`;
                     }
                 },
                 { 
                     data: 'total',
-                    render: function(data) {
-                        return `$${parseFloat(data).toFixed(2)}`;
+                    title: 'Monto y Pago',
+                    render: (data, type, row) => {
+                        const fecha = (!row.fecha_pago || row.fecha_pago === '0000-00-00 00:00:00') 
+                            ? 'N/A' 
+                            : new Date(row.fecha_pago).toLocaleDateString('es-AR');
+                        
+                        return `<div class="text-end">
+                                    <span class="fw-bold text-success d-block">$${parseFloat(data).toFixed(2)}</span>
+                                    <small class="text-muted" title="Fecha de pago">${fecha}</small>
+                                </div>`;
                     }
                 },
                 { 
-                    data: 'fecha_pago',
-                    render: function(data) {
-                        if(!data) return '';
-                        const fecha = new Date(data);
-                        return fecha.toLocaleDateString('es-AR');
+                    data: 'fecha_vencimiento',
+                    title: 'Estado de Deuda',
+                    render: (data, type, row) => {
+                        if (!data || data === '0000-00-00') return '<span class="text-muted">N/A</span>';
+                        
+                        const fechaVenc = new Date(data);
+                        const hoy = new Date();
+                        const esActual = (row.id_pago == row.ultimo_pago_id);
+                        const estaVencido = (fechaVenc < hoy);
+                        const fechaFormateada = fechaVenc.toLocaleDateString('es-AR');
+
+                        if (esActual && estaVencido) {
+                            return `<div class="text-center">
+                                        <span class="badge bg-danger mb-1">VENCIDO</span><br>
+                                        <span class="text-danger fw-bold small">${fechaFormateada}</span>
+                                    </div>`;
+                        }
+
+                        return `<div class="text-center">
+                                    <span class="text-muted small">${fechaFormateada}</span>
+                                </div>`;
+                    }
+                },
+                {
+                    data: 'archivo_pago',
+                    title: 'Archivo',
+                    orderable: false,
+                    render: function(data, type, row) {
+                        if (data) {
+                            return `<a href="<?= URL ?>/public/uploads/${data}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                        <i class="bi bi-file-earmark-pdf"></i> Ver Archivo
+                                    </a>`;
+                        }
+                        return '<span class="text-muted">No disponible</span>';
                     }
                 }
-            ],
-
-            'difuntos': [
-                { data: 'fecha_fallecimiento' }, { data: 'nombre' }, { data: 'apellido' },
-                { data: 'edad' }, { data: 'dni' }, { data: 'nombre_deudo' },
-                { data: 'estado_civil' }, { data: 'nacionalidad' }, { data: 'sexo' },
-                { data: 'domicilio' }, { data: 'localidad' }, { data: 'codigo_postal' }
             ],
             'traslados': [
                 { data: 'nombre' }, { data: 'apellido' }, { data: 'dni' },
@@ -181,57 +220,40 @@
                     }
                 }
             ],
-            'vendidas': [
-                { data: 'id_parcela' }, { data: 'tipo_parcela' }, { data: 'nombre_titular' },
-                { data: 'apellido_titular' }, { data: 'dni' }, { data: 'monto' },
-                { data: 'fecha_venta' }, { data: 'fecha_vencimiento' }
-            ],
             'morosos': [
                 { data: 'id_parcela' }, 
-                { data: 'dni' }, 
-                { data: 'nombre' },
-                { data: 'apellido' },
+                { data: 'dni' },        
+                { data: 'nombre' },     
+                { data: 'apellido' },   
                 { 
-                    data: 'fecha_vencimiento',
-                    render: function(data, type, row) {
+                    data: 'fecha_vencimiento', 
+                    render: function(data) {
                         if (!data) return '';
-                        const date = new Date(data);
-                        return `<span class="text-danger fw-bold">${date.toLocaleDateString('es-AR')}</span>`;
+                        return `<span class="text-danger fw-bold">${new Date(data).toLocaleDateString('es-AR')}</span>`;
                     }
                 }, 
                 { 
-                    data: 'total',
-                    render: function(data, type, row) {
-                        return `$${parseFloat(data).toFixed(2)}`;
-                    }
+                    data: 'total', 
+                    render: data => `$${parseFloat(data).toFixed(2)}`
                 },
                 { 
-                    data: 'fecha_vencimiento',
-                    title: "Días de mora",
+                    data: 'fecha_vencimiento', 
                     orderable: false,
-                    render: function(data, type, row) {
-                        if (!data) return '';
-                        const fechaVencimiento = new Date(data);
-                        const hoy = new Date();
-                        const diffTime = hoy - fechaVencimiento;
-                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                        return `<span class="badge bg-danger">${diffDays > 0 ? diffDays : 0} día/s</span>`;
+                    render: function(data) {
+                        const diff = Math.ceil((new Date() - new Date(data)) / (1000 * 60 * 60 * 24));
+                        return `<span class="badge bg-danger">${diff > 0 ? diff : 0} día/s</span>`;
                     }
                 },
                 {
-                    data: null,
-                    title: "Acciones",
+                    data: null, 
                     orderable: false,
                     render: function(data, type, row) {
-                        const nombreCompleto = `${row.apellido}, ${row.nombre}`;
                         return `<button type="button" class="btn btn-sm btn-success registrar-pago-btn" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#pagoModal"
-                                    data-deudor-id="${row.id_deudo}"
-                                    data-parcela-id="${row.id_parcela}"
-                                    data-deudor-nombre="${nombreCompleto}"
+                                    data-bs-toggle="modal" data-bs-target="#pagoModal"
+                                    data-deudor-id="${row.id_deudo}" data-parcela-id="${row.id_parcela}"
+                                    data-deudor-nombre="${row.apellido}, ${row.nombre}"
                                     data-vencimiento-anterior="${row.fecha_vencimiento}">
-                                    <i class="bi bi-cash-coin"></i> Registrar Pago
+                                    <i class="bi bi-cash-coin"></i> Registrar
                                 </button>`;
                     }
                 }
@@ -308,7 +330,7 @@
                         const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Tab(modalEl);
                         modalInstance.hide();
 
-                        const table = $('#tabla-morosos').DataTable();
+                        const table = $('#morosos .datatable-ajax').DataTable();
                         if (lastClickedButton) {
                             const rowToRemove = $(lastClickedButton).closest('tr');
                             table.row(rowToRemove).remove().draw(false);
