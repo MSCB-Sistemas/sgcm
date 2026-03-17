@@ -6,7 +6,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form id="formNuevoDifunto" action="<?= URL ?>/difunto/save" method="POST">
+                <form id="formNuevoDifunto" action="<?= URL ?>/difunto/save" method="POST" novalidate>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -14,6 +14,9 @@
                                 <div class="input-group">
                                     <input list="deudos" id="deudo_search_in_modal" class="form-control" placeholder="Ingrese un deudo" autocomplete="off" required>
                                     <input type="hidden" id="id_deudo_in_modal" name="id_deudo">
+                                    <div class="invalid-feedback">
+                                        Por favor seleccione un deudo
+                                    </div>
                                 </div>
                                 <datalist id="deudos">
                                     <?php foreach ($datos['deudos'] as $d): ?>
@@ -25,34 +28,49 @@
 
                             <div class="mb-3">
                                 <label for="nombre" class="form-label fw-bold">Nombre</label>
-                                <input type="text" class="form-control" id="nombre" name="nombre">
+                                <input type="text" class="form-control" id="nombre" name="nombre" required>
+                                <div class="invalid-feedback">
+                                Por favor seleccione un nombre
+                            </div>
                             </div>
 
                             <div class="mb-3">
                                 <label for="apellido" class="form-label fw-bold">Apellido</label>
-                                <input type="text" class="form-control" id="apellido" name="apellido">
+                                <input type="text" class="form-control" id="apellido" name="apellido" required>
+                                <div class="invalid-feedback">
+                                Por favor seleccione un apellido
+                                </div>
                             </div>
 
                             <div class="mb-3">
                                 <label for="dni" class="form-label fw-bold">DNI</label>
-                                <input type="text" class="form-control" id="dni" name="dni">
+                                <input type="text" class="form-control" id="dni" name="dni" required>
+                                <div class="invalid-feedback">
+                                Por favor seleccione un DNI
+                                </div>
                             </div>
 
                             <div class="mb-3">
                                 <label for="edad" class="form-label fw-bold">Edad</label>
-                                <input type="text" class="form-control" id="edad" name="edad">
+                                <input type="text" class="form-control" id="edad" name="edad" required>
+                                <div class="invalid-feedback">
+                                Por favor seleccione una edad
+                                </div>
                             </div>
 
                             <div class="mb-3">
                                 <label for="fecha_fallecimiento" class="form-label fw-bold">Fecha fallecimiento</label>
-                                <input type="date" class="form-control" id="fecha_fallecimiento" name="fecha_fallecimiento">
+                                <input type="date" class="form-control" id="fecha_fallecimiento" name="fecha_fallecimiento" required>
+                                <div class="invalid-feedback">
+                                Por favor seleccione una fecha de fallecimiento
+                                </div>
                             </div>
                         </div>
 
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="sexo" class="form-label fw-bold">Género</label>
-                                <select class="form-select" id="sexo" name="sexo">
+                                <select class="form-select" id="sexo" name="sexo" required>
                                     <option value="">Seleccione...</option>
                                     <?php foreach ($datos['sexos'] as $n): ?>
                                         <option value="<?= $n['id_sexo'] ?>" 
@@ -65,11 +83,15 @@
                                         </option>
                                     <?php endforeach ?>
                                 </select>
+                                <div class="invalid-feedback">
+                                    Por favor seleccione un género
+                                </div>
+
                             </div>
 
                             <div class="mb-3">
                                 <label for="nacionalidad" class="form-label fw-bold">Nacionalidad</label>
-                                <select class="form-select" id="nacionalidad" name="nacionalidad">
+                                <select class="form-select" id="nacionalidad" name="nacionalidad" required>
                                     <option value="">Seleccione...</option>
                                     <?php foreach ($datos['nacionalidades'] as $n): ?>
                                         <option value="<?= $n['id_nacionalidad'] ?>"
@@ -82,11 +104,14 @@
                                         </option>
                                     <?php endforeach ?>
                                 </select>
+                                <div class="invalid-feedback">
+                                Por favor seleccione una nacionalidad
+                            </div>
                             </div>
 
                             <div class="mb-3">
                                 <label for="estado_civil" class="form-label fw-bold">Estado civil</label>
-                                <select class="form-select" id="estado_civil" name="estado_civil">
+                                <select class="form-select" id="estado_civil" name="estado_civil" required>
                                     <option value="">Seleccione...</option>
                                     <?php foreach ($datos['estados_civiles'] as $n): ?>
                                         <option value="<?= $n['id_estado_civil'] ?>"
@@ -99,21 +124,33 @@
                                         </option>
                                     <?php endforeach ?>
                                 </select>
+                                <div class="invalid-feedback">
+                                Por favor seleccione un estado civil
+                                    </div>
                             </div>
 
                             <div class="mb-3">
                                 <label for="domicilio" class="form-label fw-bold">Domicilio</label>
-                                <input type="text" class="form-control" id="domicilio" name="domicilio">
+                                <input type="text" class="form-control" id="domicilio" name="domicilio" required>
+                                <div class="invalid-feedback">
+                                Por favor seleccione un domicilio
+                                </div>
                             </div>
 
                             <div class="mb-3">
                                 <label for="localidad" class="form-label fw-bold">Localidad</label>
-                                <input type="text" class="form-control" id="localidad" name="localidad">
+                                <input type="text" class="form-control" id="localidad" name="localidad" required>
+                                <div class="invalid-feedback">
+                                Por favor seleccione una localidad
+                                    </div>
                             </div>
 
                             <div class="mb-3">
                                 <label for="codigo_postal" class="form-label fw-bold">Código postal</label>
-                                <input type="text" class="form-control" id="codigo_postal" name="codigo_postal">
+                                <input type="text" class="form-control" id="codigo_postal" name="codigo_postal" required>
+                                <div class="invalid-feedback">
+                                Por favor seleccione un código postal
+                                    </div>
                             </div>
                         </div>
                     </div>

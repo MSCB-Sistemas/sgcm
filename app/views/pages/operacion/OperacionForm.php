@@ -410,6 +410,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         form.addEventListener('submit', function(e) {
+            
+            if (!form.checkValidity()) {
+            e.preventDefault();
+            e.stopPropagation();
+            form.classList.add('was-validated');
+            return;
+    }
             e.preventDefault();
             const formData = new FormData(form);
             const url = form.getAttribute('action');
