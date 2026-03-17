@@ -167,7 +167,7 @@ class ParcelaModel
                 'seccion'          => $seccion,
                 'fraccion'         => $fraccion,
                 'nivel'            => $nivel,
-                'id_orientacion'   => $id_orientacion
+                'id_orientacion'   => !empty($id_orientacion) ? $id_orientacion : null
             ];
             
             $stmt->execute($parametros);
@@ -212,7 +212,7 @@ class ParcelaModel
             'seccion'           => $seccion,
             'fraccion'          => $fraccion,
             'nivel'             => $nivel,
-            'id_orientacion'    => $id_orientacion
+            'id_orientacion'    => !empty($id_orientacion) ? $id_orientacion : null
         ];        
         $stmt->execute($parametros);
 
