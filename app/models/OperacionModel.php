@@ -230,5 +230,30 @@ class OperacionModel
         $stmt->execute(['id_parcela' => $id_parcela, 'id_deudo' => $id_deudo]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function getDatosParaPdfRenovacion($id_parcela, $id_deudo, $id_pago)
+    {
+        $sql = "SELECT 
+                    CONCAT(d.apellido, ', ', d.nombre) AS deudo,
+                    d.dni AS dni_deudo,
+                    
+                    p.id_pago,
+                    p.fecha_pago,
+                    p.fecha_vencimiento,
+                    
+                    par.id_parcela,
+                    par.hilera,
+                    par.seccion,
+                    tp.nombre_parcela AS tipo_parcela
+                FROM pago p
+                JOIN deudo d ON p.id_deudo = d.id_deudo
+                JOIN parcela par ON p.id_parcela = par.id_parcela
+                JOIN tipo_parcela tp ON par.id_tipo_parcela = tp.id_tipo_parcela
+                WHERE p.id_pago = :id_pago AND p.id_parcela = :id_parcela AND p.id_deudo = :id_deudo";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id_pago' => $id_pago, 'id_parcela' => $id_parcela, 'id_deudo' => $id_deudo]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
 ?>
