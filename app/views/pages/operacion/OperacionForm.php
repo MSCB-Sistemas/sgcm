@@ -34,6 +34,7 @@
         <form action="<?= $datos['action'] ?>" method="POST" id="operacionForm">
             <input type="hidden" name="tipo_operacion" id="tipo_operacion_hidden">
 
+            <!-- Traslado Interno (Exhumación) -->
             <div id="seccion-1" class="seccion-operacion" data-prefix="ti" style="display:none;">
                 <h5 class="mb-3">Traslado Interno</h5>
                 <p class="text-muted small">Mueve un difunto de su ubicacion actual a una nueva parcela vacía.</p>
@@ -73,6 +74,7 @@
                 include __DIR__ . '/../partials/_campos_pago.php'; ?>
             </div>
 
+            <!-- Traslado Externo (Exhumación) -->
             <div id="seccion-2" class="seccion-operacion" style="display:none;">
                 <h5 class="mb-3">Traslado Externo (Exhumación)</h5>
                 <p class="text-muted small">Registra el retiro de un difunto del cementerio.</p>
@@ -93,6 +95,7 @@
                 </div>
             </div>
 
+            <!-- Persona bajos recursos -->
             <div id="seccion-3" class="seccion-operacion" data-prefix="br" style="display:none;">
                 <h5 class="mb-3">Autorización para Personas de Bajos Recursos</h5>
                 <p class="text-muted small">Registra un nuevo ingreso en una parcela asignada.</p>
@@ -124,6 +127,7 @@
                 include __DIR__ . '/../partials/_campos_pago.php'; ?>
             </div>
 
+            <!-- Libre de deuda -->
             <div id="seccion-4" class="seccion-operacion" style="display:none;">
                 <h5 class="mb-3">Certificado Libre de Deuda</h5>
                 <p class="text-muted small">Imprime comprobante de libre de deuda para un deudo y parcela especifica.
@@ -148,6 +152,7 @@
                 </div>
             </div>
 
+            <!-- Ingreso de Difunto -->
             <div id="seccion-5" class="seccion-operacion" data-prefix="in" style="display:none;">
                 <h5 class="mb-3">Ingreso de Difunto</h5>
                 <p class="text-muted small">Registra la primera inhumación de un difunto en una parcela vacía.</p>
@@ -183,6 +188,7 @@
                 include __DIR__ . '/../partials/_campos_pago.php'; ?>
             </div>
 
+            <!-- Renovacion de Pago -->
             <div id="seccion-6" class="seccion-operacion" data-prefix="rp" style="display:none;">
                 <h5 class="mb-3">Renovación de Pago</h5>
                 <p class="text-muted small">Registra la renovación del pago de una parcela ocupada.</p>
