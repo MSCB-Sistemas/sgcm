@@ -533,17 +533,29 @@
         }
 
         // --- 5. CONFIGURACIÓN DE AUTOCOMPLETADOS ---
+        // Traslado Interno (TI)
         configurarAutocompletado('difunto_search_ti', 'id_difunto_ti', 'difuntos');
         configurarAutocompletado('parcela_search_ti', 'id_parcela_ti', 'parcelas');
         configurarAutocompletado('deudo_search_ti', 'id_deudo_ti', 'deudos');
+
+        // Traslado Externo (TE)
         configurarAutocompletado('difunto_search_te', 'id_difunto_te', 'difuntos');
+
+        // Persona bajos recursos (BR)
         configurarAutocompletado('difunto_search_br', 'id_difunto_br', 'difuntos');
         configurarAutocompletado('parcela_search_br', 'id_parcela_br', 'parcelas');
         configurarAutocompletado('deudo_search_br', 'id_deudo_br', 'deudos');
+
+        // Libre de deuda (LD)
         configurarAutocompletado('parcela_search_ld', 'id_parcela_ld', 'parcelas');
         configurarAutocompletado('deudo_search_ld', 'id_deudo_ld', 'deudos');
+
+        // Ingreso de Difunto (IN)
         configurarAutocompletado('difunto_search_in', 'id_difunto_in', 'difuntos');
         configurarAutocompletado('parcela_search_in', 'id_parcela_in', 'parcelas');
+        configurarAutocompletado('deudo_search_in', 'id_deudo_in', 'deudos');
+
+        // Renovacion de Pago (RP)
         configurarAutocompletado('deudo_search_rp', 'id_deudo_rp', 'deudos');
         configurarAutocompletado('parcela_search_rp', 'id_parcela_rp', 'parcelasOcupadas');
 

@@ -242,12 +242,12 @@ class OperacionController extends Control
     private function procesarIngreso($data)
     {
         $errores = [];
-        $id_difunto       = $data['id_difunto_in'] ?? '';
-        $id_parcela       = $data['id_parcela_in'] ?? '';
-        $id_deudo         = $data['id_deudo_in'] ?? '';
-        $fecha_operacion  = $data['fecha_ingreso_in'] ?? date('Y-m-d');
-        $importe          = $data['importe_in'] ?? '';
-        $vencimiento      = $data['fecha_vencimiento_in'] ?? '';
+        $id_difunto       = $data['id_difunto_in'];
+        $id_parcela       = $data['id_parcela_in'];
+        $id_deudo         = $data['id_deudo_in'];
+        $fecha_operacion  = $data['fecha_ingreso_in'];
+        $importe          = $data['importe_in'];
+        $vencimiento      = $data['fecha_vencimiento_in'];
 
         if (empty($id_difunto)) $errores[] = "Debe seleccionar un difunto válido de la lista.";
         if (empty($id_parcela)) $errores[] = "Debe seleccionar una parcela válida de la lista.";
