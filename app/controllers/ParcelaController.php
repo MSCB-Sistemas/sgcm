@@ -90,12 +90,16 @@ class ParcelaController extends Control
         $seccion = trim($_POST['seccion']);
         $fraccion = trim($_POST['fraccion']);
         $nivel = trim($_POST['nivel']);
-        $orientacion = $_POST['orientacion'];
+        
+        if (isset($_POST['orientacion'])) {
+            $orientacion = $_POST['orientacion'];
+        } else {
+            $orientacion = null;
+        }
 
         $errores = [];
 
         if (empty($tipo_parcela)) $errores[]    = "El tipo de parcela es obligatorio.";
-        if (empty($orientacion)) $errores[]     = "La orientacion de la parcela es obligatoria.";
 
         $es_ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
 
@@ -215,10 +219,15 @@ class ParcelaController extends Control
             } else {
                 $nivel = '';
             }
-            $orientacion = $_POST['orientacion'];
+            if (isset($_POST['orientacion'])) {
+                $orientacion = $_POST['orientacion'];
+            } else {
+                $orientacion = null;
+            }
+
+            $errores = [];
 
             if (empty($tipo_parcela)) $errores[]    = "El tipo de parcela es obligatorio.";
-            if (empty($orientacion)) $errores[]     = "La orientacion de la parcela es obligatoria.";
 
             if (!empty($errores)) {
                 $parcela = [
