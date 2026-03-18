@@ -255,5 +255,13 @@ class OperacionModel
         $stmt->execute(['id_pago' => $id_pago, 'id_parcela' => $id_parcela, 'id_deudo' => $id_deudo]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function obtenerParcelasPagasPorDeudo($id_deudo)
+    {
+        $sql = "SELECT DISTINCT id_parcela FROM pago WHERE id_deudo = :id_deudo AND fecha_vencimiento < CURDATE()";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id_deudo' => $id_deudo]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?>

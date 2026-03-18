@@ -54,7 +54,7 @@
                     <div class="col-md-6">
                         <label class="form-label">Parcela de Destino (debe estar vacía)</label>
                         <div class="input-group">
-                            <input list="parcelas" id="parcela_search_ti" class="form-control"
+                            <input list="parcelasDisponibles" id="parcela_search_ti" class="form-control"
                                 placeholder="Buscar parcela de destino...">
                             <input type="hidden" name="id_parcela_ti" id="id_parcela_ti">
                             <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
@@ -113,7 +113,7 @@
                     <div class="col-md-6">
                         <label class="form-label">Parcela Asignada (debe estar vacía)</label>
                         <div class="input-group">
-                            <input list="parcelas" id="parcela_search_br" class="form-control"
+                            <input list="parcelasDisponibles" id="parcela_search_br" class="form-control"
                                 placeholder="Buscar parcela...">
                             <input type="hidden" name="id_parcela_br" id="id_parcela_br">
                             <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
@@ -170,7 +170,7 @@
                     <div class="col-md-6">
                         <label class="form-label">Parcela de Destino (debe estar vacía)</label>
                         <div class="input-group">
-                            <input list="parcelas" id="parcela_search_in" class="form-control"
+                            <input list="parcelasDisponibles" id="parcela_search_in" class="form-control"
                                 placeholder="Buscar parcela...">
                             <input type="hidden" name="id_parcela_in" id="id_parcela_in">
                             <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
@@ -206,7 +206,7 @@
                     <div class="col-md-6">
                         <label class="form-label">Parcela a Renovar</label>
                         <div class="input-group">
-                            <input list="parcelasOcupadas" id="parcela_search_rp" class="form-control"
+                            <input list="parcelasPagasPorDeudo" id="parcela_search_rp" class="form-control"
                                 placeholder="Buscar parcela...">
                             <input type="hidden" name="id_parcela_rp" id="id_parcela_rp">
                         </div>
@@ -226,7 +226,43 @@
     </div>
 </div>
 
-<datalist id="parcelas">
+<datalist id="parcelasPagasPorDeudo">
+    <?php foreach ($datos['parcelasPagasPorDeudo'] as $p): ?>
+        <?php
+        $texto_parcela = "ID: ";
+
+        if (isset($p['id_parcela'])) {
+            $texto_parcela .= $p['id_parcela'];
+        } else {
+            $texto_parcela .= '';
+        }
+
+        $texto_parcela .= " | Ubic: ";
+        if (isset($p['numero_ubicacion'])) {
+            $texto_parcela .= $p['numero_ubicacion'];
+        } else {
+            $texto_parcela .= 'S/N';
+        }
+
+        $texto_parcela .= " | Sec: ";
+        if (isset($p['seccion'])) {
+            $texto_parcela .= $p['seccion'];
+        } else {
+            $texto_parcela .= 'S/S';
+        }
+
+        $texto_parcela .= " | Hil: ";
+        if (isset($p['hilera'])) {
+            $texto_parcela .= $p['hilera'];
+        } else {
+            $texto_parcela .= 'S/H';
+        }
+        ?>
+        <option value="<?= htmlspecialchars($texto_parcela) ?>" data-id="<?= $p['id_parcela'] ?>">
+        <?php endforeach; ?>
+</datalist>
+
+<datalist id="parcelasDisponibles">
     <?php foreach ($datos['parcelasDisponibles'] as $p): ?>
         <?php
         $texto_parcela = "ID: ";

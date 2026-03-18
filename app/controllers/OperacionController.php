@@ -37,6 +37,7 @@ class OperacionController extends Control
             'tipo_operaciones' => $this->tipoOperacionModel->getAllTipoOperaciones(),
             'parcelasDisponibles' => $this->parcelaModel->getParcelasDisponibles(),
             'parcelasOcupadas' => $this->parcelaModel->getParcelasOcupadas(),
+            'parcelasPagasPorDeudo' => $this->model->obtenerParcelasPagasPorDeudo($values['id_deudo_rp']),
             'deudos' => $this->deudoModel->getAllDeudos(),
             'difuntos' => $this->difuntoModel->getAllDifuntos(),
             'sexos'            => $this->sexoModel->getAllSexos(),
@@ -297,6 +298,15 @@ class OperacionController extends Control
         if (empty($id_deudo))   $errores[] = "Debe seleccionar un deudo responsable.";
         if (!is_numeric($importe) || $importe <= 0) $errores[] = "El importe debe ser un número mayor a 0.";
         if (empty($vencimiento)) $errores[] = "La fecha de vencimiento es obligatoria.";
+
+        $parcelas_pagas = $this->model->obtenerParcelasPagasPorDeudo($id_deudo);
+
+        foreach ($parcelas_pagas as $parcela) {
+            if (!$parcela['id_parcela'] == $id_parcela) {
+                $errores[] = "El deudo seleccionado no tiene pagos activos en la parcela seleccionada.";
+                break;
+            }
+        }
 
         if (!$this->model->verificarParcelaOcupada($id_parcela)) {
             $errores[] = "La parcela seleccionada no está ocupada por ningún difunto.";
