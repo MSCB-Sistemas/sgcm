@@ -351,8 +351,9 @@
 </datalist>
 
 <div class="d-flex justify-content-end gap-2 mt-4">
-    <button type="submit" form="operacionForm" class="btn btn-success"><i class="bi bi-save"></i> Guardar
-        Operación</button>
+    <button type="submit" form="operacionForm" class="btn btn-success"><i class="bi bi-save"></i> 
+        Guardar Operación
+    </button>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
