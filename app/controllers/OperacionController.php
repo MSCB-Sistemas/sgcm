@@ -74,7 +74,10 @@ class OperacionController extends Control
                 return $this->procesarLibreDeuda($_POST);
             case 5:
                 return $this->procesarIngreso($_POST);
+            case 6:
+                return $this->procesarRenovacionPago($_POST);
             default:
+
                 return $this->index(['Tenes que seleccionar un tipo de operacion.'], $_POST);
         }
     }
@@ -276,6 +279,50 @@ class OperacionController extends Control
             PdfHelper::generarPlantilla($templatePath, $datos_pdf, "Comprobante-Ingreso-{$id_difunto}.pdf");
             exit;
 
+        } else {
+            return $this->index(['Error fatal al crear el registro de pago.'], $data);
+        }
+    }
+
+    private function procesarRenovacionPago($data)
+    {
+        $errores = [];
+        $id_parcela       = $data['id_parcela_rp'] ?? '';
+        $id_deudo         = $data['id_deudo_rp'] ?? '';
+        $fecha_operacion  = $data['fecha_renovacion_rp'] ?? date('Y-m-d');
+        $importe          = $data['importe_rp'] ?? '';
+        $vencimiento      = $data['fecha_vencimiento_rp'] ?? '';
+
+        if (empty($id_parcela)) $errores[] = "Debe seleccionar una parcela válida de la lista.";
+        if (empty($id_deudo))   $errores[] = "Debe seleccionar un deudo responsable.";
+        if (!is_numeric($importe) || $importe <= 0) $errores[] = "El importe debe ser un número mayor a 0.";
+        if (empty($vencimiento)) $errores[] = "La fecha de vencimiento es obligatoria.";
+
+        if (!$this->model->verificarParcelaOcupada($id_parcela)) {
+            $errores[] = "La parcela seleccionada no está ocupada por ningún difunto.";
+        }
+        
+        if (!empty($errores)) {
+            return $this->index($errores, $data);
+        }
+
+        $total = floatval($importe) + (floatval($importe) * (floatval($data['recargo_rp'] ?? 0) / 100));
+        $nuevo_pago = $this->model->crearNuevoPago($id_deudo, $id_parcela, 6, $fecha_operacion, $vencimiento, $importe, $data['recargo_rp'] ?? 0, $total, $_SESSION['usuario_id']);
+        
+        if ($nuevo_pago) {
+            $datos_pdf = $this->model->getDatosParaPdfRenovacion($id_parcela, $id_deudo, $nuevo_pago);
+
+            if ($datos_pdf) {                
+                $datos_pdf['fecha_vencimiento'] = date('d/m/Y', strtotime($datos_pdf['fecha_vencimiento']));
+                $datos_pdf['fecha_pago'] = date('d/m/Y', strtotime($datos_pdf['fecha_pago']));
+
+                $templatePath = __DIR__ . '/../../docs/COMPROBANTERENOVACION.html';
+                
+                PdfHelper::generarPlantilla($templatePath, $datos_pdf, "RenovacionPago-{$id_parcela}.pdf");
+                exit;
+            } else {
+                return $this->index(['Error al obtener los datos para el comprobante de pago.'], $data);
+            }
         } else {
             return $this->index(['Error fatal al crear el registro de pago.'], $data);
         }
