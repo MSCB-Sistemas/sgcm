@@ -150,8 +150,9 @@
                     title: 'Ubicación / Parcela',
                     render: function(data, type, row) {
                         return `<div class="lh-sm">
-                                    <span class="badge border text-dark bg-light mb-1">${row.tipo_nombre || 'S/T'}</span><br>
-                                    <small class="text-secondary">ID interno: ${row.id_parcela}</small><br>
+                                    <span class="badge border text-dark bg-light mb-1">${row.tipo_nombre || 'S/T'} </span><br>
+                                    <span class="badge border text-dark bg-light mb-1">ID INTERNO: ${row.id_parcela || 'S/T'} </span><br>
+                                    <small class="text-secondary">Numero ubicacion: ${row.numero_ubicacion || '-'} </small><br>
                                     <small class="text-muted">Seccion: ${row.seccion || '-'} Hilera: ${row.hilera || '-'} Nivel: ${row.numero_ubicacion || '-'}</small>
                                 </div>`;
                     }

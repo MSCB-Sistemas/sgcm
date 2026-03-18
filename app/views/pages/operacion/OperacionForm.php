@@ -401,29 +401,99 @@
             input.addEventListener('change', function () {
                 const id = document.getElementById(hiddenId).value;
                 const accordion = document.getElementById(accordionId);
+              
+            if (!id) {
+                accordion.innerHTML = '';
+                return;
+            }
+            
+            accordion.innerHTML = '<div class="text-center p-3"><div class="spinner-border text-primary" role="status"></div></div>';
 
-                if (!id) {
-                    accordion.innerHTML = '';
-                    return;
-                }
+            fetch(urlTemplate + id)
+                .then(res => {
+                    if (!res.ok) throw new Error('Error en la respuesta del servidor');
+                    return res.json();
+                })
+                .then(data => {
+                    let pagosHtml = `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePagos">Pagos Asociados (${data.pagos.length})</button></h2><div id="collapsePagos" class="accordion-collapse collapse show"><div class="accordion-body p-0">`;
+                    if (data.pagos.length > 0) {
+                        pagosHtml += `<table class="table table-sm table-striped mb-0"><thead><tr><th>Fecha Pago</th><th>Vencimiento</th><th>Total</th><th>Deudo</th></tr></thead><tbody>`;
+                        data.pagos.forEach(p => {
+                            pagosHtml += `<tr><td>${p.fecha_pago}</td><td>${p.fecha_vencimiento}</td><td>ARS ${p.total}</td><td>${p.Deudo}</td></tr>`;
+                        });
+                        pagosHtml += `</tbody></table>`;
+                    } else {
+                        pagosHtml += `<p class="text-center text-muted p-3">No hay pagos asociados.</p>`;
+                    }
+                    pagosHtml += `</div></div></div>`;
 
-                accordion.innerHTML = '<div class="text-center p-3"><div class="spinner-border text-primary" role="status"></div></div>';
+                    let difuntosHtml = `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDifuntos">Difuntos Asociados (${data.difuntos.length})</button></h2><div id="collapseDifuntos" class="accordion-collapse collapse"><div class="accordion-body p-0">`;
+                    if (data.difuntos.length > 0) {
+                         difuntosHtml += `<table class="table table-sm table-striped mb-0"><thead><tr><th>DNI</th><th>Nombre</th><th>Apellido</th><th>Fecha Ubicación</th></tr></thead><tbody>`;
+                        data.difuntos.forEach(d => {
+                            difuntosHtml += `<tr><td>${d.dni}</td><td>${d.nombre}</td><td>${d.apellido}</td><td>${d.fecha_ubicacion}</td></tr>`;
+                        });
+                        difuntosHtml += `</tbody></table>`;
+                    } else {
+                        difuntosHtml += `<p class="text-center text-muted p-3">No hay difuntos asociados.</p>`;
+                    }
+                    difuntosHtml += `</div></div></div>`;
 
-                fetch(urlTemplate + id)
-                    .then(res => {
-                        if (!res.ok) throw new Error('Error en la respuesta del servidor');
-                        return res.json();
-                    })
-                    .then(data => {
-                        let pagosHtml = `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePagos">Pagos Asociados (${data.pagos.length})</button></h2><div id="collapsePagos" class="accordion-collapse collapse show"><div class="accordion-body p-0">`;
-                        if (data.pagos.length > 0) {
-                            pagosHtml += `<table class="table table-sm table-striped mb-0"><thead><tr><th>Fecha Pago</th><th>Vencimiento</th><th>Total</th><th>Deudo</th></tr></thead><tbody>`;
-                            data.pagos.forEach(p => {
-                                pagosHtml += `<tr><td>${p.fecha_pago}</td><td>${p.fecha_vencimiento}</td><td>ARS ${p.total}</td><td>${p.Deudo}</td></tr>`;
-                            });
-                            pagosHtml += `</tbody></table>`;
-                        } else {
-                            pagosHtml += `<p class="text-center text-muted p-3">No hay pagos asociados.</p>`;
+                    accordion.innerHTML = pagosHtml + difuntosHtml;
+                })
+                .catch(err => {
+                    console.error("Error al cargar info dinámica:", err);
+                    accordion.innerHTML = `<div class="alert alert-danger">Error al cargar los detalles.</div>`;
+                });
+        });
+    }
+
+    function configurarModalAjax(modalId, formId) {
+        const form = document.getElementById(formId);
+        const modalEl = document.getElementById(modalId);
+        if (!form || !modalEl) return;
+
+        let inputActivo = null;
+
+        modalEl.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+
+            if (button) {
+                const container = button.closest('.input-group') || button.parentElement;
+                inputActivo = container ? container.querySelector('input[list]') : null;
+            }
+        });
+
+        form.addEventListener('submit', function(e) {
+            
+            if (!form.checkValidity()) {
+            e.preventDefault();
+            e.stopPropagation();
+            form.classList.add('was-validated');
+            return;
+    }
+            e.preventDefault();
+            const formData = new FormData(form);
+            const url = form.getAttribute('action');
+
+            fetch(url, { method: 'POST', body: formData, headers: {'X-Requested-With': 'XMLHttpRequest'} })
+            .then(response => {
+                return response.json().then(data => ({ ok: response.ok, data: data }));
+            })
+            .then(({ ok, data }) => {
+                if (ok && data.success) {
+                    const datalistId = modalId.replace('modal', '').toLowerCase() + 's';
+                    const datalist = document.getElementById(datalistId);
+                    
+                    if (datalist && data.newItem) {
+                        const option = document.createElement('option');
+                        option.value = data.newItem.text;
+                        option.dataset.id = data.newItem.id;
+                        datalist.appendChild(option);
+
+                        if (inputActivo) {
+                            inputActivo.value = data.newItem.text;
+                            inputActivo.dataset.id = data.newItem.id;
                         }
                         pagosHtml += `</div></div></div>`;
 
