@@ -358,6 +358,8 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        
+        // --- 1. FUNCIÓN AUTOCOMPLETADO ---
         function configurarAutocompletado(inputId, hiddenId, datalistId) {
             const input = document.getElementById(inputId);
             const hidden = document.getElementById(hiddenId);
@@ -368,14 +370,11 @@
             input.addEventListener('input', () => {
                 hidden.value = '';
                 const valorInputNormalizado = normalizeText(input.value);
-
                 if (valorInputNormalizado === '') return;
 
                 const options = document.querySelectorAll(`#${datalistId} option`);
-
                 for (const option of options) {
                     const valorOpcionNormalizado = normalizeText(option.value);
-
                     if (valorOpcionNormalizado === valorInputNormalizado) {
                         hidden.value = option.dataset.id;
                         input.setCustomValidity("");
@@ -394,6 +393,7 @@
             });
         }
 
+        // --- 2. FUNCIÓN INFO DINÁMICA (ACCORDEON) ---
         function configurarInfoDinamica(inputId, hiddenId, urlTemplate, accordionId) {
             const input = document.getElementById(inputId);
             if (!input) return;
@@ -401,105 +401,35 @@
             input.addEventListener('change', function () {
                 const id = document.getElementById(hiddenId).value;
                 const accordion = document.getElementById(accordionId);
-              
-            if (!id) {
-                accordion.innerHTML = '';
-                return;
-            }
-            
-            accordion.innerHTML = '<div class="text-center p-3"><div class="spinner-border text-primary" role="status"></div></div>';
+                
+                if (!id) {
+                    accordion.innerHTML = '';
+                    return;
+                }
+                
+                accordion.innerHTML = '<div class="text-center p-3"><div class="spinner-border text-primary" role="status"></div></div>';
 
-            fetch(urlTemplate + id)
-                .then(res => {
-                    if (!res.ok) throw new Error('Error en la respuesta del servidor');
-                    return res.json();
-                })
-                .then(data => {
-                    let pagosHtml = `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePagos">Pagos Asociados (${data.pagos.length})</button></h2><div id="collapsePagos" class="accordion-collapse collapse show"><div class="accordion-body p-0">`;
-                    if (data.pagos.length > 0) {
-                        pagosHtml += `<table class="table table-sm table-striped mb-0"><thead><tr><th>Fecha Pago</th><th>Vencimiento</th><th>Total</th><th>Deudo</th></tr></thead><tbody>`;
-                        data.pagos.forEach(p => {
-                            pagosHtml += `<tr><td>${p.fecha_pago}</td><td>${p.fecha_vencimiento}</td><td>ARS ${p.total}</td><td>${p.Deudo}</td></tr>`;
-                        });
-                        pagosHtml += `</tbody></table>`;
-                    } else {
-                        pagosHtml += `<p class="text-center text-muted p-3">No hay pagos asociados.</p>`;
-                    }
-                    pagosHtml += `</div></div></div>`;
-
-                    let difuntosHtml = `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDifuntos">Difuntos Asociados (${data.difuntos.length})</button></h2><div id="collapseDifuntos" class="accordion-collapse collapse"><div class="accordion-body p-0">`;
-                    if (data.difuntos.length > 0) {
-                         difuntosHtml += `<table class="table table-sm table-striped mb-0"><thead><tr><th>DNI</th><th>Nombre</th><th>Apellido</th><th>Fecha Ubicación</th></tr></thead><tbody>`;
-                        data.difuntos.forEach(d => {
-                            difuntosHtml += `<tr><td>${d.dni}</td><td>${d.nombre}</td><td>${d.apellido}</td><td>${d.fecha_ubicacion}</td></tr>`;
-                        });
-                        difuntosHtml += `</tbody></table>`;
-                    } else {
-                        difuntosHtml += `<p class="text-center text-muted p-3">No hay difuntos asociados.</p>`;
-                    }
-                    difuntosHtml += `</div></div></div>`;
-
-                    accordion.innerHTML = pagosHtml + difuntosHtml;
-                })
-                .catch(err => {
-                    console.error("Error al cargar info dinámica:", err);
-                    accordion.innerHTML = `<div class="alert alert-danger">Error al cargar los detalles.</div>`;
-                });
-        });
-    }
-
-    function configurarModalAjax(modalId, formId) {
-        const form = document.getElementById(formId);
-        const modalEl = document.getElementById(modalId);
-        if (!form || !modalEl) return;
-
-        let inputActivo = null;
-
-        modalEl.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
-
-            if (button) {
-                const container = button.closest('.input-group') || button.parentElement;
-                inputActivo = container ? container.querySelector('input[list]') : null;
-            }
-        });
-
-        form.addEventListener('submit', function(e) {
-            
-            if (!form.checkValidity()) {
-            e.preventDefault();
-            e.stopPropagation();
-            form.classList.add('was-validated');
-            return;
-    }
-            e.preventDefault();
-            const formData = new FormData(form);
-            const url = form.getAttribute('action');
-
-            fetch(url, { method: 'POST', body: formData, headers: {'X-Requested-With': 'XMLHttpRequest'} })
-            .then(response => {
-                return response.json().then(data => ({ ok: response.ok, data: data }));
-            })
-            .then(({ ok, data }) => {
-                if (ok && data.success) {
-                    const datalistId = modalId.replace('modal', '').toLowerCase() + 's';
-                    const datalist = document.getElementById(datalistId);
-                    
-                    if (datalist && data.newItem) {
-                        const option = document.createElement('option');
-                        option.value = data.newItem.text;
-                        option.dataset.id = data.newItem.id;
-                        datalist.appendChild(option);
-
-                        if (inputActivo) {
-                            inputActivo.value = data.newItem.text;
-                            inputActivo.dataset.id = data.newItem.id;
+                fetch(urlTemplate + id)
+                    .then(res => {
+                        if (!res.ok) throw new Error('Error en la respuesta del servidor');
+                        return res.json();
+                    })
+                    .then(data => {
+                        let pagosHtml = `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePagos">Pagos Asociados (${data.pagos.length})</button></h2><div id="collapsePagos" class="accordion-collapse collapse show"><div class="accordion-body p-0">`;
+                        if (data.pagos.length > 0) {
+                            pagosHtml += `<table class="table table-sm table-striped mb-0"><thead><tr><th>Fecha Pago</th><th>Vencimiento</th><th>Total</th><th>Deudo</th></tr></thead><tbody>`;
+                            data.pagos.forEach(p => {
+                                pagosHtml += `<tr><td>${p.fecha_pago}</td><td>${p.fecha_vencimiento}</td><td>ARS ${p.total}</td><td>${p.Deudo}</td></tr>`;
+                            });
+                            pagosHtml += `</tbody></table>`;
+                        } else {
+                            pagosHtml += `<p class="text-center text-muted p-3">No hay pagos asociados.</p>`;
                         }
                         pagosHtml += `</div></div></div>`;
 
                         let difuntosHtml = `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDifuntos">Difuntos Asociados (${data.difuntos.length})</button></h2><div id="collapseDifuntos" class="accordion-collapse collapse"><div class="accordion-body p-0">`;
                         if (data.difuntos.length > 0) {
-                            difuntosHtml += `<table class="table table-sm table-striped mb-0"><thead><tr><th>DNI</th><th>Nombre</th><th>Apellido</th><th>Fecha Ubicación</th></tr></thead><tbody>`;
+                             difuntosHtml += `<table class="table table-sm table-striped mb-0"><thead><tr><th>DNI</th><th>Nombre</th><th>Apellido</th><th>Fecha Ubicación</th></tr></thead><tbody>`;
                             data.difuntos.forEach(d => {
                                 difuntosHtml += `<tr><td>${d.dni}</td><td>${d.nombre}</td><td>${d.apellido}</td><td>${d.fecha_ubicacion}</td></tr>`;
                             });
@@ -518,7 +448,8 @@
             });
         }
 
-        function configurarModalAjax(modalId, formId) {
+        // --- 3. FUNCIÓN MODALES AJAX (GUARDADO) ---
+        function configurarModalAjax(modalId, formId, datalistId) {
             const form = document.getElementById(formId);
             const modalEl = document.getElementById(modalId);
             if (!form || !modalEl) return;
@@ -527,7 +458,6 @@
 
             modalEl.addEventListener('show.bs.modal', function (event) {
                 const button = event.relatedTarget;
-
                 if (button) {
                     const container = button.closest('.input-group') || button.parentElement;
                     inputActivo = container ? container.querySelector('input[list]') : null;
@@ -536,18 +466,21 @@
 
             form.addEventListener('submit', function (e) {
                 e.preventDefault();
+                
+                if (!form.checkValidity()) {
+                    e.stopPropagation();
+                    form.classList.add('was-validated');
+                    return;
+                }
+                
                 const formData = new FormData(form);
                 const url = form.getAttribute('action');
 
                 fetch(url, { method: 'POST', body: formData, headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-                    .then(response => {
-                        return response.json().then(data => ({ ok: response.ok, data: data }));
-                    })
+                    .then(response => response.json().then(data => ({ ok: response.ok, data: data })))
                     .then(({ ok, data }) => {
                         if (ok && data.success) {
-                            const datalistId = modalId.replace('modal', '').toLowerCase() + 's';
                             const datalist = document.getElementById(datalistId);
-
                             if (datalist && data.newItem) {
                                 const option = document.createElement('option');
                                 option.value = data.newItem.text;
@@ -556,27 +489,29 @@
 
                                 if (inputActivo) {
                                     inputActivo.value = data.newItem.text;
-                                    inputActivo.dataset.id = data.newItem.id;
+                                    const hiddenId = inputActivo.id.replace('search', 'id');
+                                    const hidden = document.getElementById(hiddenId);
+                                    if(hidden) hidden.value = data.newItem.id;
                                 }
                             }
-
                             const modal = bootstrap.Modal.getInstance(modalEl);
                             modal.hide();
                             form.reset();
+                            form.classList.remove('was-validated');
                             alert(data.mensaje || 'Creado con éxito.');
-
                         } else {
-                            const errorMsg = data.errors ? data.errors.join('\n') : 'Ocurrió un error desconocido.';
+                            const errorMsg = data.errors ? data.errors.join('\n') : 'Ocurrió un error.';
                             alert('No se pudo guardar:\n' + errorMsg);
                         }
                     })
                     .catch(error => {
-                        console.error('Error de conexión o JSON inválido:', error);
-                        alert('Ocurrió un error de comunicación. Revisa la consola para más detalles.');
+                        console.error('Error:', error);
+                        alert('Error de comunicación.');
                     });
             });
         }
 
+        // --- 4. SELECTOR DE OPERACIONES ---
         const selectorOperacion = document.getElementById('tipo_operacion_selector');
         if (selectorOperacion) {
             selectorOperacion.addEventListener('change', function () {
@@ -590,6 +525,7 @@
             });
         }
 
+        // --- 5. CONFIGURACIÓN DE AUTOCOMPLETADOS ---
         configurarAutocompletado('difunto_search_ti', 'id_difunto_ti', 'difuntos');
         configurarAutocompletado('parcela_search_ti', 'id_parcela_ti', 'parcelas');
         configurarAutocompletado('deudo_search_ti', 'id_deudo_ti', 'deudos');
@@ -599,34 +535,24 @@
         configurarAutocompletado('deudo_search_br', 'id_deudo_br', 'deudos');
         configurarAutocompletado('parcela_search_ld', 'id_parcela_ld', 'parcelas');
         configurarAutocompletado('deudo_search_ld', 'id_deudo_ld', 'deudos');
-        configurarAutocompletado('deudo_search_in_modal', 'id_deudo_in_modal', 'deudos');
-        configurarAutocompletado('deudo_search_in_modal_parcela', 'id_deudo_in_modal_parcela', 'deudos');
         configurarAutocompletado('difunto_search_in', 'id_difunto_in', 'difuntos');
         configurarAutocompletado('parcela_search_in', 'id_parcela_in', 'parcelas');
-        configurarAutocompletado('deudo_search_in', 'id_deudo_in', 'deudos');
         configurarAutocompletado('deudo_search_rp', 'id_deudo_rp', 'deudos');
         configurarAutocompletado('parcela_search_rp', 'id_parcela_rp', 'parcelasOcupadas');
 
+        // --- 6. INFO DINÁMICA ---
         const urlInfoParcela = "<?= URL ?>parcela/obtenerInfoParcela/";
         configurarInfoDinamica('parcela_search_ti', 'id_parcela_ti', urlInfoParcela, 'accordionParcelaInfo');
         configurarInfoDinamica('parcela_search_br', 'id_parcela_br', urlInfoParcela, 'accordionParcelaInfo');
         configurarInfoDinamica('parcela_search_ld', 'id_parcela_ld', urlInfoParcela, 'accordionParcelaInfo');
         configurarInfoDinamica('parcela_search_rp', 'id_parcela_rp', urlInfoParcela, 'accordionParcelaInfo');
 
-        const getActiveTargets = (baseName) => {
-            const seccionActiva = document.querySelector('.seccion-operacion[style*="block"]');
-            if (!seccionActiva) return null;
-            const prefix = seccionActiva.id.split('-')[1];
-            return {
-                inputId: `${baseName}_search_${prefix}`,
-                hiddenId: `id_${baseName}_${prefix}`
-            };
-        };
-
+        // --- 7. MODALES ---
         configurarModalAjax('modalDifunto', 'formNuevoDifunto', 'difuntos');
         configurarModalAjax('modalParcela', 'formNuevaParcela', 'parcelas');
         configurarModalAjax('modalDeudo', 'formNuevoDeudo', 'deudos');
 
+        // --- 8. CÁLCULOS DE TOTALES ---
         function configurarCalculoTotal(prefix) {
             const monto = document.getElementById(`importe_${prefix}`);
             const recargo = document.getElementById(`recargo_${prefix}`);
@@ -643,9 +569,6 @@
             if (recargo) recargo.addEventListener("input", calcular);
         }
 
-        configurarCalculoTotal('ti');
-        configurarCalculoTotal('br');
-        configurarCalculoTotal('in');
-        configurarCalculoTotal('rp');
+        ['ti', 'br', 'in', 'rp'].forEach(configurarCalculoTotal);
     });
 </script>
