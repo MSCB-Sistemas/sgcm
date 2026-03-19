@@ -54,7 +54,7 @@
                     <div class="col-md-6">
                         <label class="form-label">Parcela de Destino (debe estar vacía)</label>
                         <div class="input-group">
-                            <input list="parcelas" id="parcela_search_ti" class="form-control"
+                            <input list="parcelasDisponibles" id="parcela_search_ti" class="form-control"
                                 placeholder="Buscar parcela de destino...">
                             <input type="hidden" name="id_parcela_ti" id="id_parcela_ti">
                             <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
@@ -113,7 +113,7 @@
                     <div class="col-md-6">
                         <label class="form-label">Parcela Asignada (debe estar vacía)</label>
                         <div class="input-group">
-                            <input list="parcelas" id="parcela_search_br" class="form-control"
+                            <input list="parcelasDisponibles" id="parcela_search_br" class="form-control"
                                 placeholder="Buscar parcela...">
                             <input type="hidden" name="id_parcela_br" id="id_parcela_br">
                             <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
@@ -170,7 +170,7 @@
                     <div class="col-md-6">
                         <label class="form-label">Parcela de Destino (debe estar vacía)</label>
                         <div class="input-group">
-                            <input list="parcelas" id="parcela_search_in" class="form-control"
+                            <input list="parcelasDisponibles" id="parcela_search_in" class="form-control"
                                 placeholder="Buscar parcela...">
                             <input type="hidden" name="id_parcela_in" id="id_parcela_in">
                             <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
@@ -226,7 +226,7 @@
     </div>
 </div>
 
-<datalist id="parcelas">
+<datalist id="parcelasDisponibles">
     <?php foreach ($datos['parcelasDisponibles'] as $p): ?>
         <?php
         $texto_parcela = "ID: ";
@@ -535,7 +535,7 @@
         // --- 5. CONFIGURACIÓN DE AUTOCOMPLETADOS ---
         // Traslado Interno (TI)
         configurarAutocompletado('difunto_search_ti', 'id_difunto_ti', 'difuntos');
-        configurarAutocompletado('parcela_search_ti', 'id_parcela_ti', 'parcelas');
+        configurarAutocompletado('parcela_search_ti', 'id_parcela_ti', 'parcelasDisponibles');
         configurarAutocompletado('deudo_search_ti', 'id_deudo_ti', 'deudos');
 
         // Traslado Externo (TE)
@@ -543,16 +543,16 @@
 
         // Persona bajos recursos (BR)
         configurarAutocompletado('difunto_search_br', 'id_difunto_br', 'difuntos');
-        configurarAutocompletado('parcela_search_br', 'id_parcela_br', 'parcelas');
+        configurarAutocompletado('parcela_search_br', 'id_parcela_br', 'parcelasDisponibles');
         configurarAutocompletado('deudo_search_br', 'id_deudo_br', 'deudos');
 
         // Libre de deuda (LD)
-        configurarAutocompletado('parcela_search_ld', 'id_parcela_ld', 'parcelas');
+        configurarAutocompletado('parcela_search_ld', 'id_parcela_ld', 'parcelasOcupadas');
         configurarAutocompletado('deudo_search_ld', 'id_deudo_ld', 'deudos');
 
         // Ingreso de Difunto (IN)
         configurarAutocompletado('difunto_search_in', 'id_difunto_in', 'difuntos');
-        configurarAutocompletado('parcela_search_in', 'id_parcela_in', 'parcelas');
+        configurarAutocompletado('parcela_search_in', 'id_parcela_in', 'parcelasDisponibles');
         configurarAutocompletado('deudo_search_in', 'id_deudo_in', 'deudos');
 
         // Renovacion de Pago (RP)

@@ -212,7 +212,8 @@ class OperacionController extends Control
         $id_parcela = $data['id_parcela_ld'];   
         $id_deudo = $data['id_deudo_ld'];   
 
-        if (!$id_parcela || !$id_deudo) $errores[] = "Debe seleccionar un deudo y parcela para verificar su estado de deuda.";
+        if (!$id_parcela) $errores[] = "Debe seleccionar una parcela para verificar su estado de deuda.";
+        if (!$id_deudo) $errores[] = "Debe seleccionar un deudo para verificar su estado de deuda.";
         
         if (!empty($errores)) return $this->index($errores, $data);
         
