@@ -126,6 +126,7 @@ if (!function_exists('renderIcon')) {
             <?= ucfirst($_SESSION['usuario_nombre'])." ".ucfirst($_SESSION['usuario_apellido']); ?>
         </a>
         <ul class="dropdown-menu text-small shadow">
+            <li><a class="dropdown-item" href="<?= URL ?>usuario/changePass/<?= $_SESSION['usuario_id'] ?>">Cambiar contraseña</a></li>
             <li><button class="dropdown-item" id="toggleTheme">Cambiar tema</button></li>
             <li><a class="dropdown-item text-danger" href="<?= URL ?>logout">Cerrar sesión</a></li>
         </ul>

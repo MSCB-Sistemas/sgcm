@@ -33,6 +33,7 @@ class UsuarioController extends Control{
                 if ($puedeEditar) 
                 {
                     $html .= '<a href="'.$url.'/edit/'.$id.'" class="btn btn-sm btn-primary">Editar</a> ';
+                    $html .= '<a href="'.$url.'/changePass/'.$id.'" class="btn btn-sm btn-warning">Cambiar Clave</a> ';
                     $html .= '<form action="'.$url.'/activate/'.$id.'" method="post" style="display:inline">'
                           .  '<button class="btn btn-sm btn-success" onclick="return confirm(\'¿Activar este usuario?\');">Activar</button>'
                           .  '</form> ';
@@ -294,12 +295,18 @@ class UsuarioController extends Control{
         }
 
         $contrasenia = trim($_POST["password"]);
+        $confirmacion = trim($_POST["password_confirmar"]);
 
         $errores = [];
         if (empty($contrasenia)) 
         {
             $errores[] = "El campo nueva contrasenia es obligatorio.";
         }
+
+        if($contrasenia !== $confirmacion){
+            $errores[] = "La confirmación de la contraseña no coincide.";
+        }
+
         if (!empty($errores)) {
             $this->loadView("usuarios/UsuarioFormPass", [
                 'title'     => 'Cambiar clave',
@@ -310,6 +317,7 @@ class UsuarioController extends Control{
         }
 
         $hash = password_hash($contrasenia, PASSWORD_DEFAULT);
+        
         if ($this->model->updatePassword($id, $hash)) {
             $_SESSION['flash_ok'] = 'Contraseña actualizada.';
             $this->redirect('usuario');
