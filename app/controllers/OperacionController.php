@@ -22,11 +22,11 @@ class OperacionController extends Control
         $this->deudoModel = $this->loadModel('DeudoModel');
         $this->difuntoModel = $this->loadModel('DifuntoModel');
         $this->tipoOperacionModel = $this->loadModel('TipoOperacionModel');
-        $this->sexoModel          = $this->loadModel("SexoModel");
-        $this->nacionalidadesModel= $this->loadModel("NacionalidadesModel");
-        $this->estadoCivilModel   = $this->loadModel("EstadoCivilModel");
-        $this->tipoParcelaModel   = $this->loadModel("TipoParcelaModel");
-        $this->orientacionModel   = $this->loadModel("OrientacionModel");
+        $this->sexoModel = $this->loadModel("SexoModel");
+        $this->nacionalidadesModel = $this->loadModel("NacionalidadesModel");
+        $this->estadoCivilModel = $this->loadModel("EstadoCivilModel");
+        $this->tipoParcelaModel = $this->loadModel("TipoParcelaModel");
+        $this->orientacionModel = $this->loadModel("OrientacionModel");
     }
 
     public function index($errores = [], $values = [])
@@ -39,11 +39,11 @@ class OperacionController extends Control
             'parcelasOcupadas' => $this->parcelaModel->getParcelasOcupadas(),
             'deudos' => $this->deudoModel->getAllDeudos(),
             'difuntos' => $this->difuntoModel->getAllDifuntos(),
-            'sexos'            => $this->sexoModel->getAllSexos(),
-            'nacionalidades'   => $this->nacionalidadesModel->getAllNacionalidades(),
-            'estados_civiles'  => $this->estadoCivilModel->getAllEstadosCiviles(),
-            'tipos_parcelas'   => $this->tipoParcelaModel->getAllTiposParcelas(),
-            'orientaciones'    => $this->orientacionModel->getAllOrientaciones(),
+            'sexos' => $this->sexoModel->getAllSexos(),
+            'nacionalidades' => $this->nacionalidadesModel->getAllNacionalidades(),
+            'estados_civiles' => $this->estadoCivilModel->getAllEstadosCiviles(),
+            'tipos_parcelas' => $this->tipoParcelaModel->getAllTiposParcelas(),
+            'orientaciones' => $this->orientacionModel->getAllOrientaciones(),
             'values' => $values,
             'errores' => $errores
         ];
@@ -59,7 +59,8 @@ class OperacionController extends Control
 
         if (isset($_POST['tipo_operacion'])) {
             $tipo_operacion_id = $_POST['tipo_operacion'];
-        } else {
+        }
+        else {
             $tipo_operacion_id = 0;
         }
 
@@ -85,21 +86,29 @@ class OperacionController extends Control
     private function procesarTrasladoInterno($data)
     {
         $errores = [];
-        $id_difunto       = $data['id_difunto_ti'];
+        $id_difunto = $data['id_difunto_ti'];
         $id_parcela_nueva = $data['id_parcela_ti'];
-        $id_deudo         = $data['id_deudo_ti'];
-        if (isset($data['fecha_traslado_ti'])) { $fecha_operacion = $data['fecha_traslado_ti']; } else { $fecha_operacion = date('Y-m-d'); }
-        $importe          = $data['importe_ti'];
-        $vencimiento      = $data['fecha_vencimiento_ti'];
+        $id_deudo = $data['id_deudo_ti'];
+        if (isset($data['fecha_traslado_ti'])) {
+            $fecha_operacion = $data['fecha_traslado_ti'];
+        }
+        else {
+            $fecha_operacion = date('Y-m-d');
+        }
+        $importe = $data['importe_ti'];
+        $vencimiento = $data['fecha_vencimiento_ti'];
 
         if (!$id_difunto || !$id_parcela_nueva || !$id_deudo || !is_numeric($importe) || !$vencimiento) {
             $errores[] = "Para un Traslado Interno, todos los campos son obligatorios.";
-        } else {
-            $ubicacion_actual = $this->model->obtenerUbicacionActual($id_difunto);
-            if (!$ubicacion_actual) $errores[] = "El difunto no tiene una ubicación activa para trasladar.";
-            if ($this->model->verificarParcelaOcupada($id_parcela_nueva)) $errores[] = "La parcela de destino ya está ocupada.";
         }
-        
+        else {
+            $ubicacion_actual = $this->model->obtenerUbicacionActual($id_difunto);
+            if (!$ubicacion_actual)
+                $errores[] = "El difunto no tiene una ubicación activa para trasladar.";
+            if ($this->model->verificarParcelaOcupada($id_parcela_nueva))
+                $errores[] = "La parcela de destino ya está ocupada.";
+        }
+
         if (!empty($errores)) {
             return $this->index($errores, $data);
         }
@@ -107,7 +116,7 @@ class OperacionController extends Control
         $ubicacion_actual = $this->model->obtenerUbicacionActual($id_difunto);
         $this->model->actualizarFechaRetiro($ubicacion_actual['id_ubicacion_difunto'], $fecha_operacion);
         $this->model->crearNuevaUbicacion($id_difunto, $id_parcela_nueva, $fecha_operacion);
-        
+
         $recargo = 0;
         if (isset($data['recargo_ti'])) {
             $recargo = $data['recargo_ti'];
@@ -116,7 +125,7 @@ class OperacionController extends Control
         $total = floatval($importe) + (floatval($importe) * (floatval($recargo) / 100));
 
         $nuevo_ingreso = $this->model->crearNuevoPago($id_deudo, $id_parcela_nueva, 1, $fecha_operacion, $vencimiento, $importe, $recargo, $total, $_SESSION['usuario_id']);
-        
+
         if ($nuevo_ingreso) {
             $datos_pdf = $this->model->getDatosParaPdfTraslado($id_difunto, $nuevo_ingreso);
 
@@ -124,13 +133,14 @@ class OperacionController extends Control
             $datos_pdf['fecha_pago'] = date('d/m/Y', strtotime($datos_pdf['fecha_pago']));
 
             $templatePath = __DIR__ . '/../../docs/AUTORIZACIONTRASLADOINTERNO.html';
-            
+
             PdfHelper::generarPlantilla($templatePath, $datos_pdf, "Traslado-{$id_difunto}.pdf");
-        } else {
+        }
+        else {
             return $this->index(['Error fatal al crear el registro de pago.'], $data);
         }
 
-        header('Location: ' . URL . 'operacion?exito=1'); 
+        header('Location: ' . URL . 'operacion?exito=1');
         exit;
     }
 
@@ -138,27 +148,36 @@ class OperacionController extends Control
     {
         $errores = [];
         $id_difunto = $data['id_difunto_te'];
-        if ($data['fecha_exhumacion_te']) { $fecha_operacion = $data['fecha_exhumacion_te']; } else { $fecha_operacion = date('Y-m-d'); }
+        if ($data['fecha_exhumacion_te']) {
+            $fecha_operacion = $data['fecha_exhumacion_te'];
+        }
+        else {
+            $fecha_operacion = date('Y-m-d');
+        }
 
-        if (!$id_difunto) $errores[] = "Para un traslado externo, debe seleccionar un difunto.";
-        
+        if (!$id_difunto)
+            $errores[] = "Para un traslado externo, debe seleccionar un difunto.";
+
         $ubicacion_actual = $id_difunto ? $this->model->obtenerUbicacionActual($id_difunto) : null;
-        if (!$ubicacion_actual) $errores[] = "El difunto seleccionado no tiene una ubicación activa para exhumar.";
-        
-        if (!empty($errores)) return $this->index($errores, $data);
+        if (!$ubicacion_actual)
+            $errores[] = "El difunto seleccionado no tiene una ubicación activa para exhumar.";
+
+        if (!empty($errores))
+            return $this->index($errores, $data);
 
         $this->model->actualizarFechaRetiro($ubicacion_actual['id_ubicacion_difunto'], $fecha_operacion);
 
         $datos_pdf = $this->model->getDatosParaPdfTrasladoExterno($id_difunto, $ubicacion_actual['id_parcela']);
-        
+
         if ($datos_pdf) {
             $datos_pdf['fecha_fallecimiento'] = date('d/m/Y', strtotime($datos_pdf['fecha_fallecimiento']));
             $datos_pdf['fecha_operacion'] = date('d/m/Y', strtotime($fecha_operacion));
-        
+
             $templatePath = __DIR__ . '/../../docs/AUTORIZACIONTRASLADOEXTERNO.html';
             PdfHelper::generarPlantilla($templatePath, $datos_pdf, "TrasladoExterno-{$id_difunto}.pdf");
             exit;
-        } else {
+        }
+        else {
             return $this->index(['Error fatal al obtener los datos para el certificado.'], $data);
         }
     }
@@ -168,15 +187,18 @@ class OperacionController extends Control
         $errores = [];
         $id_difunto = $data['id_difunto_br'];
         $id_parcela = $data['id_parcela_br'];
-        $id_deudo   = $data['id_deudo_br'];
+        $id_deudo = $data['id_deudo_br'];
         $vencimiento = $data['fecha_vencimiento_br'];
         $fecha_operacion = date('Y-m-d');
-        
 
-        if (!$id_difunto || !$id_parcela || !$id_deudo) $errores[] = "Debe seleccionar difunto, deudo y parcela.";
-        if (empty($vencimiento)) $errores[] = "Debe especificar una fecha de vencimiento.";
-        if ($this->model->verificarParcelaOcupada($id_parcela)) $errores[] = "La parcela ya está ocupada.";
-        
+
+        if (!$id_difunto || !$id_parcela || !$id_deudo)
+            $errores[] = "Debe seleccionar difunto, deudo y parcela.";
+        if (empty($vencimiento))
+            $errores[] = "Debe especificar una fecha de vencimiento.";
+        if ($this->model->verificarParcelaOcupada($id_parcela))
+            $errores[] = "La parcela ya está ocupada.";
+
         if (!empty($errores)) {
             return $this->index($errores, $data);
         }
@@ -193,15 +215,17 @@ class OperacionController extends Control
             if ($datos_pdf) {
                 $datos_pdf['fecha_operacion'] = date('d/m/Y', strtotime($fecha_operacion));
                 $datos_pdf['fecha_vencimiento'] = date('d/m/Y', strtotime($vencimiento));
-    
+
                 $templatePath = __DIR__ . '/../../docs/AUTORIZACIONPERSONASBAJOSRECURSOS.html';
                 PdfHelper::generarPlantilla($templatePath, $datos_pdf, "IngresoBR-{$id_difunto}.pdf");
                 exit;
-            } else {
+            }
+            else {
                 return $this->index(['Error al obtener los datos para el comprobante.'], $data);
             }
 
-        } catch (Exception $e) {
+        }
+        catch (Exception $e) {
             return $this->index(['Error al procesar el ingreso: ' . $e->getMessage()], $data);
         }
     }
@@ -209,14 +233,17 @@ class OperacionController extends Control
     private function procesarLibreDeuda($data)
     {
         $errores = [];
-        $id_parcela = $data['id_parcela_ld'];   
-        $id_deudo = $data['id_deudo_ld'];   
+        $id_parcela = $data['id_parcela_ld'];
+        $id_deudo = $data['id_deudo_ld'];
 
-        if (!$id_parcela) $errores[] = "Debe seleccionar una parcela para verificar su estado de deuda.";
-        if (!$id_deudo) $errores[] = "Debe seleccionar un deudo para verificar su estado de deuda.";
-        
-        if (!empty($errores)) return $this->index($errores, $data);
-        
+        if (!$id_parcela)
+            $errores[] = "Debe seleccionar una parcela para verificar su estado de deuda.";
+        if (!$id_deudo)
+            $errores[] = "Debe seleccionar un deudo para verificar su estado de deuda.";
+
+        if (!empty($errores))
+            return $this->index($errores, $data);
+
         $deuda = $this->model->obtenerDeudaPorDeudoYParcela($id_deudo, $id_parcela);
 
         if ($deuda) {
@@ -230,10 +257,8 @@ class OperacionController extends Control
             return $this->index(["No se encontraron datos para la parcela seleccionada."], $data);
         }
 
-        setlocale(LC_TIME, 'es_ES.UTF-8', 'es_ES', 'esp');
-        
-        $datos_pdf['fecha_vencimiento'] = $datos_pdf['fecha_vencimiento'] ? date('d \d\e F \d\e Y', strtotime($datos_pdf['fecha_vencimiento'])) : 'No registra pagos';
-        $datos_pdf['fecha_pago'] = date('d \d\e F \d\e Y');
+        $datos_pdf['fecha_vencimiento'] = $datos_pdf['fecha_vencimiento'] ? date('d/m/Y', strtotime($datos_pdf['fecha_vencimiento'])) : 'No registra pagos';
+        $datos_pdf['fecha_pago'] = date('d/m/Y');
 
         $templatePath = __DIR__ . '/../../docs/LIBREDEUDA.html';
         PdfHelper::generarPlantilla($templatePath, $datos_pdf, "LibreDeuda-{$id_parcela}.pdf");
@@ -243,32 +268,37 @@ class OperacionController extends Control
     private function procesarIngreso($data)
     {
         $errores = [];
-        $id_difunto       = $data['id_difunto_in'];
-        $id_parcela       = $data['id_parcela_in'];
-        $id_deudo         = $data['id_deudo_in'];
-        $fecha_operacion  = $data['fecha_ingreso_in'];
-        $importe          = $data['importe_in'];
-        $vencimiento      = $data['fecha_vencimiento_in'];
+        $id_difunto = $data['id_difunto_in'];
+        $id_parcela = $data['id_parcela_in'];
+        $id_deudo = $data['id_deudo_in'];
+        $fecha_operacion = $data['fecha_ingreso_in'];
+        $importe = $data['importe_in'];
+        $vencimiento = $data['fecha_vencimiento_in'];
 
-        if (empty($id_difunto)) $errores[] = "Debe seleccionar un difunto válido de la lista.";
-        if (empty($id_parcela)) $errores[] = "Debe seleccionar una parcela válida de la lista.";
-        if (empty($id_deudo))   $errores[] = "Debe seleccionar un deudo responsable.";
-        if (!is_numeric($importe) || $importe <= 0) $errores[] = "El importe debe ser un número mayor a 0.";
-        if (empty($vencimiento)) $errores[] = "La fecha de vencimiento es obligatoria.";
+        if (empty($id_difunto))
+            $errores[] = "Debe seleccionar un difunto válido de la lista.";
+        if (empty($id_parcela))
+            $errores[] = "Debe seleccionar una parcela válida de la lista.";
+        if (empty($id_deudo))
+            $errores[] = "Debe seleccionar un deudo responsable.";
+        if (!is_numeric($importe) || $importe <= 0)
+            $errores[] = "El importe debe ser un número mayor a 0.";
+        if (empty($vencimiento))
+            $errores[] = "La fecha de vencimiento es obligatoria.";
 
         if ($this->model->verificarParcelaOcupada($id_parcela)) {
             $errores[] = "La parcela seleccionada ya está ocupada.";
         }
-        
+
         if (!empty($errores)) {
             return $this->index($errores, $data);
         }
 
         $this->model->crearNuevaUbicacion($id_difunto, $id_parcela, $fecha_operacion);
-        
+
         $total = floatval($importe) + (floatval($importe) * (floatval($data['recargo_in'] ?? 0) / 100));
         $nuevo_pago = $this->model->crearNuevoPago($id_deudo, $id_parcela, 5, $fecha_operacion, $vencimiento, $importe, $data['recargo_in'] ?? 0, $total, $_SESSION['usuario_id']);
-        
+
         if ($nuevo_pago) {
             $datos_pdf = $this->model->getDatosParaPdfIngresoDifunto($id_difunto, $nuevo_pago);
 
@@ -276,11 +306,12 @@ class OperacionController extends Control
             $datos_pdf['fecha_pago'] = date('d/m/Y', strtotime($datos_pdf['fecha_pago']));
 
             $templatePath = __DIR__ . '/../../docs/AUTORIZACIONINGRESO.html';
-            
+
             PdfHelper::generarPlantilla($templatePath, $datos_pdf, "Comprobante-Ingreso-{$id_difunto}.pdf");
             exit;
 
-        } else {
+        }
+        else {
             return $this->index(['Error fatal al crear el registro de pago.'], $data);
         }
     }
@@ -288,43 +319,49 @@ class OperacionController extends Control
     private function procesarRenovacionPago($data)
     {
         $errores = [];
-        $id_parcela       = $data['id_parcela_rp'] ?? '';
-        $id_deudo         = $data['id_deudo_rp'] ?? '';
-        $fecha_operacion  = $data['fecha_renovacion_rp'] ?? date('Y-m-d');
-        $importe          = $data['importe_rp'] ?? '';
-        $vencimiento      = $data['fecha_vencimiento_rp'] ?? '';
+        $id_parcela = $data['id_parcela_rp'] ?? '';
+        $id_deudo = $data['id_deudo_rp'] ?? '';
+        $fecha_operacion = $data['fecha_renovacion_rp'] ?? date('Y-m-d');
+        $importe = $data['importe_rp'] ?? '';
+        $vencimiento = $data['fecha_vencimiento_rp'] ?? '';
 
-        if (empty($id_parcela)) $errores[] = "Debe seleccionar una parcela válida de la lista.";
-        if (empty($id_deudo))   $errores[] = "Debe seleccionar un deudo responsable.";
-        if (!is_numeric($importe) || $importe <= 0) $errores[] = "El importe debe ser un número mayor a 0.";
-        if (empty($vencimiento)) $errores[] = "La fecha de vencimiento es obligatoria.";
+        if (empty($id_parcela))
+            $errores[] = "Debe seleccionar una parcela válida de la lista.";
+        if (empty($id_deudo))
+            $errores[] = "Debe seleccionar un deudo responsable.";
+        if (!is_numeric($importe) || $importe <= 0)
+            $errores[] = "El importe debe ser un número mayor a 0.";
+        if (empty($vencimiento))
+            $errores[] = "La fecha de vencimiento es obligatoria.";
 
         if (!$this->model->verificarParcelaOcupada($id_parcela)) {
             $errores[] = "La parcela seleccionada no está ocupada por ningún difunto.";
         }
-        
+
         if (!empty($errores)) {
             return $this->index($errores, $data);
         }
 
         $total = floatval($importe) + (floatval($importe) * (floatval($data['recargo_rp'] ?? 0) / 100));
         $nuevo_pago = $this->model->crearNuevoPago($id_deudo, $id_parcela, 6, $fecha_operacion, $vencimiento, $importe, $data['recargo_rp'] ?? 0, $total, $_SESSION['usuario_id']);
-        
+
         if ($nuevo_pago) {
             $datos_pdf = $this->model->getDatosParaPdfRenovacion($id_parcela, $id_deudo, $nuevo_pago);
 
-            if ($datos_pdf) {                
+            if ($datos_pdf) {
                 $datos_pdf['fecha_vencimiento'] = date('d/m/Y', strtotime($datos_pdf['fecha_vencimiento']));
                 $datos_pdf['fecha_pago'] = date('d/m/Y', strtotime($datos_pdf['fecha_pago']));
 
                 $templatePath = __DIR__ . '/../../docs/COMPROBANTERENOVACION.html';
-                
+
                 PdfHelper::generarPlantilla($templatePath, $datos_pdf, "RenovacionPago-{$id_parcela}.pdf");
                 exit;
-            } else {
+            }
+            else {
                 return $this->index(['Error al obtener los datos para el comprobante de pago.'], $data);
             }
-        } else {
+        }
+        else {
             return $this->index(['Error fatal al crear el registro de pago.'], $data);
         }
     }

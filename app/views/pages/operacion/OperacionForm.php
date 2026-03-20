@@ -194,16 +194,6 @@
                 <p class="text-muted small">Registra la renovación del pago de una parcela ocupada.</p>
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="form-label">Deudo Responsable</label>
-                        <div class="input-group">
-                            <input list="deudos" id="deudo_search_rp" class="form-control"
-                                placeholder="Buscar deudo...">
-                            <input type="hidden" name="id_deudo_rp" id="id_deudo_rp">
-                            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
-                                data-bs-target="#modalDeudo"><i class="bi bi-plus"></i></button>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
                         <label class="form-label">Parcela a Renovar</label>
                         <div class="input-group">
                             <input list="parcelasOcupadas" id="parcela_search_rp" class="form-control"
@@ -211,9 +201,7 @@
                             <input type="hidden" name="id_parcela_rp" id="id_parcela_rp">
                         </div>
                     </div>
-                </div>
-                <div class="row g-3 mt-1">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <label class="form-label">Fecha de Renovación</label>
                         <input type="date" class="form-control" name="fecha_renovacion_rp"
                             value="<?= date('Y-m-d'); ?>">
