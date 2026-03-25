@@ -52,14 +52,27 @@ class EstadisticasModel extends Control
     public function getTotalParcelasOcupadas()
     {
         try {
-            $stmt = $this->db->query("SELECT COUNT(*) as total FROM parcela");
+            $sql = "SELECT COUNT(DISTINCT id_parcela) as total 
+                    FROM (
+                        SELECT id_parcela 
+                        FROM ubicacion_difunto 
+                        WHERE (fecha_retiro IS NULL OR fecha_retiro = '0000-00-00')
+                        
+                        UNION 
+                        
+                        SELECT pa.id_parcela 
+                        FROM pago pa
+                        INNER JOIN (
+                            SELECT id_parcela, MAX(id_pago) as max_id 
+                            FROM pago GROUP BY id_parcela
+                        ) sub ON pa.id_pago = sub.max_id
+                        WHERE pa.fecha_vencimiento >= CURRENT_DATE
+                    ) AS todas_las_ocupadas";
+
+            $stmt = $this->db->query($sql);
             $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if (isset($resultado['total'])) {
-                return (int) $resultado['total'];
-            } else {
-                return 0;
-            }
+            return (int) ($resultado['total'] ?? 0);
 
         } catch (PDOException $e) {
             error_log("Error en getTotalParcelasOcupadas: " . $e->getMessage());
@@ -253,6 +266,9 @@ class EstadisticasModel extends Control
                     dif.nombre as difunto_nombre, dif.apellido as difunto_apellido,
                     tp.nombre_parcela as tipo_nombre,
                     par.seccion, par.hilera, par.numero_ubicacion, par.nivel,
+                    (SELECT COUNT(*) FROM ubicacion_difunto ud2 
+                    WHERE ud2.id_parcela = p.id_parcela 
+                    AND (ud2.fecha_retiro IS NULL OR ud2.fecha_retiro = '0000-00-00')) as tiene_difunto,
                     (SELECT MAX(id_pago) FROM pago WHERE id_parcela = p.id_parcela) as ultimo_pago_id " 
                 . $sql_base . $where . $order_by . $limit;
 

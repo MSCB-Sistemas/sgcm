@@ -58,29 +58,32 @@ class ParcelaModel
                 LEFT JOIN tipo_parcela tp ON p.id_tipo_parcela = tp.id_tipo_parcela
                 LEFT JOIN deudo de ON p.id_deudo = de.id_deudo
                 LEFT JOIN orientacion o ON p.id_orientacion = o.id_orientacion
+                
+                LEFT JOIN (
+                    SELECT pg1.id_parcela, pg1.fecha_vencimiento
+                    FROM pago pg1
+                    INNER JOIN (
+                        SELECT id_parcela, MAX(id_pago) as max_id
+                        FROM pago
+                        GROUP BY id_parcela
+                    ) pg2 ON pg1.id_pago = pg2.max_id
+                ) ultimo_pago ON p.id_parcela = ultimo_pago.id_parcela
+
                 WHERE 
                     NOT EXISTS (
                         SELECT 1
                         FROM ubicacion_difunto ud
                         WHERE ud.id_parcela = p.id_parcela
+                        AND (ud.fecha_retiro IS NULL OR ud.fecha_retiro = '0000-00-00')
                     )
                     AND (
-                        NOT EXISTS (
-                            SELECT 1
-                            FROM pago pg
-                            WHERE pg.id_parcela = p.id_parcela
-                        )
-                        OR EXISTS (
-                            SELECT 1
-                            FROM pago pg
-                            WHERE pg.id_parcela = p.id_parcela
-                            AND pg.fecha_vencimiento < CURDATE()
-                        )
+                        ultimo_pago.fecha_vencimiento IS NULL 
+                        OR ultimo_pago.fecha_vencimiento < CURDATE()
                     )
-                ";
+        ";
+        
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
-
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 

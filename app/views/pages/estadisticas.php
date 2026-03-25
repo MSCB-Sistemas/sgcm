@@ -182,11 +182,26 @@
                         const esActual = (row.id_pago == row.ultimo_pago_id);
                         const estaVencido = (fechaVenc < hoy);
                         const fechaFormateada = fechaVenc.toLocaleDateString('es-AR');
+                        
+                        const tieneDifunto = parseInt(row.tiene_difunto) > 0;
 
                         if (esActual && estaVencido) {
+                            if (tieneDifunto) {
+                                return `<div class="text-center">
+                                            <span class="badge bg-danger mb-1" title="Deuda con ocupación física">MOROSO</span><br>
+                                            <span class="text-danger fw-bold small">${fechaFormateada}</span>
+                                        </div>`;
+                            } else {
+                                return `<div class="text-center">
+                                            <span class="badge bg-secondary mb-1" title="Sin difunto: Parcela disponible">CADUCADO</span><br>
+                                            <span class="text-muted small">${fechaFormateada}</span>
+                                        </div>`;
+                            }
+                        }
+
+                        if (esActual) {
                             return `<div class="text-center">
-                                        <span class="badge bg-danger mb-1">VENCIDO</span><br>
-                                        <span class="text-danger fw-bold small">${fechaFormateada}</span>
+                                        <span class="text-muted small">${fechaFormateada}</span>
                                     </div>`;
                         }
 
