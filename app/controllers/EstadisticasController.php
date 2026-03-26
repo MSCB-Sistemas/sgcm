@@ -40,6 +40,9 @@ class EstadisticasController extends Control {
             'total_morosos' => $this->model->getTotalDeudosMorosos(),
             'total_difuntos' => $this->model->getTotalDifuntos(),
             'total_parcelas' => $this->model->getTotalParcelasOcupadas(),
+            'total_parcelas_generales' => $this->model->getTotalParcelas(),
+            'deuda_estimada' => $this->model->getDeudaTotalEstimada(),
+            'ingresos_mes' => $this->model->getIngresosMesActual(),
             'total_traslados' => $this->model->getTotalTraslados(),
         ];
 

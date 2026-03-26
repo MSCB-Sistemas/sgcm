@@ -32,48 +32,91 @@
 
     <div class="tab-pane fade" id="estadisticas" role="tabpanel">
         <div class="row">
+            <!-- Capacidad y Ocupación -->
             <div class="col-md-6 mb-4">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">Registros Generales</div>
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-primary text-white">Capacidad del Recinto</div>
                     <div class="card-body">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item">Personas Fallecidas:
-                                <strong>
-                                    <?php
-                                        if (isset($datos['total_difuntos'])) {
-                                            echo $datos['total_difuntos'];
-                                        } else {
-                                            echo 0;
-                                        }
-                                    ?>
-                                </strong>
+                        <?php 
+                        $totalParcelas = $datos['total_parcelas_generales'] ?? 0;
+                        $ocupadas = $datos['total_parcelas'] ?? 0;
+                        $libres = max(0, $totalParcelas - $ocupadas);
+                        $porcentaje = $totalParcelas > 0 ? round(($ocupadas / $totalParcelas) * 100) : 0;
+                        ?>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span><strong>Nivel de Ocupación</strong></span>
+                                <span><?= $porcentaje ?>%</span>
+                            </div>
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar <?= $porcentaje > 90 ? 'bg-danger' : ($porcentaje > 70 ? 'bg-warning' : 'bg-primary') ?>" role="progressbar" style="width: <?= $porcentaje ?>%;" aria-valuenow="<?= $porcentaje ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <ul class="list-group list-group-flush mt-3">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Total de Parcelas Registradas
+                                <span class="badge bg-secondary rounded-pill"><?= $totalParcelas ?></span>
                             </li>
-                            <li class="list-group-item">Parcelas Ocupadas:
-                                <strong>
-                                    <?php
-                                        if (isset($datos['total_parcelas'])) {
-                                            echo $datos['total_parcelas'];
-                                        } else {
-                                            echo 0;
-                                        }
-                                    ?>
-                                </strong>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Parcelas Ocupadas
+                                <span class="badge bg-primary rounded-pill"><?= $ocupadas ?></span>
                             </li>
-                            <li class="list-group-item">Traslados Registrados:
-                                <strong>
-                                    <?php
-                                        if (isset($datos['total_traslados'])) {
-                                            echo $datos['total_traslados'];
-                                        } else {
-                                            echo 0;
-                                        }
-                                    ?>
-                                </strong>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Parcelas Libres
+                                <span class="badge bg-success rounded-pill"><?= $libres ?></span>
                             </li>
                         </ul>
                     </div>
                 </div>
             </div>
+
+            <!-- Resumen Financiero -->
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-success text-white">Resumen Financiero</div>
+                    <div class="card-body">
+                        <?php 
+                        $deudaEstimada = $datos['deuda_estimada'] ?? 0;
+                        $ingresosMes = $datos['ingresos_mes'] ?? 0;
+                        $totalMorosos = $datos['total_morosos'] ?? 0;
+                        ?>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Ingresos del Mes Actual
+                                <strong>$<?= number_format($ingresosMes, 2, ',', '.') ?></strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Deudores Morosos Activos
+                                <span class="badge bg-danger rounded-pill"><?= $totalMorosos ?></span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center text-danger">
+                                Deuda Estimada Pendiente
+                                <strong>$<?= number_format($deudaEstimada, 2, ',', '.') ?></strong>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actividad de Registro -->
+            <div class="col-md-12 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-secondary text-white">Actividad de Registro Histórica</div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Personas Fallecidas Registradas
+                                <span class="badge bg-dark rounded-pill"><?= isset($datos['total_difuntos']) ? $datos['total_difuntos'] : 0 ?></span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Traslados Realizados
+                                <span class="badge bg-dark rounded-pill"><?= isset($datos['total_traslados']) ? $datos['total_traslados'] : 0 ?></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
