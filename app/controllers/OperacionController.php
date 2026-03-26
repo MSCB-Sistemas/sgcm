@@ -392,5 +392,74 @@ class OperacionController extends Control
         echo json_encode(['ocupadas' => $parcelas]);
         exit;
     }
+
+    public function reimprimirPdf($id_pago = 0)
+    {
+        $id_pago = intval($id_pago);
+
+        if (!$id_pago) {
+            echo "ID de comprobante inválido.";
+            return;
+        }
+
+        $pago = $this->model->getPagoInfoParaReimpresion($id_pago);
+        if (!$pago) {
+            echo "Pago no encontrado.";
+            return;
+        }
+
+        $id_tipo_operacion = intval($pago['id_tipo_operacion']);
+        $id_parcela = $pago['id_parcela'];
+        $id_deudo = $pago['id_deudo'];
+
+        if (!$id_tipo_operacion) {
+            echo "Este comprobante no pertenece a una operación estructurada.";
+            return;
+        }
+
+        $id_difunto = intval($this->model->getDifuntoByPago($id_pago));
+
+        switch ($id_tipo_operacion) {
+            case 1: // Traslado Interno
+                $datos_pdf = $this->model->getDatosParaPdfTraslado($id_difunto, $id_pago);
+                if ($datos_pdf) {
+                    $datos_pdf['fecha_fallecimiento'] = date('d/m/Y', strtotime($datos_pdf['fecha_fallecimiento']));
+                    $datos_pdf['fecha_pago'] = date('d/m/Y', strtotime($datos_pdf['fecha_pago']));
+                    $templatePath = __DIR__ . '/../../docs/AUTORIZACIONTRASLADOINTERNO.html';
+                    PdfHelper::generarPlantilla($templatePath, $datos_pdf, "Traslado-{$id_difunto}.pdf");
+                } else echo "Error construyendo comprobante en Traslado Interno.";
+                break;
+            case 3: // Ingreso BR
+                $datos_pdf = $this->model->getDatosParaPdfIngresoBR($id_difunto, $id_deudo, $id_parcela);
+                if ($datos_pdf) {
+                    $datos_pdf['fecha_operacion'] = date('d/m/Y', strtotime($pago['fecha_pago']));
+                    $datos_pdf['fecha_vencimiento'] = date('d/m/Y', strtotime($pago['fecha_vencimiento']));
+                    $templatePath = __DIR__ . '/../../docs/AUTORIZACIONPERSONASBAJOSRECURSOS.html';
+                    PdfHelper::generarPlantilla($templatePath, $datos_pdf, "IngresoBR-{$id_difunto}.pdf");
+                } else echo "Error construyendo comprobante en Ingreso Bajos Recursos.";
+                break;
+            case 5: // Ingreso Normal
+                $datos_pdf = $this->model->getDatosParaPdfIngresoDifunto($id_difunto, $id_pago);
+                if ($datos_pdf) {
+                    $datos_pdf['fecha_fallecimiento'] = date('d/m/Y', strtotime($datos_pdf['fecha_fallecimiento']));
+                    $datos_pdf['fecha_pago'] = date('d/m/Y', strtotime($datos_pdf['fecha_pago']));
+                    $templatePath = __DIR__ . '/../../docs/AUTORIZACIONINGRESO.html';
+                    PdfHelper::generarPlantilla($templatePath, $datos_pdf, "Ingreso-{$id_difunto}.pdf");
+                } else echo "Error construyendo comprobante en Ingreso.";
+                break;
+            case 6: // Renovación
+                $datos_pdf = $this->model->getDatosParaPdfRenovacion($id_parcela, $id_deudo, $id_pago);
+                if ($datos_pdf) {
+                    $datos_pdf['fecha_vencimiento'] = date('d/m/Y', strtotime($datos_pdf['fecha_vencimiento']));
+                    $datos_pdf['fecha_pago'] = date('d/m/Y', strtotime($datos_pdf['fecha_pago']));
+                    $templatePath = __DIR__ . '/../../docs/COMPROBANTERENOVACION.html';
+                    PdfHelper::generarPlantilla($templatePath, $datos_pdf, "RenovacionPago-{$id_parcela}.pdf");
+                } else echo "Error construyendo comprobante de Renovación.";
+                break;
+            default:
+                echo "No hay documento impreso configurado para este tipo de pago.";
+                break;
+        }
+    }
 }
 ?>

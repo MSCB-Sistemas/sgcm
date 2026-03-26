@@ -42,10 +42,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 title: 'Ubicación / Parcela',
                 render: function (data, type, row) {
                     return `<div class="lh-sm">
-                                <span class="badge border text-dark bg-light mb-1">${escapeHTML(row.tipo_nombre || 'S/T')} </span><br>
-                                <span class="badge border text-dark bg-light mb-1">ID INTERNO: ${escapeHTML(row.id_parcela || 'S/T')} </span><br>
-                                <small class="text-secondary">Numero ubicacion: ${escapeHTML(row.numero_ubicacion || '-')} </small><br>
-                                <small class="text-muted">Seccion: ${escapeHTML(row.seccion || '-')} Hilera: ${escapeHTML(row.hilera || '-')} Nivel: ${escapeHTML(row.numero_ubicacion || '-')}</small>
+                                <strong>${escapeHTML(row.tipo_nombre || 'S/T')} - Nº ${escapeHTML(row.numero_ubicacion || '-')}</strong><br>
+                                <small class="text-muted" title="ID Interno: ${escapeHTML(row.id_parcela || 'S/T')}">Sec: ${escapeHTML(row.seccion || '-')} | Hil: ${escapeHTML(row.hilera || '-')} | Niv: ${escapeHTML(row.nivel || '-')}</small>
                             </div>`;
                 }
             },
@@ -80,39 +78,46 @@ document.addEventListener('DOMContentLoaded', function () {
                     const esActual = (row.id_pago == row.ultimo_pago_id);
                     const estaVencido = (fechaVenc < hoy);
                     const fechaFormateada = fechaVenc.toLocaleDateString('es-AR');
-
                     const tieneDifunto = parseInt(row.tiene_difunto) > 0;
 
-                    if (esActual && estaVencido) {
+                    if (!esActual) {
+                         return `<div class="text-center lh-sm">
+                                    <span class="badge bg-light text-secondary mb-1">HISTÓRICO</span><br>
+                                    <small class="text-muted">${fechaFormateada}</small>
+                                 </div>`;
+                    }
+
+                    if (estaVencido) {
                         if (tieneDifunto) {
-                            return `<div class="text-center">
-                                        <span class="badge bg-danger mb-1" title="Deuda con ocupación física">MOROSO</span><br>
-                                        <span class="text-danger fw-bold small">${fechaFormateada}</span>
+                            return `<div class="text-center lh-sm">
+                                        <span class="badge bg-danger mb-1" title="Deuda activa">MOROSO</span><br>
+                                        <small class="text-danger fw-bold">${fechaFormateada}</small>
                                     </div>`;
                         } else {
-                            return `<div class="text-center">
-                                        <span class="badge bg-secondary mb-1" title="Sin difunto: Parcela disponible">CADUCADO</span><br>
-                                        <span class="text-muted small">${fechaFormateada}</span>
+                            return `<div class="text-center lh-sm">
+                                        <span class="badge bg-secondary mb-1" title="Parcela desocupada">CADUCADO</span><br>
+                                        <small class="text-muted">${fechaFormateada}</small>
                                     </div>`;
                         }
                     }
 
-                    return `<div class="text-center">
-                                <span class="text-muted small">${fechaFormateada}</span>
+                    return `<div class="text-center lh-sm">
+                                <span class="badge bg-success mb-1">AL DÍA</span><br>
+                                <small class="text-success fw-bold">${fechaFormateada}</small>
                             </div>`;
                 }
             },
             {
-                data: 'archivo_pago',
+                data: null,
                 title: 'Archivo',
                 orderable: false,
                 render: function (data, type, row) {
-                    if (data) {
-                        return `<a href="${BASE_URL}/public/uploads/${escapeHTML(data)}" target="_blank" class="btn btn-sm btn-outline-secondary">
-                                    <i class="bi bi-file-earmark-pdf"></i> Ver Archivo
+                    if (row.id_tipo_operacion && parseInt(row.id_tipo_operacion) > 0) {
+                        return `<a href="${BASE_URL}/operacion/reimprimirPdf/${escapeHTML(row.id_pago)}" target="_blank" class="btn btn-sm btn-outline-danger" title="Descargar Comprobante de la Operación">
+                                    <i class="bi bi-file-earmark-pdf"></i> Ver PDF
                                 </a>`;
                     }
-                    return '<span class="text-muted">No disponible</span>';
+                    return '<span class="text-muted small">Mantenimiento genérico</span>';
                 }
             }
         ],

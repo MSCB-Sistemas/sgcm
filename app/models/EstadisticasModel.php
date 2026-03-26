@@ -306,7 +306,7 @@ class EstadisticasModel extends Control
 
         if (!empty($params['search']['value'])) {
             $search = '%' . $params['search']['value'] . '%';
-            $where .= " AND (dif.nombre LIKE ? OR dif.apellido LIKE ? OR deu.apellido LIKE ? OR p.id_parcela LIKE ? OR tp.nombre_parcela LIKE ?)";
+            $where .= " AND (dif.nombre LIKE ? OR dif.apellido LIKE ? OR deu.apellido LIKE ? OR par.numero_ubicacion LIKE ? OR tp.nombre_parcela LIKE ?)";
             array_push($pdo_params, $search, $search, $search, $search, $search);
         }
 
@@ -318,7 +318,7 @@ class EstadisticasModel extends Control
         $order_by = " ORDER BY " . ($columnas[$col_idx] ?? 'p.id_pago') . " " . $params['order'][0]['dir'];
         $limit = " LIMIT " . intval($params['start']) . ", " . intval($params['length']);
 
-        $sql = "SELECT p.id_pago, p.id_parcela, p.total, p.fecha_pago, p.fecha_vencimiento,
+        $sql = "SELECT p.id_pago, p.id_parcela, p.total, p.fecha_pago, p.fecha_vencimiento, p.id_tipo_operacion, ud.id_difunto,
                     deu.nombre as deudo_nombre, deu.apellido as deudo_apellido,
                     dif.nombre as difunto_nombre, dif.apellido as difunto_apellido,
                     tp.nombre_parcela as tipo_nombre,

@@ -306,5 +306,24 @@ class OperacionModel
         $header['parcelas'] = $this->obtenerParcelasYDeudasPorDeudo($id_deudo);
         return $header;
     }
+
+    public function getPagoInfoParaReimpresion($id_pago) {
+        $sql = "SELECT id_deudo, id_parcela, fecha_pago, fecha_vencimiento, id_tipo_operacion FROM pago WHERE id_pago = :id_pago";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id_pago' => $id_pago]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getDifuntoByPago($id_pago) {
+        $sql = "SELECT ud.id_difunto 
+                FROM pago p
+                JOIN ubicacion_difunto ud ON p.id_parcela = ud.id_parcela
+                WHERE p.id_pago = :id_pago 
+                AND ud.fecha_ingreso <= p.fecha_pago 
+                ORDER BY ud.fecha_ingreso DESC LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id_pago' => $id_pago]);
+        return $stmt->fetchColumn();
+    }
 }
 ?>
