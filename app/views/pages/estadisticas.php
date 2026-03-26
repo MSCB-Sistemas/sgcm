@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="<?= URL . '/public/css/estadisticas.css' ?>">
-<ul class="nav nav-tabs" id="myTab" role="tablist">
+<ul class="nav nav-tabs sticky-top bg-white" id="myTab" role="tablist" style="z-index: 1000; padding-top: 10px;">
     <li class="nav-item">
         <button class="nav-link" id="integral-tab" data-bs-toggle="tab" data-bs-target="#reporte_integral" type="button" role="tab">Reporte General de Pagos</button>
     </li>
