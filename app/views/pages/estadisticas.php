@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="<?= URL . '/public/css/estadisticas.css' ?>">
-<ul class="nav nav-tabs" id="myTab" role="tablist">
+<ul class="nav nav-tabs sticky-top bg-white" id="myTab" role="tablist" style="z-index: 1000; padding-top: 10px;">
     <li class="nav-item">
         <button class="nav-link" id="integral-tab" data-bs-toggle="tab" data-bs-target="#reporte_integral" type="button" role="tab">Reporte General de Pagos</button>
     </li>
@@ -32,48 +32,91 @@
 
     <div class="tab-pane fade" id="estadisticas" role="tabpanel">
         <div class="row">
+            <!-- Capacidad y Ocupación -->
             <div class="col-md-6 mb-4">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">Registros Generales</div>
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-primary text-white">Capacidad del Recinto</div>
                     <div class="card-body">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item">Personas Fallecidas:
-                                <strong>
-                                    <?php
-                                        if (isset($datos['total_difuntos'])) {
-                                            echo $datos['total_difuntos'];
-                                        } else {
-                                            echo 0;
-                                        }
-                                    ?>
-                                </strong>
+                        <?php 
+                        $totalParcelas = $datos['total_parcelas_generales'] ?? 0;
+                        $ocupadas = $datos['total_parcelas'] ?? 0;
+                        $libres = max(0, $totalParcelas - $ocupadas);
+                        $porcentaje = $totalParcelas > 0 ? round(($ocupadas / $totalParcelas) * 100) : 0;
+                        ?>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span><strong>Nivel de Ocupación</strong></span>
+                                <span><?= $porcentaje ?>%</span>
+                            </div>
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar <?= $porcentaje > 90 ? 'bg-danger' : ($porcentaje > 70 ? 'bg-warning' : 'bg-primary') ?>" role="progressbar" style="width: <?= $porcentaje ?>%;" aria-valuenow="<?= $porcentaje ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <ul class="list-group list-group-flush mt-3">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Total de Parcelas Registradas
+                                <span class="badge bg-secondary rounded-pill"><?= $totalParcelas ?></span>
                             </li>
-                            <li class="list-group-item">Parcelas Ocupadas:
-                                <strong>
-                                    <?php
-                                        if (isset($datos['total_parcelas'])) {
-                                            echo $datos['total_parcelas'];
-                                        } else {
-                                            echo 0;
-                                        }
-                                    ?>
-                                </strong>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Parcelas Ocupadas
+                                <span class="badge bg-primary rounded-pill"><?= $ocupadas ?></span>
                             </li>
-                            <li class="list-group-item">Traslados Registrados:
-                                <strong>
-                                    <?php
-                                        if (isset($datos['total_traslados'])) {
-                                            echo $datos['total_traslados'];
-                                        } else {
-                                            echo 0;
-                                        }
-                                    ?>
-                                </strong>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Parcelas Libres
+                                <span class="badge bg-success rounded-pill"><?= $libres ?></span>
                             </li>
                         </ul>
                     </div>
                 </div>
             </div>
+
+            <!-- Resumen Financiero -->
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-success text-white">Resumen Financiero</div>
+                    <div class="card-body">
+                        <?php 
+                        $deudaEstimada = $datos['deuda_estimada'] ?? 0;
+                        $ingresosMes = $datos['ingresos_mes'] ?? 0;
+                        $totalMorosos = $datos['total_morosos'] ?? 0;
+                        ?>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Ingresos del Mes Actual
+                                <strong>$<?= number_format($ingresosMes, 2, ',', '.') ?></strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Deudores Morosos Activos
+                                <span class="badge bg-danger rounded-pill"><?= $totalMorosos ?></span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center text-danger">
+                                Deuda Estimada Pendiente
+                                <strong>$<?= number_format($deudaEstimada, 2, ',', '.') ?></strong>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actividad de Registro -->
+            <div class="col-md-12 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-secondary text-white">Actividad de Registro Histórica</div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Personas Fallecidas Registradas
+                                <span class="badge bg-dark rounded-pill"><?= isset($datos['total_difuntos']) ? $datos['total_difuntos'] : 0 ?></span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Traslados Realizados
+                                <span class="badge bg-dark rounded-pill"><?= isset($datos['total_traslados']) ? $datos['total_traslados'] : 0 ?></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
@@ -116,303 +159,6 @@
 </div>
 
 <script>
-    let lastClickedButton;
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const dataTablesConfigs = {
-            'integral': [
-                { 
-                    data: 'id_pago',
-                    title: '# ID',
-                    render: (data, type, row) => {
-                        const esActual = (row.id_pago == row.ultimo_pago_id);
-                        return esActual 
-                            ? `<span class="badge bg-success" title="Último pago">#${data} - ACTUAL</span>`
-                            : `<span class="text-muted small">#${data} (Histórico)</span>`;
-                    }
-                },
-                { 
-                    data: null,
-                    title: 'Sujetos (Deudo / Difunto)',
-                    render: function(data, type, row) {
-                        const difunto = row.difunto_nombre 
-                            ? `<small class="text-muted"><i class="bi bi-person"></i> Dif: ${row.difunto_apellido}, ${row.difunto_nombre}</small>`
-                            : '<small class="text-muted italic text-opacity-50">Sin difunto asociado</small>';
-                        
-                        return `<div>
-                                    <div class="fw-bold text-primary">${row.deudo_apellido}, ${row.deudo_nombre}</div>
-                                    ${difunto}
-                                </div>`;
-                    }
-                },
-                { 
-                    data: null,
-                    title: 'Ubicación / Parcela',
-                    render: function(data, type, row) {
-                        return `<div class="lh-sm">
-                                    <span class="badge border text-dark bg-light mb-1">${row.tipo_nombre || 'S/T'} </span><br>
-                                    <span class="badge border text-dark bg-light mb-1">ID INTERNO: ${row.id_parcela || 'S/T'} </span><br>
-                                    <small class="text-secondary">Numero ubicacion: ${row.numero_ubicacion || '-'} </small><br>
-                                    <small class="text-muted">Seccion: ${row.seccion || '-'} Hilera: ${row.hilera || '-'} Nivel: ${row.numero_ubicacion || '-'}</small>
-                                </div>`;
-                    }
-                },
-                { 
-                    data: 'total',
-                    title: 'Monto y Pago',
-                    render: (data, type, row) => {
-                        const fecha = (!row.fecha_pago || row.fecha_pago === '0000-00-00 00:00:00') 
-                            ? 'N/A' 
-                            : new Date(row.fecha_pago).toLocaleDateString('es-AR');
-                        
-                        return `<div class="text-end">
-                                    <span class="fw-bold text-success d-block">$${parseFloat(data).toFixed(2)}</span>
-                                    <small class="text-muted" title="Fecha de pago">${fecha}</small>
-                                </div>`;
-                    }
-                },
-                { 
-                    data: 'fecha_vencimiento',
-                    title: 'Estado de Deuda',
-                    render: (data, type, row) => {
-                        if (!data || data === '0000-00-00') return '<span class="text-muted">N/A</span>';
-                        
-                        const fechaVenc = new Date(data);
-                        const hoy = new Date();
-                        const esActual = (row.id_pago == row.ultimo_pago_id);
-                        const estaVencido = (fechaVenc < hoy);
-                        const fechaFormateada = fechaVenc.toLocaleDateString('es-AR');
-                        
-                        const tieneDifunto = parseInt(row.tiene_difunto) > 0;
-
-                        if (esActual && estaVencido) {
-                            if (tieneDifunto) {
-                                return `<div class="text-center">
-                                            <span class="badge bg-danger mb-1" title="Deuda con ocupación física">MOROSO</span><br>
-                                            <span class="text-danger fw-bold small">${fechaFormateada}</span>
-                                        </div>`;
-                            } else {
-                                return `<div class="text-center">
-                                            <span class="badge bg-secondary mb-1" title="Sin difunto: Parcela disponible">CADUCADO</span><br>
-                                            <span class="text-muted small">${fechaFormateada}</span>
-                                        </div>`;
-                            }
-                        }
-
-                        if (esActual) {
-                            return `<div class="text-center">
-                                        <span class="text-muted small">${fechaFormateada}</span>
-                                    </div>`;
-                        }
-
-                        return `<div class="text-center">
-                                    <span class="text-muted small">${fechaFormateada}</span>
-                                </div>`;
-                    }
-                },
-                {
-                    data: 'archivo_pago',
-                    title: 'Archivo',
-                    orderable: false,
-                    render: function(data, type, row) {
-                        if (data) {
-                            return `<a href="<?= URL ?>/public/uploads/${data}" target="_blank" class="btn btn-sm btn-outline-secondary">
-                                        <i class="bi bi-file-earmark-pdf"></i> Ver Archivo
-                                    </a>`;
-                        }
-                        return '<span class="text-muted">No disponible</span>';
-                    }
-                }
-            ],
-            'traslados': [
-                { data: 'nombre' }, { data: 'apellido' }, { data: 'dni' },
-                { data: 'fecha_fallecimiento' }, { data: 'fecha_retiro' },
-                { 
-                    data: null, orderable: false,
-                    render: function(data, type, row) {
-                        const origen = row.parcela_origen;
-                        const destino = row.parcela_destino || 'Externo';
-                        return `<strong>${origen}</strong> → <strong>${destino}</strong>`;
-                    }
-                }
-            ],
-            'morosos': [
-                { data: 'id_parcela' }, 
-                { data: 'dni' },        
-                { data: 'nombre' },     
-                { data: 'apellido' },   
-                { 
-                    data: 'fecha_vencimiento', 
-                    render: function(data) {
-                        if (!data) return '';
-                        return `<span class="text-danger fw-bold">${new Date(data).toLocaleDateString('es-AR')}</span>`;
-                    }
-                }, 
-                { 
-                    data: 'total', 
-                    render: data => `$${parseFloat(data).toFixed(2)}`
-                },
-                { 
-                    data: 'fecha_vencimiento', 
-                    orderable: false,
-                    render: function(data) {
-                        const diff = Math.ceil((new Date() - new Date(data)) / (1000 * 60 * 60 * 24));
-                        return `<span class="badge bg-danger">${diff > 0 ? diff : 0} día/s</span>`;
-                    }
-                },
-                {
-                    data: null, 
-                    orderable: false,
-                    render: function(data, type, row) {
-                        return `<button type="button" class="btn btn-sm btn-success registrar-pago-btn" 
-                                    data-bs-toggle="modal" data-bs-target="#pagoModal"
-                                    data-deudor-id="${row.id_deudo}" data-parcela-id="${row.id_parcela}"
-                                    data-deudor-nombre="${row.apellido}, ${row.nombre}"
-                                    data-vencimiento-anterior="${row.fecha_vencimiento}">
-                                    <i class="bi bi-cash-coin"></i> Registrar
-                                </button>`;
-                    }
-                }
-            ]
-        };
-
-        function inicializarDataTableAjax(tabla) {
-            if (!tabla || $.fn.DataTable.isDataTable(tabla)) return;
-            
-            const tablaJQ = $(tabla);
-            const ajaxUrl = tablaJQ.data('ajax-url');
-            const configKey = tablaJQ.data('config-key');
-            const filterIds = tablaJQ.data('filter-ids').split(',');
-
-            if (!ajaxUrl || !dataTablesConfigs[configKey]) return;
-
-            const dt = tablaJQ.DataTable({
-                retrieve: true, dom: 'Bfrtip', buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
-                language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' },
-                pageLength: 10, processing: true, serverSide: true,
-                ajax: {
-                    url: ajaxUrl, type: 'POST',
-                    data: function(d) {
-                        d.fecha_inicio = $(filterIds[0].trim()).val();
-                        d.fecha_fin = $(filterIds[1].trim()).val();
-                    }
-                },
-                columns: dataTablesConfigs[configKey]
-            });
-            $(filterIds.join(', ')).on('change', () => dt.ajax.reload());
-        }
-
-        const pagoModal = document.getElementById('pagoModal');
-        if (pagoModal) {
-            pagoModal.addEventListener('show.bs.modal', function (event) {
-                const button = event.relatedTarget;
-                lastClickedButton = button;
-
-                const deudorId = button.getAttribute('data-deudor-id');
-                const parcelaId = button.getAttribute('data-parcela-id');
-                const deudorNombre = button.getAttribute('data-deudor-nombre');
-                const vencimientoAnterior = button.getAttribute('data-vencimiento-anterior');
-
-                let nuevoVencimiento = '';
-
-                const soloFecha = vencimientoAnterior.substring(0, 10);
-                const partes = soloFecha.split('-');
-
-                if (partes.length === 3) {
-                    let fecha = new Date(partes[0], partes[1] - 1, partes[2]);
-
-                    fecha.setFullYear(fecha.getFullYear() + 1);
-
-                    const y = fecha.getFullYear();
-                    const m = String(fecha.getMonth() + 1).padStart(2, '0');
-                    const d = String(fecha.getDate()).padStart(2, '0');
-
-                    nuevoVencimiento = `${y}-${m}-${d}`;
-                } else {
-                    let hoy = new Date();
-                    hoy.setFullYear(hoy.getFullYear() + 1);
-                    nuevoVencimiento = hoy.toISOString().split('T')[0];
-                }
-                
-                pagoModal.querySelector('#modalDeudorNombre').textContent = deudorNombre;
-                pagoModal.querySelector('#modalParcelaId').textContent = parcelaId;
-                pagoModal.querySelector('#modalDeudoId').value = deudorId;
-                pagoModal.querySelector('#modalParcelaIdInput').value = parcelaId;
-                pagoModal.querySelector('#fecha_vencimiento').value = nuevoVencimiento;
-            });
-        }
-
-        $('#pagoModal form').on('submit', function(e) {
-            e.preventDefault();
-
-            const form = $(this);
-            const url = form.attr('action');
-            const data = form.serialize();
-
-            $.ajax({
-                type: 'POST',
-                url: url,
-                data: data,
-                dataType: 'json',
-                success: function(response) {
-                    if (response.success) {
-                        const modalEl = document.getElementById('pagoModal');
-                        const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Tab(modalEl);
-                        modalInstance.hide();
-
-                        const table = $('#morosos .datatable-ajax').DataTable();
-                        if (lastClickedButton) {
-                            const rowToRemove = $(lastClickedButton).closest('tr');
-                            table.row(rowToRemove).remove().draw(false);
-                        }
-
-                        const badge = $('#morosos-tab .badge');
-                        if (badge.length) {
-                            const info = table.page.info();
-                            const nuevoTotal = info.recordsDisplay; 
-
-                            if (nuevoTotal > 0) {
-                                badge.text(nuevoTotal);
-                            } else {
-                                badge.remove();
-                            }
-                        }
-
-                        alert('Pago registrado correctamente.');
-                    } else {
-                        alert('Error: ' + response.message);
-                    }
-                },
-                error: function(xhr) {
-                    console.error(xhr.responseText);
-                    alert('Ocurrió un error al procesar el pago. Intente nuevamente.');
-                }
-            });
-        });
-
-        const tablaDifuntos = document.getElementById('tabla-difuntos');
-        if (tablaDifuntos) {
-            inicializarDataTableAjax(tablaDifuntos);
-        }
-
-        document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tabEl => {
-            tabEl.addEventListener('shown.bs.tab', event => {
-                localStorage.setItem('activeTab', event.target.getAttribute('data-bs-target'));
-                
-                const panelId = event.target.getAttribute('data-bs-target');
-                const tablaEnPanel = document.querySelector(panelId + ' .datatable-ajax');
-                if (tablaEnPanel) {
-                    inicializarDataTableAjax(tablaEnPanel);
-                }
-            });
-        });
-
-        const lastTab = localStorage.getItem('activeTab');
-        if (lastTab) {
-            const tabElement = document.querySelector(`[data-bs-target="${lastTab}"]`);
-            if (tabElement && lastTab !== '#difuntos') {
-                new bootstrap.Tab(tabElement).show();
-            }
-        }
-    });
+    const BASE_URL = '<?= URL ?>';
 </script>
+<script src="<?= URL ?>/public/js/estadisticas.js"></script>

@@ -255,5 +255,75 @@ class OperacionModel
         $stmt->execute(['id_pago' => $id_pago, 'id_parcela' => $id_parcela, 'id_deudo' => $id_deudo]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function obtenerParcelasYDeudasPorDeudo($id_deudo)
+    {
+        $sql = "SELECT 
+                    par.id_parcela,
+                    par.hilera,
+                    par.seccion,
+                    tp.nombre_parcela AS tipo_parcela,
+                    CONCAT(d.apellido, ', ', d.nombre) AS difunto,
+                    (SELECT MAX(pg.fecha_vencimiento) FROM pago pg WHERE pg.id_parcela = par.id_parcela) AS fecha_vencimiento
+                FROM ubicacion_difunto ud
+                JOIN difunto d ON ud.id_difunto = d.id_difunto
+                JOIN parcela par ON ud.id_parcela = par.id_parcela
+                JOIN tipo_parcela tp ON par.id_tipo_parcela = tp.id_tipo_parcela
+                WHERE ud.fecha_retiro IS NULL 
+                  AND d.id_deudo = :id_deudo";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id_deudo' => $id_deudo]);
+        $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $fecha_actual = date('Y-m-d');
+        foreach ($resultados as &$r) {
+            if (!$r['fecha_vencimiento']) {
+                $r['tiene_deuda'] = true; // Si está ocupada y no tiene pagos, tiene deuda
+                $r['fecha_vencimiento'] = 'Sin pagos previos';
+            } else {
+                $r['tiene_deuda'] = ($r['fecha_vencimiento'] < $fecha_actual);
+                if (!$r['tiene_deuda']) {
+                    $r['fecha_vencimiento'] = date('d/m/Y', strtotime($r['fecha_vencimiento']));
+                } else {
+                    $r['fecha_vencimiento'] = date('d/m/Y', strtotime($r['fecha_vencimiento']));
+                }
+            }
+        }
+        return $resultados;
+    }
+
+    public function getDatosParaPdfGeneral($id_deudo)
+    {
+        $sql = "SELECT d.dni AS dni_deudo, CONCAT(d.apellido, ', ', d.nombre) AS deudo 
+                FROM deudo d WHERE d.id_deudo = :id_deudo";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id_deudo' => $id_deudo]);
+        $header = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if(!$header) return false;
+        
+        $header['parcelas'] = $this->obtenerParcelasYDeudasPorDeudo($id_deudo);
+        return $header;
+    }
+
+    public function getPagoInfoParaReimpresion($id_pago) {
+        $sql = "SELECT id_deudo, id_parcela, fecha_pago, fecha_vencimiento, id_tipo_operacion FROM pago WHERE id_pago = :id_pago";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id_pago' => $id_pago]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getDifuntoByPago($id_pago) {
+        $sql = "SELECT ud.id_difunto 
+                FROM pago p
+                JOIN ubicacion_difunto ud ON p.id_parcela = ud.id_parcela
+                WHERE p.id_pago = :id_pago 
+                AND ud.fecha_ingreso <= p.fecha_pago 
+                ORDER BY ud.fecha_ingreso DESC LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id_pago' => $id_pago]);
+        return $stmt->fetchColumn();
+    }
 }
 ?>

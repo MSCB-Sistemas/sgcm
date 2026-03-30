@@ -98,6 +98,63 @@ class EstadisticasModel extends Control
         }
     }
 
+    public function getTotalParcelas()
+    {
+        try {
+            $stmt = $this->db->query("SELECT COUNT(*) as total FROM parcela");
+            $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (isset($resultado['total'])) {
+                return (int) $resultado['total'];
+            } else {
+                return 0;
+            }
+
+        } catch (PDOException $e) {
+            error_log("Error en getTotalParcelas: " . $e->getMessage());
+            return 0;
+        }
+    }
+
+    public function getDeudaTotalEstimada()
+    {
+        try {
+            $sql = "SELECT SUM(p.total) as total_deuda 
+                    FROM pago p
+                    INNER JOIN (
+                        SELECT id_parcela, MAX(id_pago) as max_id 
+                        FROM pago GROUP BY id_parcela
+                    ) sub ON p.id_pago = sub.max_id
+                    INNER JOIN ubicacion_difunto ud ON p.id_parcela = ud.id_parcela
+                    WHERE (ud.fecha_retiro IS NULL OR ud.fecha_retiro = '0000-00-00')
+                    AND p.fecha_vencimiento < CURRENT_DATE";
+            
+            $stmt = $this->db->query($sql);
+            $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+            return (float) ($resultado['total_deuda'] ?? 0);
+        } catch (PDOException $e) {
+            error_log("Error en getDeudaTotalEstimada: " . $e->getMessage());
+            return 0;
+        }
+    }
+
+    public function getIngresosMesActual()
+    {
+        try {
+            $sql = "SELECT SUM(total) as ingresos 
+                    FROM pago 
+                    WHERE MONTH(fecha_pago) = MONTH(CURRENT_DATE()) 
+                    AND YEAR(fecha_pago) = YEAR(CURRENT_DATE())";
+            
+            $stmt = $this->db->query($sql);
+            $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+            return (float) ($resultado['ingresos'] ?? 0);
+        } catch (PDOException $e) {
+            error_log("Error en getIngresosMesActual: " . $e->getMessage());
+            return 0;
+        }
+    }
+
     public function getTrasladosAjax($params) {
         $columnas_ordenables = [
             'd.nombre', 'd.apellido', 'd.dni', 'd.fecha_fallecimiento', 
@@ -249,7 +306,7 @@ class EstadisticasModel extends Control
 
         if (!empty($params['search']['value'])) {
             $search = '%' . $params['search']['value'] . '%';
-            $where .= " AND (dif.nombre LIKE ? OR dif.apellido LIKE ? OR deu.apellido LIKE ? OR p.id_parcela LIKE ? OR tp.nombre_parcela LIKE ?)";
+            $where .= " AND (dif.nombre LIKE ? OR dif.apellido LIKE ? OR deu.apellido LIKE ? OR par.numero_ubicacion LIKE ? OR tp.nombre_parcela LIKE ?)";
             array_push($pdo_params, $search, $search, $search, $search, $search);
         }
 
@@ -261,7 +318,7 @@ class EstadisticasModel extends Control
         $order_by = " ORDER BY " . ($columnas[$col_idx] ?? 'p.id_pago') . " " . $params['order'][0]['dir'];
         $limit = " LIMIT " . intval($params['start']) . ", " . intval($params['length']);
 
-        $sql = "SELECT p.id_pago, p.id_parcela, p.total, p.fecha_pago, p.fecha_vencimiento,
+        $sql = "SELECT p.id_pago, p.id_parcela, p.total, p.fecha_pago, p.fecha_vencimiento, p.id_tipo_operacion, ud.id_difunto,
                     deu.nombre as deudo_nombre, deu.apellido as deudo_apellido,
                     dif.nombre as difunto_nombre, dif.apellido as difunto_apellido,
                     tp.nombre_parcela as tipo_nombre,

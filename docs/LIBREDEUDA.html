@@ -77,25 +77,39 @@
 
     <div class="title-block">
         <p class="main-title">LIBRE DEUDA</p>
-        <p class="sub-title">DERECHOS DE CEMENTERIO POR RENOVACIÓN DE {tipo_parcela}</p>
+        <p class="sub-title">DERECHOS DE CEMENTERIO (CERTIFICADO GENERAL)</p>
     </div>
 
     <div class="data-section">
-        <p class="data-item"><strong>Restos de:</strong> {difunto}</p>
-        <p class="data-item"><strong>Tipo de Parcela:</strong> {tipo_parcela}</p>
-        <p class="data-item"><strong>Hilera:</strong> {hilera}</p>
-        <p class="data-item"><strong>Sección:</strong> {seccion}</p>
-        <p class="data-item"><strong>Responsable:</strong> {deudo}</p>
+        <p class="data-item"><strong>Responsable (Deudo):</strong> {deudo}</p>
+        <p class="data-item"><strong>DNI:</strong> {dni_deudo}</p>
+    </div>
+
+    <div style="margin-bottom: 24pt;">
+        <p style="font-weight: bold; margin-bottom: 8pt; text-decoration: underline;">Detalle de parcelas ocupadas y responsabilidades:</p>
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 11pt;">
+            <thead>
+                <tr>
+                    <th style="padding: 5px; border-bottom: 2px solid #000;">Difunto</th>
+                    <th style="padding: 5px; border-bottom: 2px solid #000;">Tipo Parcela</th>
+                    <th style="padding: 5px; border-bottom: 2px solid #000;">Ubicación</th>
+                    <th style="padding: 5px; border-bottom: 2px solid #000;">Próx. Vencimiento</th>
+                </tr>
+            </thead>
+            <tbody>
+                {html_parcelas}
+            </tbody>
+        </table>
     </div>
 
     <p class="main-paragraph">
-        Se informa que la parcela antes mencionada no registra deuda por DERECHOS DE CEMENTERIO. Se eleva la misma para ser presentada a la administración del cementerio municipal. Próximo vencimiento de la parcela antes mencionada: <strong>{fecha_vencimiento}</strong>.
+        Se informa que el contribuyente antes mencionado no registra deudas vencidas por DERECHOS DE CEMENTERIO en ninguna de sus parcelas bajo responsabilidad. Se eleva el presente certificado de LIBRE DEUDA GENERAL para ser presentado a la administración del cementerio municipal.
     </p>
     
     <p class="closing">Atentamente.</p>
     
     <div class="footer">
-        <p>SAN CARLOS DE BARILOCHE, {fecha_pago}</p>
+        <p>SAN CARLOS DE BARILOCHE, {fecha_hoy}</p>
     </div>
 
 </body>

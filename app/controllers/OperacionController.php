@@ -233,35 +233,49 @@ class OperacionController extends Control
     private function procesarLibreDeuda($data)
     {
         $errores = [];
-        $id_parcela = $data['id_parcela_ld'];
-        $id_deudo = $data['id_deudo_ld'];
+        $id_deudo = $data['id_deudo_ld'] ?? '';
 
-        if (!$id_parcela)
-            $errores[] = "Debe seleccionar una parcela para verificar su estado de deuda.";
         if (!$id_deudo)
             $errores[] = "Debe seleccionar un deudo para verificar su estado de deuda.";
 
         if (!empty($errores))
             return $this->index($errores, $data);
 
-        $deuda = $this->model->obtenerDeudaPorDeudoYParcela($id_deudo, $id_parcela);
-
-        if ($deuda) {
-            $vencimiento = date('d/m/Y', strtotime($deuda['fecha_vencimiento']));
-            return $this->index(["El deudo presenta una deuda en esta parcela con vencimiento el $vencimiento."], $data);
-        }
-
-        $datos_pdf = $this->model->getDatosParaPdfLibreDeuda($id_parcela, $id_deudo);
+        $datos_pdf = $this->model->getDatosParaPdfGeneral($id_deudo);
 
         if (!$datos_pdf) {
-            return $this->index(["No se encontraron datos para la parcela seleccionada."], $data);
+            return $this->index(["No se encontró información del deudo seleccionado."], $data);
         }
 
-        $datos_pdf['fecha_vencimiento'] = $datos_pdf['fecha_vencimiento'] ? date('d/m/Y', strtotime($datos_pdf['fecha_vencimiento'])) : 'No registra pagos';
-        $datos_pdf['fecha_pago'] = date('d/m/Y');
+        $tiene_deuda = false;
+        $html_parcelas = "";
 
-        $templatePath = __DIR__ . '/../../docs/LIBREDEUDA.html';
-        PdfHelper::generarPlantilla($templatePath, $datos_pdf, "LibreDeuda-{$id_parcela}.pdf");
+        if (empty($datos_pdf['parcelas'])) {
+            $html_parcelas = "<tr><td colspan='4' style='text-align:center; padding: 10px; border-bottom: 1px solid #ccc;'>El deudo no posee parcelas ocupadas con difuntos registrados a su cargo.</td></tr>";
+        } else {
+            foreach ($datos_pdf['parcelas'] as $p) {
+                if ($p['tiene_deuda']) {
+                    $tiene_deuda = true;
+                }
+                $html_parcelas .= "<tr>
+                                    <td style='padding: 8px; border-bottom: 1px solid #ddd;'>" . htmlspecialchars($p['difunto'] ?? '') . "</td>
+                                    <td style='padding: 8px; border-bottom: 1px solid #ddd;'>" . htmlspecialchars($p['tipo_parcela'] ?? '') . "</td>
+                                    <td style='padding: 8px; border-bottom: 1px solid #ddd;'>Sec. " . htmlspecialchars($p['seccion'] ?? '-') . " / Hil. " . htmlspecialchars($p['hilera'] ?? '-') . "</td>
+                                    <td style='padding: 8px; border-bottom: 1px solid #ddd;'>" . htmlspecialchars($p['fecha_vencimiento'] ?? '') . "</td>
+                                   </tr>";
+            }
+        }
+
+        $datos_pdf['html_parcelas'] = $html_parcelas;
+        $datos_pdf['fecha_hoy'] = date('d/m/Y');
+
+        if ($tiene_deuda) {
+            $templatePath = __DIR__ . '/../../docs/ESTADODEDEUDA.html';
+            PdfHelper::generarPlantilla($templatePath, $datos_pdf, "EstadoDeuda-{$id_deudo}.pdf");
+        } else {
+            $templatePath = __DIR__ . '/../../docs/LIBREDEUDA.html';
+            PdfHelper::generarPlantilla($templatePath, $datos_pdf, "LibreDeuda-{$id_deudo}.pdf");
+        }
         exit;
     }
 
@@ -363,6 +377,88 @@ class OperacionController extends Control
         }
         else {
             return $this->index(['Error fatal al crear el registro de pago.'], $data);
+        }
+    }
+
+    public function obtenerDeudaDeudo($id_deudo)
+    {
+        header('Content-Type: application/json');
+        if (!is_numeric($id_deudo)) {
+            echo json_encode(['error' => 'ID de deudo inválido']);
+            exit;
+        }
+        
+        $parcelas = $this->model->obtenerParcelasYDeudasPorDeudo($id_deudo);
+        echo json_encode(['ocupadas' => $parcelas]);
+        exit;
+    }
+
+    public function reimprimirPdf($id_pago = 0)
+    {
+        $id_pago = intval($id_pago);
+
+        if (!$id_pago) {
+            echo "ID de comprobante inválido.";
+            return;
+        }
+
+        $pago = $this->model->getPagoInfoParaReimpresion($id_pago);
+        if (!$pago) {
+            echo "Pago no encontrado.";
+            return;
+        }
+
+        $id_tipo_operacion = intval($pago['id_tipo_operacion']);
+        $id_parcela = $pago['id_parcela'];
+        $id_deudo = $pago['id_deudo'];
+
+        if (!$id_tipo_operacion) {
+            echo "Este comprobante no pertenece a una operación estructurada.";
+            return;
+        }
+
+        $id_difunto = intval($this->model->getDifuntoByPago($id_pago));
+
+        switch ($id_tipo_operacion) {
+            case 1: // Traslado Interno
+                $datos_pdf = $this->model->getDatosParaPdfTraslado($id_difunto, $id_pago);
+                if ($datos_pdf) {
+                    $datos_pdf['fecha_fallecimiento'] = date('d/m/Y', strtotime($datos_pdf['fecha_fallecimiento']));
+                    $datos_pdf['fecha_pago'] = date('d/m/Y', strtotime($datos_pdf['fecha_pago']));
+                    $templatePath = __DIR__ . '/../../docs/AUTORIZACIONTRASLADOINTERNO.html';
+                    PdfHelper::generarPlantilla($templatePath, $datos_pdf, "Traslado-{$id_difunto}.pdf");
+                } else echo "Error construyendo comprobante en Traslado Interno.";
+                break;
+            case 3: // Ingreso BR
+                $datos_pdf = $this->model->getDatosParaPdfIngresoBR($id_difunto, $id_deudo, $id_parcela);
+                if ($datos_pdf) {
+                    $datos_pdf['fecha_operacion'] = date('d/m/Y', strtotime($pago['fecha_pago']));
+                    $datos_pdf['fecha_vencimiento'] = date('d/m/Y', strtotime($pago['fecha_vencimiento']));
+                    $templatePath = __DIR__ . '/../../docs/AUTORIZACIONPERSONASBAJOSRECURSOS.html';
+                    PdfHelper::generarPlantilla($templatePath, $datos_pdf, "IngresoBR-{$id_difunto}.pdf");
+                } else echo "Error construyendo comprobante en Ingreso Bajos Recursos.";
+                break;
+            case 5: // Ingreso Normal
+                $datos_pdf = $this->model->getDatosParaPdfIngresoDifunto($id_difunto, $id_pago);
+                if ($datos_pdf) {
+                    $datos_pdf['fecha_fallecimiento'] = date('d/m/Y', strtotime($datos_pdf['fecha_fallecimiento']));
+                    $datos_pdf['fecha_pago'] = date('d/m/Y', strtotime($datos_pdf['fecha_pago']));
+                    $templatePath = __DIR__ . '/../../docs/AUTORIZACIONINGRESO.html';
+                    PdfHelper::generarPlantilla($templatePath, $datos_pdf, "Ingreso-{$id_difunto}.pdf");
+                } else echo "Error construyendo comprobante en Ingreso.";
+                break;
+            case 6: // Renovación
+                $datos_pdf = $this->model->getDatosParaPdfRenovacion($id_parcela, $id_deudo, $id_pago);
+                if ($datos_pdf) {
+                    $datos_pdf['fecha_vencimiento'] = date('d/m/Y', strtotime($datos_pdf['fecha_vencimiento']));
+                    $datos_pdf['fecha_pago'] = date('d/m/Y', strtotime($datos_pdf['fecha_pago']));
+                    $templatePath = __DIR__ . '/../../docs/COMPROBANTERENOVACION.html';
+                    PdfHelper::generarPlantilla($templatePath, $datos_pdf, "RenovacionPago-{$id_parcela}.pdf");
+                } else echo "Error construyendo comprobante de Renovación.";
+                break;
+            default:
+                echo "No hay documento impreso configurado para este tipo de pago.";
+                break;
         }
     }
 }
