@@ -422,6 +422,12 @@ class OperacionController extends Control
         switch ($id_tipo_operacion) {
             case 1: // Traslado Interno
                 $datos_pdf = $this->model->getDatosParaPdfTraslado($id_difunto, $id_pago);
+                if (!$datos_pdf && $id_difunto && $id_parcela) {
+                    // reintentar con id_difunto desde pago si la primera búsqueda falla
+                    $id_difunto = intval($this->model->getDifuntoByPago($id_pago));
+                    $datos_pdf = $this->model->getDatosParaPdfTraslado($id_difunto, $id_pago);
+                }
+
                 if ($datos_pdf) {
                     $datos_pdf['fecha_fallecimiento'] = date('d/m/Y', strtotime($datos_pdf['fecha_fallecimiento']));
                     $datos_pdf['fecha_pago'] = date('d/m/Y', strtotime($datos_pdf['fecha_pago']));

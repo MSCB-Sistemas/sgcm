@@ -116,12 +116,18 @@ class OperacionModel
                 JOIN deudo de ON p.id_deudo = de.id_deudo
                 JOIN difunto d ON d.id_difunto = :id_difunto
                 
-                JOIN ubicacion_difunto uo ON uo.id_difunto = d.id_difunto AND uo.fecha_retiro IS NOT NULL
+                JOIN ubicacion_difunto uo ON uo.id_difunto = d.id_difunto
+                    AND uo.fecha_retiro = (
+                        SELECT MAX(fecha_retiro)
+                        FROM ubicacion_difunto
+                        WHERE id_difunto = d.id_difunto
+                          AND fecha_retiro IS NOT NULL
+                          AND fecha_retiro <= p.fecha_pago
+                    )
                 JOIN parcela po ON po.id_parcela = uo.id_parcela
                 JOIN tipo_parcela tpo ON tpo.id_tipo_parcela = po.id_tipo_parcela
-                
-                JOIN ubicacion_difunto ud ON ud.id_difunto = d.id_difunto AND ud.fecha_retiro IS NULL
-                JOIN parcela pd ON pd.id_parcela = ud.id_parcela
+
+                JOIN parcela pd ON pd.id_parcela = p.id_parcela
                 JOIN tipo_parcela tpd ON tpd.id_tipo_parcela = pd.id_tipo_parcela
 
                 WHERE p.id_pago = :id_pago
@@ -153,8 +159,8 @@ class OperacionModel
                 JOIN deudo de ON p.id_deudo = de.id_deudo
                 JOIN difunto d ON d.id_difunto = :id_difunto
                 
-                JOIN ubicacion_difunto ud ON ud.id_difunto = d.id_difunto AND ud.fecha_retiro IS NULL
-                JOIN parcela par ON ud.id_parcela = par.id_parcela
+                -- La parcela del comprobante se guarda en p.id_parcela, usarla incluso si ya no es la ubicación activa
+                JOIN parcela par ON par.id_parcela = p.id_parcela
                 JOIN tipo_parcela tp ON par.id_tipo_parcela = tp.id_tipo_parcela
 
                 WHERE p.id_pago = :id_pago";
