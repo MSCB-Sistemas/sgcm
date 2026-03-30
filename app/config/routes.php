@@ -138,6 +138,8 @@ return [
     'operacion/update' => ['OperacionController', 'update', 'editar_operacion'],
     'operacion/delete' => ['OperacionController', 'delete', 'eliminar_operacion'],
     'operacion/reimprimirPdf' => ['OperacionController', 'reimprimirPdf', 'ver_operacion'],
+    'operacion/obtenerDeudaDeudo' => ['OperacionController', 'obtenerDeudaDeudo', '__login__'],
+
 
     // Errores
     'error-permisos' => ['ErrorController', 'permisosError', '__public__'],

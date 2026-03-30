@@ -263,14 +263,15 @@ class OperacionModel
                     par.hilera,
                     par.seccion,
                     tp.nombre_parcela AS tipo_parcela,
-                    CONCAT(d.apellido, ', ', d.nombre) AS difunto,
+                    COALESCE(CONCAT(d.apellido, ', ', d.nombre), 'Sin difunto asignado') AS difunto,
                     (SELECT MAX(pg.fecha_vencimiento) FROM pago pg WHERE pg.id_parcela = par.id_parcela) AS fecha_vencimiento
-                FROM ubicacion_difunto ud
-                JOIN difunto d ON ud.id_difunto = d.id_difunto
-                JOIN parcela par ON ud.id_parcela = par.id_parcela
+                FROM pago p
+                JOIN parcela par ON p.id_parcela = par.id_parcela
                 JOIN tipo_parcela tp ON par.id_tipo_parcela = tp.id_tipo_parcela
-                WHERE ud.fecha_retiro IS NULL 
-                  AND d.id_deudo = :id_deudo";
+                LEFT JOIN ubicacion_difunto ud ON par.id_parcela = ud.id_parcela AND (ud.fecha_retiro IS NULL OR ud.fecha_retiro = '0000-00-00')
+                LEFT JOIN difunto d ON ud.id_difunto = d.id_difunto
+                WHERE p.id_deudo = :id_deudo
+                GROUP BY par.id_parcela";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['id_deudo' => $id_deudo]);
@@ -279,19 +280,16 @@ class OperacionModel
         $fecha_actual = date('Y-m-d');
         foreach ($resultados as &$r) {
             if (!$r['fecha_vencimiento']) {
-                $r['tiene_deuda'] = true; // Si está ocupada y no tiene pagos, tiene deuda
+                $r['tiene_deuda'] = true; 
                 $r['fecha_vencimiento'] = 'Sin pagos previos';
             } else {
                 $r['tiene_deuda'] = ($r['fecha_vencimiento'] < $fecha_actual);
-                if (!$r['tiene_deuda']) {
-                    $r['fecha_vencimiento'] = date('d/m/Y', strtotime($r['fecha_vencimiento']));
-                } else {
-                    $r['fecha_vencimiento'] = date('d/m/Y', strtotime($r['fecha_vencimiento']));
-                }
+                $r['fecha_vencimiento'] = date('d/m/Y', strtotime($r['fecha_vencimiento']));
             }
         }
         return $resultados;
     }
+
 
     public function getDatosParaPdfGeneral($id_deudo)
     {
