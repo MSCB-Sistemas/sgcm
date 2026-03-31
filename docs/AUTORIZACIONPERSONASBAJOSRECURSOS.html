@@ -1,0 +1,93 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Autorización de Servicio para Personas de Bajos Recursos</title>
+    <style>
+        body {
+            font-family: "Times New Roman", serif;
+            font-size: 12pt;
+            line-height: 1.6;
+            margin: 1.5cm;
+        }
+
+        .container {
+            width: 100%;
+        }
+        
+        p {
+            margin: 0 0 12pt 0;
+            text-align: justify;
+        }
+
+        .header {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 24pt;
+        }
+
+        .title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 14pt;
+            text-decoration: underline;
+            margin-top: 24pt;
+            margin-bottom: 36pt;
+        }
+        
+        strong {
+            font-weight: bold;
+        }
+
+        .address-section {
+            margin-bottom: 24pt;
+        }
+
+        .footer {
+            margin-top: 60pt;
+        }
+
+        .signature-line {
+            margin-top: 72pt;
+            border-top: 1px solid #333;
+            width: 250px;
+            text-align: center;
+            padding-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <div class="header">
+            <p>MUNICIPALIDAD DE SAN CARLOS DE BARILOCHE</p>
+            <p>PROVINCIA DE RÍO NEGRO</p>
+        </div>
+
+        <h1 class="title">AUTORIZACIÓN DE SERVICIO PARA PERSONAS DE BAJOS RECURSOS</h1>
+
+        <div class="address-section">
+            <p><strong>Señores:</strong> {deudo_apellido}, {deudo_nombre}</p>
+            <p><strong>DE:</strong> DIRECCIÓN DE SERVICIOS PÚBLICOS - ÁREA CEMENTERIO</p>
+        </div>
+        <p>
+            Mediante la presente se autoriza a realizar el servicio de inhumación y traslado 
+            para los restos de quien en vida fuera <strong>{difunto_apellido}, {difunto_nombre}</strong>.
+        </p>
+        
+        <p>
+            Dicho servicio se llevará a cabo en la <strong>Parcela N° {numero_ubicacion}, hilera {hilera}, sección {seccion}, fracción {fraccion}</strong>.
+        </p>
+
+        <div class="footer">
+            <p>
+                Emitido en San Carlos de Bariloche, a los {fecha_operacion}.
+            </p>
+            
+            <div class="signature-line">
+                <p>Firma y Aclaración</p>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

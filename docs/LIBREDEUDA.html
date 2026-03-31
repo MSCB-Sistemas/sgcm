@@ -1,0 +1,116 @@
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Libre Deuda</title>
+    <style type="text/css">
+        body {
+            font-family: "Times New Roman", serif;
+            font-size: 12pt;
+            padding: 72pt 72pt;
+        }
+
+        p {
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24pt;
+        }
+
+        .header-main {
+            font-weight: 700;
+            font-size: 13pt;
+        }
+
+        .header-sub {
+            font-weight: 700;
+            font-size: 11pt;
+        }
+
+        .title-block {
+            text-align: center;
+            margin-bottom: 24pt;
+        }
+
+        .main-title, .sub-title {
+            font-weight: 700;
+            text-decoration: underline;
+        }
+
+        .data-section {
+            margin-bottom: 24pt;
+        }
+
+        .data-item {
+            margin-bottom: 4pt;
+        }
+
+        .data-item strong {
+            font-weight: normal;
+        }
+        
+        .main-paragraph {
+            text-align: justify;
+            text-indent: 36pt;
+            margin-bottom: 24pt;
+        }
+
+        .closing {
+            margin-bottom: 48pt;
+        }
+
+        .footer {
+            text-align: left;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <p class="header-main">MUNICIPALIDAD DE SAN CARLOS DE BARILOCHE</p>
+        <p class="header-sub">PROVINCIA DE RÍO NEGRO</p>
+    </div>
+
+    <div class="title-block">
+        <p class="main-title">LIBRE DEUDA</p>
+        <p class="sub-title">DERECHOS DE CEMENTERIO (CERTIFICADO GENERAL)</p>
+    </div>
+
+    <div class="data-section">
+        <p class="data-item"><strong>Responsable (Deudo):</strong> {deudo}</p>
+        <p class="data-item"><strong>DNI:</strong> {dni_deudo}</p>
+    </div>
+
+    <div style="margin-bottom: 24pt;">
+        <p style="font-weight: bold; margin-bottom: 8pt; text-decoration: underline;">Detalle de parcelas ocupadas y responsabilidades:</p>
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 11pt;">
+            <thead>
+                <tr>
+                    <th style="padding: 5px; border-bottom: 2px solid #000;">Difunto</th>
+                    <th style="padding: 5px; border-bottom: 2px solid #000;">Tipo Parcela</th>
+                    <th style="padding: 5px; border-bottom: 2px solid #000;">Ubicación</th>
+                    <th style="padding: 5px; border-bottom: 2px solid #000;">Próx. Vencimiento</th>
+                </tr>
+            </thead>
+            <tbody>
+                {html_parcelas}
+            </tbody>
+        </table>
+    </div>
+
+    <p class="main-paragraph">
+        Se informa que el contribuyente antes mencionado no registra deudas vencidas por DERECHOS DE CEMENTERIO en ninguna de sus parcelas bajo responsabilidad. Se eleva el presente certificado de LIBRE DEUDA GENERAL para ser presentado a la administración del cementerio municipal.
+    </p>
+    
+    <p class="closing">Atentamente.</p>
+    
+    <div class="footer">
+        <p>SAN CARLOS DE BARILOCHE, {fecha_hoy}</p>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,91 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Autorización de Operación</title>
+    <style>
+        body {
+            font-family: "Times New Roman", serif;
+            font-size: 12pt;
+            line-height: 1.6;
+            margin: 1.5cm; 
+        }
+
+        .container {
+            width: 100%;
+        }
+
+        p {
+            margin: 0 0 12pt 0;
+            text-align: justify;
+        }
+
+        .encabezado {
+            margin-bottom: 24pt;
+        }
+
+        .titulo {
+            text-align: center;
+            font-weight: bold;
+            font-size: 14pt;
+            text-decoration: underline;
+            margin-top: 24pt;
+            margin-bottom: 24pt;
+        }
+
+        strong {
+            font-weight: bold;
+        }
+        
+        .detalles {
+            padding-left: 20pt;
+            border-left: 1px solid #ccc;
+            margin-top: 20pt;
+            margin-bottom: 20pt;
+        }
+
+        .pie-pagina {
+            margin-top: 48pt;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <div class="encabezado">
+            <p><strong>DE:</strong> DIRECCIÓN DE SERVICIOS PÚBLICOS.</p>
+            <p><strong>A:</strong> ENCARGADO DE CEMENTERIO MUNICIPAL.</p>
+        </div>
+
+        <h1 class="titulo">AUTORIZACIÓN DE TRASLADO INTERNO</h1>
+
+        <p>
+            Por la presente se <strong>AUTORIZA</strong> el traslado de los restos de quien en vida fuera 
+            <strong>{difunto}</strong>, con fecha de defunción el día <strong>{fecha_fallecimiento}</strong>.
+        </p>
+
+        <div class="detalles">
+            <p>
+                <strong>UBICACIÓN DE ORIGEN:</strong><br>
+                {tipo_parcela} N° {id_parcela}, Hilera {hilera}, Sección {seccion}.
+            </p>
+            <p>
+                <strong>UBICACIÓN DE DESTINO:</strong><br>
+                {tipo_parcela_2} N° {id_parcela_2}, Hilera {hilera_2}, Sección {seccion_2}.
+            </p>
+        </div>
+
+        <p>
+            Los derechos fueron abonados mediante <strong>RECIBO N° {id_pago}</strong> con fecha {fecha_pago}.
+        </p>
+        
+        <p>
+            Trámite realizado por: <strong>{responsable_tramite}</strong>.
+        </p>
+
+        <p class="pie-pagina">
+            SAN CARLOS DE BARILOCHE, {fecha_pago}.
+        </p>
+
+    </div>
+</body>
+</html>
