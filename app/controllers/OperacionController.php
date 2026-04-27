@@ -31,12 +31,16 @@ class OperacionController extends Control
 
     public function index($errores = [], $values = [])
     {
+        $tipo = $_GET['tipo'] ?? ($values['tipo_operacion'] ?? null);
+
         $datos = [
             'title' => 'Registrar operacion',
+            'tipo_seleccionado' => $tipo,
             'action' => URL . 'operacion/save',
             'tipo_operaciones' => $this->tipoOperacionModel->getAllTipoOperaciones(),
             'parcelasDisponibles' => $this->parcelaModel->getParcelasDisponibles(),
             'parcelasOcupadas' => $this->parcelaModel->getParcelasOcupadas(),
+            'todasLasParcelas' => $this->parcelaModel->getAllParcelas(),
             'deudos' => $this->deudoModel->getAllDeudos(),
             'difuntos' => $this->difuntoModel->getAllDifuntos(),
             'sexos' => $this->sexoModel->getAllSexos(),
@@ -59,8 +63,7 @@ class OperacionController extends Control
 
         if (isset($_POST['tipo_operacion'])) {
             $tipo_operacion_id = $_POST['tipo_operacion'];
-        }
-        else {
+        } else {
             $tipo_operacion_id = 0;
         }
 
@@ -86,58 +89,72 @@ class OperacionController extends Control
     private function procesarTrasladoInterno($data)
     {
         $errores = [];
-        $id_difunto = $data['id_difunto_ti'];
-        $id_parcela_nueva = $data['id_parcela_ti'];
-        $id_deudo = $data['id_deudo_ti'];
-        if (isset($data['fecha_traslado_ti'])) {
-            $fecha_operacion = $data['fecha_traslado_ti'];
-        }
-        else {
-            $fecha_operacion = date('Y-m-d');
-        }
-        $importe = $data['importe_ti'];
-        $vencimiento = $data['fecha_vencimiento_ti'];
+        $id_difunto = $data['id_difunto_ti'] ?? '';
+        $id_parcela_nueva = $data['id_parcela_ti'] ?? '';
+        $id_deudo = $data['id_deudo_ti'] ?? '';
+        $fecha_operacion = $data['fecha_traslado_ti'] ?? date('Y-m-d');
+        
+        $is_exento = isset($data['exento_pago_ti']) && $data['exento_pago_ti'] === 'on';
+        $importe = $data['importe_ti'] ?? '';
+        $vencimiento = $data['fecha_vencimiento_ti'] ?? '';
 
-        if (!$id_difunto || !$id_parcela_nueva || !$id_deudo || !is_numeric($importe) || !$vencimiento) {
-            $errores[] = "Para un Traslado Interno, todos los campos son obligatorios.";
+        if (empty($id_difunto) || empty($id_parcela_nueva) || empty($id_deudo)) {
+            $errores[] = "Para un Traslado Interno, difunto, parcela de destino y responsable son obligatorios.";
         }
-        else {
-            $ubicacion_actual = $this->model->obtenerUbicacionActual($id_difunto);
-            if (!$ubicacion_actual)
-                $errores[] = "El difunto no tiene una ubicación activa para trasladar.";
-            if ($this->model->verificarParcelaOcupada($id_parcela_nueva))
-                $errores[] = "La parcela de destino ya está ocupada.";
+        
+        if (!$is_exento) {
+            if (!is_numeric($importe) || empty($vencimiento)) {
+                $errores[] = "Si la parcela no está prepagada, debe ingresar un importe válido y fecha de vencimiento.";
+            } else if ($this->model->verificarParcelaOcupada($id_parcela_nueva)) {
+                $errores[] = "La parcela de destino ya está ocupada. Marque la casilla de 'Eximir' si es una parcela familiar/reservada.";
+            }
+        }
+
+        $ubicacion_actual = $this->model->obtenerUbicacionActual($id_difunto);
+        if (!$ubicacion_actual && empty($errores)) {
+            $errores[] = "El difunto no tiene una ubicación activa para trasladar.";
         }
 
         if (!empty($errores)) {
             return $this->index($errores, $data);
         }
 
-        $ubicacion_actual = $this->model->obtenerUbicacionActual($id_difunto);
         $this->model->actualizarFechaRetiro($ubicacion_actual['id_ubicacion_difunto'], $fecha_operacion);
         $this->model->crearNuevaUbicacion($id_difunto, $id_parcela_nueva, $fecha_operacion);
 
-        $recargo = 0;
-        if (isset($data['recargo_ti'])) {
-            $recargo = $data['recargo_ti'];
-        }
+        if ($is_exento) {
+            // Operación sin cobro
+            $datos_pdf = $this->model->getDatosParaPdfTrasladoSinPago($id_difunto, $id_parcela_nueva, $id_deudo);
+            if ($datos_pdf) {
+                $datos_pdf['fecha_fallecimiento'] = date('d/m/Y', strtotime($datos_pdf['fecha_fallecimiento']));
+                $datos_pdf['fecha_operacion'] = date('d/m/Y', strtotime($fecha_operacion));
+                $datos_pdf['tipo_tramite'] = 'TRASLADO INTERNO';
+                
+                $templatePath = __DIR__ . '/../../docs/AUTORIZACION_PREPAGADA.html';
+                PdfHelper::generarPlantilla($templatePath, $datos_pdf, "Traslado-Prepagado-{$id_difunto}.pdf");
+                exit;
+            } else {
+                return $this->index(['Error al generar comprobante de traslado prepagado.'], $data);
+            }
+        } else {
+            // Operación normal con cobro
+            $recargo = $data['recargo_ti'] ?? 0;
+            $total = floatval($importe) + (floatval($importe) * (floatval($recargo) / 100));
 
-        $total = floatval($importe) + (floatval($importe) * (floatval($recargo) / 100));
+            $nuevo_ingreso = $this->model->crearNuevoPago($id_deudo, $id_parcela_nueva, 1, $fecha_operacion, $vencimiento, $importe, $recargo, $total, $_SESSION['usuario_id']);
 
-        $nuevo_ingreso = $this->model->crearNuevoPago($id_deudo, $id_parcela_nueva, 1, $fecha_operacion, $vencimiento, $importe, $recargo, $total, $_SESSION['usuario_id']);
+            if ($nuevo_ingreso) {
+                $datos_pdf = $this->model->getDatosParaPdfTraslado($id_difunto, $nuevo_ingreso);
 
-        if ($nuevo_ingreso) {
-            $datos_pdf = $this->model->getDatosParaPdfTraslado($id_difunto, $nuevo_ingreso);
+                $datos_pdf['fecha_fallecimiento'] = date('d/m/Y', strtotime($datos_pdf['fecha_fallecimiento']));
+                $datos_pdf['fecha_pago'] = date('d/m/Y', strtotime($datos_pdf['fecha_pago']));
 
-            $datos_pdf['fecha_fallecimiento'] = date('d/m/Y', strtotime($datos_pdf['fecha_fallecimiento']));
-            $datos_pdf['fecha_pago'] = date('d/m/Y', strtotime($datos_pdf['fecha_pago']));
-
-            $templatePath = __DIR__ . '/../../docs/AUTORIZACIONTRASLADOINTERNO.html';
-
-            PdfHelper::generarPlantilla($templatePath, $datos_pdf, "Traslado-{$id_difunto}.pdf");
-        }
-        else {
-            return $this->index(['Error fatal al crear el registro de pago.'], $data);
+                $templatePath = __DIR__ . '/../../docs/AUTORIZACIONTRASLADOINTERNO.html';
+                PdfHelper::generarPlantilla($templatePath, $datos_pdf, "Traslado-{$id_difunto}.pdf");
+                exit;
+            } else {
+                return $this->index(['Error fatal al crear el registro de pago.'], $data);
+            }
         }
 
         header('Location: ' . URL . 'operacion?exito=1');
@@ -147,24 +164,26 @@ class OperacionController extends Control
     private function procesarTrasladoExterno($data)
     {
         $errores = [];
-        $id_difunto = $data['id_difunto_te'];
-        if ($data['fecha_exhumacion_te']) {
-            $fecha_operacion = $data['fecha_exhumacion_te'];
+        $id_difunto = $data['id_difunto_te'] ?? '';
+        $fecha_operacion = $data['fecha_exhumacion_te'] ?? date('Y-m-d');
+
+        if (empty($id_difunto)) {
+            $errores[] = "Debe seleccionar un difunto para exhumar.";
         }
-        else {
-            $fecha_operacion = date('Y-m-d');
+
+        $ubicacion_actual = null;
+        if (!empty($id_difunto) && is_numeric($id_difunto)) {
+            $ubicacion_actual = $this->model->obtenerUbicacionActual($id_difunto);
+            if (!$ubicacion_actual) {
+                $errores[] = "El difunto seleccionado no tiene una ubicación activa para exhumar.";
+            }
         }
 
-        if (!$id_difunto)
-            $errores[] = "Para un traslado externo, debe seleccionar un difunto.";
-
-        $ubicacion_actual = $id_difunto ? $this->model->obtenerUbicacionActual($id_difunto) : null;
-        if (!$ubicacion_actual)
-            $errores[] = "El difunto seleccionado no tiene una ubicación activa para exhumar.";
-
-        if (!empty($errores))
+        if (!empty($errores)) {
             return $this->index($errores, $data);
+        }
 
+        // Actualizar fecha de retiro
         $this->model->actualizarFechaRetiro($ubicacion_actual['id_ubicacion_difunto'], $fecha_operacion);
 
         $datos_pdf = $this->model->getDatosParaPdfTrasladoExterno($id_difunto, $ubicacion_actual['id_parcela']);
@@ -172,12 +191,15 @@ class OperacionController extends Control
         if ($datos_pdf) {
             $datos_pdf['fecha_fallecimiento'] = date('d/m/Y', strtotime($datos_pdf['fecha_fallecimiento']));
             $datos_pdf['fecha_operacion'] = date('d/m/Y', strtotime($fecha_operacion));
+            
+            // Si no hay deudo vinculado, dejamos espacios en blanco para completar a mano
+            $datos_pdf['responsable_tramite'] = !empty($datos_pdf['responsable_tramite']) ? $datos_pdf['responsable_tramite'] : '____________________';
+            $datos_pdf['dni_responsable'] = !empty($datos_pdf['dni_responsable']) ? $datos_pdf['dni_responsable'] : '____________________';
 
             $templatePath = __DIR__ . '/../../docs/AUTORIZACIONTRASLADOEXTERNO.html';
             PdfHelper::generarPlantilla($templatePath, $datos_pdf, "TrasladoExterno-{$id_difunto}.pdf");
             exit;
-        }
-        else {
+        } else {
             return $this->index(['Error fatal al obtener los datos para el certificado.'], $data);
         }
     }
@@ -206,8 +228,15 @@ class OperacionController extends Control
         try {
             $this->model->crearNuevaUbicacion($id_difunto, $id_parcela, date('Y-m-d'));
             $this->model->crearNuevoPago(
-                $id_deudo, $id_parcela, 3,
-                date('Y-m-d'), $vencimiento, 0, 0, 0, $_SESSION['usuario_id']
+                $id_deudo,
+                $id_parcela,
+                3,
+                date('Y-m-d'),
+                $vencimiento,
+                0,
+                0,
+                0,
+                $_SESSION['usuario_id']
             );
 
             $datos_pdf = $this->model->getDatosParaPdfIngresoBR($id_difunto, $id_deudo, $id_parcela);
@@ -219,13 +248,11 @@ class OperacionController extends Control
                 $templatePath = __DIR__ . '/../../docs/AUTORIZACIONPERSONASBAJOSRECURSOS.html';
                 PdfHelper::generarPlantilla($templatePath, $datos_pdf, "IngresoBR-{$id_difunto}.pdf");
                 exit;
-            }
-            else {
+            } else {
                 return $this->index(['Error al obtener los datos para el comprobante.'], $data);
             }
 
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return $this->index(['Error al procesar el ingreso: ' . $e->getMessage()], $data);
         }
     }
@@ -282,26 +309,25 @@ class OperacionController extends Control
     private function procesarIngreso($data)
     {
         $errores = [];
-        $id_difunto = $data['id_difunto_in'];
-        $id_parcela = $data['id_parcela_in'];
-        $id_deudo = $data['id_deudo_in'];
-        $fecha_operacion = $data['fecha_ingreso_in'];
-        $importe = $data['importe_in'];
-        $vencimiento = $data['fecha_vencimiento_in'];
+        $id_difunto = $data['id_difunto_in'] ?? '';
+        $id_parcela = $data['id_parcela_in'] ?? '';
+        $id_deudo = $data['id_deudo_in'] ?? '';
+        $fecha_operacion = $data['fecha_ingreso_in'] ?? date('Y-m-d');
+        
+        $is_exento = isset($data['exento_pago_in']) && $data['exento_pago_in'] === 'on';
+        $importe = $data['importe_in'] ?? '';
+        $vencimiento = $data['fecha_vencimiento_in'] ?? '';
 
-        if (empty($id_difunto))
-            $errores[] = "Debe seleccionar un difunto válido de la lista.";
-        if (empty($id_parcela))
-            $errores[] = "Debe seleccionar una parcela válida de la lista.";
-        if (empty($id_deudo))
-            $errores[] = "Debe seleccionar un deudo responsable.";
-        if (!is_numeric($importe) || $importe <= 0)
-            $errores[] = "El importe debe ser un número mayor a 0.";
-        if (empty($vencimiento))
-            $errores[] = "La fecha de vencimiento es obligatoria.";
+        if (empty($id_difunto) || empty($id_parcela) || empty($id_deudo)) {
+            $errores[] = "Debe seleccionar difunto, parcela y deudo responsable.";
+        }
 
-        if ($this->model->verificarParcelaOcupada($id_parcela)) {
-            $errores[] = "La parcela seleccionada ya está ocupada.";
+        if (!$is_exento) {
+            if (!is_numeric($importe) || $importe <= 0 || empty($vencimiento)) {
+                $errores[] = "Si la parcela no está prepagada, debe ingresar un importe válido y fecha de vencimiento.";
+            } else if ($this->model->verificarParcelaOcupada($id_parcela)) {
+                $errores[] = "La parcela seleccionada ya está ocupada. Marque la casilla de 'Eximir' si es un ingreso familiar/prepagado.";
+            }
         }
 
         if (!empty($errores)) {
@@ -310,23 +336,42 @@ class OperacionController extends Control
 
         $this->model->crearNuevaUbicacion($id_difunto, $id_parcela, $fecha_operacion);
 
-        $total = floatval($importe) + (floatval($importe) * (floatval($data['recargo_in'] ?? 0) / 100));
-        $nuevo_pago = $this->model->crearNuevoPago($id_deudo, $id_parcela, 5, $fecha_operacion, $vencimiento, $importe, $data['recargo_in'] ?? 0, $total, $_SESSION['usuario_id']);
+        if ($is_exento) {
+            // Operación sin cobro
+            $datos_pdf = $this->model->getDatosParaPdfIngresoSinPago($id_difunto, $id_parcela, $id_deudo);
+            if ($datos_pdf) {
+                $datos_pdf['fecha_fallecimiento'] = date('d/m/Y', strtotime($datos_pdf['fecha_fallecimiento']));
+                $datos_pdf['fecha_operacion'] = date('d/m/Y', strtotime($fecha_operacion));
+                $datos_pdf['tipo_tramite'] = 'INGRESO A PARCELA PREPAGADA';
+                
+                $templatePath = __DIR__ . '/../../docs/AUTORIZACION_PREPAGADA.html';
+                PdfHelper::generarPlantilla($templatePath, $datos_pdf, "Ingreso-Prepagado-{$id_difunto}.pdf");
+                exit;
+            } else {
+                return $this->index(['Error al generar comprobante de ingreso prepagado.'], $data);
+            }
+        } else {
+            // Operación con cobro
+            $total = floatval($importe) + (floatval($importe) * (floatval($data['recargo_in'] ?? 0) / 100));
+            $nuevo_pago = $this->model->crearNuevoPago($id_deudo, $id_parcela, 5, $fecha_operacion, $vencimiento, $importe, $data['recargo_in'] ?? 0, $total, $_SESSION['usuario_id']);
 
-        if ($nuevo_pago) {
-            $datos_pdf = $this->model->getDatosParaPdfIngresoDifunto($id_difunto, $nuevo_pago);
+            if ($nuevo_pago) {
+                $datos_pdf = $this->model->getDatosParaPdfIngresoDifunto($id_difunto, $nuevo_pago);
 
-            $datos_pdf['fecha_fallecimiento'] = date('d/m/Y', strtotime($datos_pdf['fecha_fallecimiento']));
-            $datos_pdf['fecha_pago'] = date('d/m/Y', strtotime($datos_pdf['fecha_pago']));
+                if (!$datos_pdf) {
+                    return $this->index(['Error al obtener los datos para generar el comprobante.'], $data);
+                }
 
-            $templatePath = __DIR__ . '/../../docs/AUTORIZACIONINGRESO.html';
+                $datos_pdf['fecha_fallecimiento'] = date('d/m/Y', strtotime($datos_pdf['fecha_fallecimiento']));
+                $datos_pdf['fecha_pago'] = date('d/m/Y', strtotime($datos_pdf['fecha_pago']));
 
-            PdfHelper::generarPlantilla($templatePath, $datos_pdf, "Comprobante-Ingreso-{$id_difunto}.pdf");
-            exit;
+                $templatePath = __DIR__ . '/../../docs/AUTORIZACIONINGRESO.html';
 
-        }
-        else {
-            return $this->index(['Error fatal al crear el registro de pago.'], $data);
+                PdfHelper::generarPlantilla($templatePath, $datos_pdf, "Comprobante-Ingreso-{$id_difunto}.pdf");
+                exit;
+            } else {
+                return $this->index(['Error al registrar el pago de la operación.'], $data);
+            }
         }
     }
 
@@ -370,12 +415,10 @@ class OperacionController extends Control
 
                 PdfHelper::generarPlantilla($templatePath, $datos_pdf, "RenovacionPago-{$id_parcela}.pdf");
                 exit;
-            }
-            else {
+            } else {
                 return $this->index(['Error al obtener los datos para el comprobante de pago.'], $data);
             }
-        }
-        else {
+        } else {
             return $this->index(['Error fatal al crear el registro de pago.'], $data);
         }
     }
@@ -387,7 +430,7 @@ class OperacionController extends Control
             echo json_encode(['error' => 'ID de deudo inválido']);
             exit;
         }
-        
+
         $parcelas = $this->model->obtenerParcelasYDeudasPorDeudo($id_deudo);
         echo json_encode(['ocupadas' => $parcelas]);
         exit;
@@ -433,7 +476,8 @@ class OperacionController extends Control
                     $datos_pdf['fecha_pago'] = date('d/m/Y', strtotime($datos_pdf['fecha_pago']));
                     $templatePath = __DIR__ . '/../../docs/AUTORIZACIONTRASLADOINTERNO.html';
                     PdfHelper::generarPlantilla($templatePath, $datos_pdf, "Traslado-{$id_difunto}.pdf");
-                } else echo "Error construyendo comprobante en Traslado Interno.";
+                } else
+                    echo "Error construyendo comprobante en Traslado Interno.";
                 break;
             case 3: // Ingreso BR
                 $datos_pdf = $this->model->getDatosParaPdfIngresoBR($id_difunto, $id_deudo, $id_parcela);
@@ -442,7 +486,8 @@ class OperacionController extends Control
                     $datos_pdf['fecha_vencimiento'] = date('d/m/Y', strtotime($pago['fecha_vencimiento']));
                     $templatePath = __DIR__ . '/../../docs/AUTORIZACIONPERSONASBAJOSRECURSOS.html';
                     PdfHelper::generarPlantilla($templatePath, $datos_pdf, "IngresoBR-{$id_difunto}.pdf");
-                } else echo "Error construyendo comprobante en Ingreso Bajos Recursos.";
+                } else
+                    echo "Error construyendo comprobante en Ingreso Bajos Recursos.";
                 break;
             case 5: // Ingreso Normal
                 $datos_pdf = $this->model->getDatosParaPdfIngresoDifunto($id_difunto, $id_pago);
@@ -451,7 +496,8 @@ class OperacionController extends Control
                     $datos_pdf['fecha_pago'] = date('d/m/Y', strtotime($datos_pdf['fecha_pago']));
                     $templatePath = __DIR__ . '/../../docs/AUTORIZACIONINGRESO.html';
                     PdfHelper::generarPlantilla($templatePath, $datos_pdf, "Ingreso-{$id_difunto}.pdf");
-                } else echo "Error construyendo comprobante en Ingreso.";
+                } else
+                    echo "Error construyendo comprobante en Ingreso.";
                 break;
             case 6: // Renovación
                 $datos_pdf = $this->model->getDatosParaPdfRenovacion($id_parcela, $id_deudo, $id_pago);
@@ -460,7 +506,8 @@ class OperacionController extends Control
                     $datos_pdf['fecha_pago'] = date('d/m/Y', strtotime($datos_pdf['fecha_pago']));
                     $templatePath = __DIR__ . '/../../docs/COMPROBANTERENOVACION.html';
                     PdfHelper::generarPlantilla($templatePath, $datos_pdf, "RenovacionPago-{$id_parcela}.pdf");
-                } else echo "Error construyendo comprobante de Renovación.";
+                } else
+                    echo "Error construyendo comprobante de Renovación.";
                 break;
             default:
                 echo "No hay documento impreso configurado para este tipo de pago.";
