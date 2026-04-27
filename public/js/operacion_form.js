@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const inputDeudoLd = document.getElementById('deudo_search_ld');
     let deudoDebounce;
     if (inputDeudoLd) {
-        inputDeudoLd.addEventListener('change', function() {
+        inputDeudoLd.addEventListener('change', function () {
             clearTimeout(deudoDebounce);
             deudoDebounce = setTimeout(() => {
                 const idDeudo = document.getElementById('id_deudo_ld').value;
@@ -220,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (typeof URL_INFO_DEUDA === 'undefined') return;
 
                 infoDiv.innerHTML = '<div class="text-center py-3"><div class="spinner-border text-primary" role="status"></div><p class="text-muted mt-2">Verificando estado de cuenta...</p></div>';
-                
+
                 fetch(URL_INFO_DEUDA + idDeudo)
                     .then(r => r.json())
                     .then(data => {
@@ -229,7 +229,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             html += '<h6 class="card-title fw-bold mb-3"><i class="bi bi-person-lines-fill me-2"></i>Estado de Parcelas de este Deudo</h6>';
                             html += '<table class="table table-sm table-striped border-top mb-3">';
                             html += '<thead class="table-light"><tr><th>Ubicación</th><th>Difunto (Último)</th><th>Estado</th></tr></thead><tbody>';
-                            
+
                             let tieneDeuda = false;
                             data.ocupadas.forEach(p => {
                                 let badge = p.tiene_deuda ? '<span class="badge bg-danger">Vencido</span>' : '<span class="badge bg-success">Al Día</span>';
@@ -241,13 +241,13 @@ document.addEventListener('DOMContentLoaded', function () {
                                          </tr>`;
                             });
                             html += '</tbody></table>';
-                            
+
                             if (tieneDeuda) {
                                 html += '<div class="alert alert-danger mb-0 py-2"><i class="bi bi-exclamation-triangle-fill me-2"></i> <strong>Moroso:</strong> El sistema generará un <i>Estado de Deuda</i> reportando los saldos pendientes.</div>';
                             } else {
                                 html += '<div class="alert alert-success mb-0 py-2"><i class="bi bi-check-circle-fill me-2"></i> <strong>Al día:</strong> Todo en orden. Se generará certificado de <i>Libre de Deuda</i>.</div>';
                             }
-                            
+
                             html += '</div></div>';
                             infoDiv.innerHTML = html;
                             infoDiv.style.opacity = 0;

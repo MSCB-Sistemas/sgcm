@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="<?= URL . '/public/css/estadisticas.css' ?>">
-<ul class="nav nav-tabs sticky-top bg-white" id="myTab" role="tablist" style="z-index: 1000; padding-top: 10px;">
+<ul class="nav nav-tabs sticky-top sticky-tabs-container" id="myTab" role="tablist">
     <li class="nav-item">
         <button class="nav-link" id="integral-tab" data-bs-toggle="tab" data-bs-target="#reporte_integral" type="button" role="tab">Reporte General de Pagos</button>
     </li>
@@ -34,8 +34,10 @@
         <div class="row">
             <!-- Capacidad y Ocupación -->
             <div class="col-md-6 mb-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-header bg-primary text-white">Capacidad del Recinto</div>
+                <div class="card shadow-sm h-100 border-0">
+                    <div class="card-header bg-acento text-white py-3">
+                        <h6 class="mb-0 fw-bold"><i class="bi bi-pie-chart-fill me-2"></i>Capacidad del Recinto</h6>
+                    </div>
                     <div class="card-body">
                         <?php 
                         $totalParcelas = $datos['total_parcelas_generales'] ?? 0;
@@ -45,25 +47,25 @@
                         ?>
                         <div class="mb-3">
                             <div class="d-flex justify-content-between mb-1">
-                                <span><strong>Nivel de Ocupación</strong></span>
-                                <span><?= $porcentaje ?>%</span>
+                                <span class="text-muted">Nivel de Ocupación</span>
+                                <span class="fw-bold"><?= $porcentaje ?>%</span>
                             </div>
-                            <div class="progress" style="height: 20px;">
-                                <div class="progress-bar <?= $porcentaje > 90 ? 'bg-danger' : ($porcentaje > 70 ? 'bg-warning' : 'bg-primary') ?>" role="progressbar" style="width: <?= $porcentaje ?>%;" aria-valuenow="<?= $porcentaje ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="progress" style="height: 12px; border-radius: 10px;">
+                                <div class="progress-bar <?= $porcentaje > 90 ? 'bg-danger' : ($porcentaje > 70 ? 'bg-primary' : 'bg-acento') ?>" role="progressbar" style="width: <?= $porcentaje ?>%;" aria-valuenow="<?= $porcentaje ?>" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                         </div>
                         <ul class="list-group list-group-flush mt-3">
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                 Total de Parcelas Registradas
-                                <span class="badge bg-secondary rounded-pill"><?= $totalParcelas ?></span>
+                                <span class="badge bg-light text-dark rounded-pill border"><?= $totalParcelas ?></span>
                             </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                 Parcelas Ocupadas
-                                <span class="badge bg-primary rounded-pill"><?= $ocupadas ?></span>
+                                <span class="badge bg-acento rounded-pill"><?= $ocupadas ?></span>
                             </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                 Parcelas Libres
-                                <span class="badge bg-success rounded-pill"><?= $libres ?></span>
+                                <span class="badge bg-primary rounded-pill"><?= $libres ?></span>
                             </li>
                         </ul>
                     </div>
@@ -72,8 +74,10 @@
 
             <!-- Resumen Financiero -->
             <div class="col-md-6 mb-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-header bg-success text-white">Resumen Financiero</div>
+                <div class="card shadow-sm h-100 border-0">
+                    <div class="card-header bg-primary text-white py-3">
+                        <h6 class="mb-0 fw-bold"><i class="bi bi-cash-coin me-2"></i>Resumen Financiero</h6>
+                    </div>
                     <div class="card-body">
                         <?php 
                         $deudaEstimada = $datos['deuda_estimada'] ?? 0;
@@ -81,17 +85,17 @@
                         $totalMorosos = $datos['total_morosos'] ?? 0;
                         ?>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                 Ingresos del Mes Actual
-                                <strong>$<?= number_format($ingresosMes, 2, ',', '.') ?></strong>
+                                <span class="fw-bold text-success">$<?= number_format($ingresosMes, 2, ',', '.') ?></span>
                             </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                 Deudores Morosos Activos
                                 <span class="badge bg-danger rounded-pill"><?= $totalMorosos ?></span>
                             </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center text-danger">
-                                Deuda Estimada Pendiente
-                                <strong>$<?= number_format($deudaEstimada, 2, ',', '.') ?></strong>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <span>Deuda Estimada Pendiente</span>
+                                <span class="fw-bold text-danger">$<?= number_format($deudaEstimada, 2, ',', '.') ?></span>
                             </li>
                         </ul>
                     </div>
@@ -100,19 +104,25 @@
 
             <!-- Actividad de Registro -->
             <div class="col-md-12 mb-4">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-secondary text-white">Actividad de Registro Histórica</div>
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-dark text-white py-3">
+                        <h6 class="mb-0 fw-bold"><i class="bi bi-journal-text me-2"></i>Actividad de Registro Histórica</h6>
+                    </div>
                     <div class="card-body">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Personas Fallecidas Registradas
-                                <span class="badge bg-dark rounded-pill"><?= isset($datos['total_difuntos']) ? $datos['total_difuntos'] : 0 ?></span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Traslados Realizados
-                                <span class="badge bg-dark rounded-pill"><?= isset($datos['total_traslados']) ? $datos['total_traslados'] : 0 ?></span>
-                            </li>
-                        </ul>
+                        <div class="row">
+                            <div class="col-md-6 border-end">
+                                <div class="d-flex justify-content-between align-items-center p-2">
+                                    <span>Personas Fallecidas Registradas</span>
+                                    <span class="fs-4 fw-bold text-acento"><?= isset($datos['total_difuntos']) ? $datos['total_difuntos'] : 0 ?></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex justify-content-between align-items-center p-2">
+                                    <span>Traslados Realizados</span>
+                                    <span class="fs-4 fw-bold text-primary"><?= isset($datos['total_traslados']) ? $datos['total_traslados'] : 0 ?></span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
