@@ -1,9 +1,12 @@
 <?php
+
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
-class PdfHelper {
-    public static function generarPlantilla(string $path, array $data, string $filename) {
+class PdfHelper
+{
+    public static function generarPlantilla(string $path, array $data, string $filename)
+    {
         if (!file_exists($path)) {
             throw new Exception("La plantilla no existe: $path");
         }
@@ -23,6 +26,7 @@ class PdfHelper {
         $options = new Options();
         $options->set('isHtml5ParserEnabled', true);
         $options->set('isRemoteEnabled', true);
+        $options->set('tempDir', dirname(APP) . '/../tmp');
 
         $dompdf = new Dompdf($options);
         $dompdf->loadHtml($html);
@@ -33,4 +37,3 @@ class PdfHelper {
         exit;
     }
 }
-?>
