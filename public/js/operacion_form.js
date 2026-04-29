@@ -1,7 +1,12 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    // Hacer obligatorios todos los campos de búsqueda
-    document.querySelectorAll('input[list]').forEach(input => input.required = true);
+    // Hacer obligatorios todos los campos de búsqueda y deshabilitar el historial del navegador agresivamente
+    document.querySelectorAll('input[list]').forEach(input => {
+        input.required = true;
+        // Chromium ignora 'off' si el campo tiene un ID recurrente, pero respeta strings no registrados o 'new-password'
+        input.setAttribute('autocomplete', 'new-password');
+        input.setAttribute('name', Math.random().toString(36).substring(7)); // Random name para engañar heurística
+    });
 
     // --- 1. FUNCIÓN AUTOCOMPLETADO ---
     function configurarAutocompletado(inputId, hiddenId, datalistId) {
@@ -16,7 +21,8 @@ document.addEventListener('DOMContentLoaded', function () {
             const valorInputNormalizado = normalizeText(input.value);
             if (valorInputNormalizado === '') return;
 
-            const options = document.querySelectorAll(`#${datalistId} option`);
+            const activeDatalistId = input.getAttribute('list') || datalistId;
+            const options = document.querySelectorAll(`#${activeDatalistId} option`);
             for (const option of options) {
                 const valorOpcionNormalizado = normalizeText(option.value);
                 if (valorOpcionNormalizado === valorInputNormalizado) {
@@ -139,9 +145,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
                             if (inputActivo) {
                                 inputActivo.value = data.newItem.text;
-                                const hiddenId = inputActivo.id.replace('search', 'id');
-                                const hidden = document.getElementById(hiddenId);
-                                if (hidden) hidden.value = data.newItem.id;
+                                const baseId = inputActivo.id.replace('_search', '');
+                                const hidden = document.getElementById('id_' + baseId) || document.getElementById(baseId + '_id') || document.getElementById(inputActivo.id.replace('search', 'id'));
+                                if (hidden) {
+                                    hidden.value = data.newItem.id;
+                                    // Trigger change event just in case
+                                    hidden.dispatchEvent(new Event('change'));
+                                }
                             }
                         }
                         const modal = bootstrap.Modal.getInstance(modalEl);
@@ -191,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- 5. CONFIGURACIÓN DE AUTOCOMPLETADOS ---
     // Traslado Interno (TI)
     configurarAutocompletado('difunto_search_ti', 'id_difunto_ti', 'difuntos');
-    configurarAutocompletado('parcela_search_ti', 'id_parcela_ti', 'parcelasDisponibles');
+    configurarAutocompletado('parcela_search_ti', 'id_parcela_ti', 'todasLasParcelas');
     configurarAutocompletado('deudo_search_ti', 'id_deudo_ti', 'deudos');
 
     // Traslado Externo (TE)
@@ -208,7 +218,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const inputDeudoLd = document.getElementById('deudo_search_ld');
     let deudoDebounce;
     if (inputDeudoLd) {
-        inputDeudoLd.addEventListener('change', function() {
+        inputDeudoLd.addEventListener('change', function () {
             clearTimeout(deudoDebounce);
             deudoDebounce = setTimeout(() => {
                 const idDeudo = document.getElementById('id_deudo_ld').value;
@@ -220,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (typeof URL_INFO_DEUDA === 'undefined') return;
 
                 infoDiv.innerHTML = '<div class="text-center py-3"><div class="spinner-border text-primary" role="status"></div><p class="text-muted mt-2">Verificando estado de cuenta...</p></div>';
-                
+
                 fetch(URL_INFO_DEUDA + idDeudo)
                     .then(r => r.json())
                     .then(data => {
@@ -229,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             html += '<h6 class="card-title fw-bold mb-3"><i class="bi bi-person-lines-fill me-2"></i>Estado de Parcelas de este Deudo</h6>';
                             html += '<table class="table table-sm table-striped border-top mb-3">';
                             html += '<thead class="table-light"><tr><th>Ubicación</th><th>Difunto (Último)</th><th>Estado</th></tr></thead><tbody>';
-                            
+
                             let tieneDeuda = false;
                             data.ocupadas.forEach(p => {
                                 let badge = p.tiene_deuda ? '<span class="badge bg-danger">Vencido</span>' : '<span class="badge bg-success">Al Día</span>';
@@ -241,13 +251,13 @@ document.addEventListener('DOMContentLoaded', function () {
                                          </tr>`;
                             });
                             html += '</tbody></table>';
-                            
+
                             if (tieneDeuda) {
                                 html += '<div class="alert alert-danger mb-0 py-2"><i class="bi bi-exclamation-triangle-fill me-2"></i> <strong>Moroso:</strong> El sistema generará un <i>Estado de Deuda</i> reportando los saldos pendientes.</div>';
                             } else {
                                 html += '<div class="alert alert-success mb-0 py-2"><i class="bi bi-check-circle-fill me-2"></i> <strong>Al día:</strong> Todo en orden. Se generará certificado de <i>Libre de Deuda</i>.</div>';
                             }
-                            
+
                             html += '</div></div>';
                             infoDiv.innerHTML = html;
                             infoDiv.style.opacity = 0;
@@ -265,10 +275,40 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Checkbox Exento de pago
+    document.querySelectorAll('.check-exento-pago').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const prefix = this.dataset.prefix;
+            const camposContainer = document.querySelectorAll(`.campos-ocultables-pago_${prefix}`);
+            const isExento = this.checked;
+
+            camposContainer.forEach(el => {
+                const inputs = el.querySelectorAll('input');
+                if (isExento) {
+                    el.style.opacity = '0.5';
+                    el.style.pointerEvents = 'none';
+                    inputs.forEach(i => { i.required = false; i.value = ''; });
+                } else {
+                    el.style.opacity = '1';
+                    el.style.pointerEvents = 'auto';
+                }
+            });
+
+            // Adjust autocomplete list dynamically
+            const parcelaInput = document.getElementById(`parcela_search_${prefix}`);
+            if (parcelaInput) {
+                parcelaInput.value = ''; // clear input to enforce re-selection
+                document.getElementById(`id_parcela_${prefix}`).value = '';
+                parcelaInput.setAttribute('list', isExento ? 'todasLasParcelas' : 'parcelasDisponibles');
+            }
+        });
+    });
+
     // Ingreso de Difunto (IN)
     configurarAutocompletado('difunto_search_in', 'id_difunto_in', 'difuntos');
     configurarAutocompletado('parcela_search_in', 'id_parcela_in', 'parcelasDisponibles');
     configurarAutocompletado('deudo_search_in', 'id_deudo_in', 'deudos');
+
 
     // Renovacion de Pago (RP)
     configurarAutocompletado('deudo_search_rp', 'id_deudo_rp', 'deudos');

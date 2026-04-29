@@ -18,192 +18,58 @@
 <div class="card shadow-sm border-0">
     <div class="card-body p-4">
 
-        <div class="mb-3">
+        <div class="mb-3 d-none">
             <label for="tipo_operacion_selector" class="form-label fw-bold">Tipo de Operación</label>
             <select class="form-select" id="tipo_operacion_selector" required>
                 <option value="">Seleccione una operación...</option>
                 <?php foreach ($datos['tipo_operaciones'] as $op): ?>
-                    <option value="<?= $op['id_tipo_operacion'] ?>">
+                    <option value="<?= $op['id_tipo_operacion'] ?>" <?= ($datos['tipo_seleccionado'] == $op['id_tipo_operacion']) ? 'selected' : '' ?>>
                         <?= htmlspecialchars($op['descripcion']) ?>
                     </option>
                 <?php endforeach; ?>
             </select>
         </div>
-        <hr>
 
-        <form action="<?= $datos['action'] ?>" method="POST" id="operacionForm">
-            <input type="hidden" name="tipo_operacion" id="tipo_operacion_hidden">
-
-            <!-- Traslado Interno (Exhumación) -->
-            <div id="seccion-1" class="seccion-operacion" data-prefix="ti" style="display:none;">
-                <h5 class="mb-3">Traslado Interno</h5>
-                <p class="text-muted small">Mueve un difunto de su ubicacion actual a una nueva parcela vacía.</p>
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Difunto a trasladar</label>
-                        <div class="input-group">
-                            <input list="difuntos" id="difunto_search_ti" class="form-control"
-                                placeholder="Buscar difunto...">
-                            <input type="hidden" name="id_difunto_ti" id="id_difunto_ti">
-                            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
-                                data-bs-target="#modalDifunto">
-                                <i class="bi bi-plus"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Parcela de Destino (debe estar vacía)</label>
-                        <div class="input-group">
-                            <input list="parcelasDisponibles" id="parcela_search_ti" class="form-control"
-                                placeholder="Buscar parcela de destino...">
-                            <input type="hidden" name="id_parcela_ti" id="id_parcela_ti">
-                            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
-                                data-bs-target="#modalParcela">
-                                <i class="bi bi-plus"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label">Fecha del Traslado</label>
-                        <input type="date" class="form-control" name="fecha_traslado_ti" value="<?= date('Y-m-d'); ?>">
-                    </div>
-                </div>
-                <?php $prefix = 'ti';
-                include __DIR__ . '/../partials/_campos_pago.php'; ?>
+        <?php if (!empty($datos['tipo_seleccionado'])): ?>
+            <h4 class="mb-0 text-primary fw-bold">
+                <i class="bi bi-pencil-square me-2"></i>
+                <?php 
+                    foreach($datos['tipo_operaciones'] as $op) {
+                        if($op['id_tipo_operacion'] == $datos['tipo_seleccionado']) {
+                            echo htmlspecialchars($op['descripcion']);
+                            break;
+                        }
+                    }
+                ?>
+            </h4>
+            <hr class="mt-2 mb-4">
+        <?php else: ?>
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i> Seleccione una operación desde el menú superior para comenzar.
             </div>
+        <?php endif; ?>
 
-            <!-- Traslado Externo (Exhumación) -->
-            <div id="seccion-2" class="seccion-operacion" style="display:none;">
-                <h5 class="mb-3">Traslado Externo (Exhumación)</h5>
-                <p class="text-muted small">Registra el retiro de un difunto del cementerio.</p>
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Difunto a exhumar</label>
-                        <div class="input-group">
-                            <input list="difuntos" id="difunto_search_te" class="form-control"
-                                placeholder="Buscar difunto...">
-                            <input type="hidden" name="id_difunto_te" id="id_difunto_te">
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Fecha de Exhumación</label>
-                        <input type="date" class="form-control" name="fecha_exhumacion_te"
-                            value="<?= date('Y-m-d'); ?>">
-                    </div>
-                </div>
-            </div>
+        <form action="<?= $datos['action'] ?>" method="POST" id="operacionForm" autocomplete="off">
+            <input type="hidden" name="tipo_operacion" id="tipo_operacion_hidden" value="<?= $datos['tipo_seleccionado'] ?>">
 
-            <!-- Persona bajos recursos -->
-            <div id="seccion-3" class="seccion-operacion" data-prefix="br" style="display:none;">
-                <h5 class="mb-3">Autorización para Personas de Bajos Recursos</h5>
-                <p class="text-muted small">Registra un nuevo ingreso en una parcela asignada.</p>
-                <div class="row g-3 mb-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Difunto a inhumar</label>
-                        <div class="input-group">
-                            <input list="difuntos" id="difunto_search_br" class="form-control"
-                                placeholder="Buscar difunto...">
-                            <input type="hidden" name="id_difunto_br" id="id_difunto_br">
-                            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
-                                data-bs-target="#modalDifunto"><i class="bi bi-plus"></i></button>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Parcela Asignada (debe estar vacía)</label>
-                        <div class="input-group">
-                            <input list="parcelasDisponibles" id="parcela_search_br" class="form-control"
-                                placeholder="Buscar parcela...">
-                            <input type="hidden" name="id_parcela_br" id="id_parcela_br">
-                            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
-                                data-bs-target="#modalParcela">
-                                <i class="bi bi-plus"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <?php $prefix = 'br';
-                include __DIR__ . '/../partials/_campos_pago.php'; ?>
-            </div>
-
-            <!-- Libre de deuda -->
-            <div id="seccion-4" class="seccion-operacion" style="display:none;">
-                <h5 class="mb-3">Estado de Deuda / Libre de Deuda</h5>
-                <p class="text-muted small">Verifica el estado de cuenta general de un deudo e imprime su certificado correspondiente.</p>
-                <div class="row g-3">
-                    <div class="col-md-12">
-                        <label for="deudo_search_ld" class="form-label fw-bold">Deudo a verificar</label>
-                        <div class="input-group">
-                            <input list="deudos" id="deudo_search_ld" class="form-control"
-                                placeholder="Buscar deudo y corroborar deuda..." required>
-                            <input type="hidden" name="id_deudo_ld" id="id_deudo_ld" required>
-                        </div>
-                    </div>
-                </div>
-                <div id="info_deuda_ld" class="mt-4">
-                    <!-- Dinamically injected from JS -->
-                </div>
-            </div>
-
-            <!-- Ingreso de Difunto -->
-            <div id="seccion-5" class="seccion-operacion" data-prefix="in" style="display:none;">
-                <h5 class="mb-3">Ingreso de Difunto</h5>
-                <p class="text-muted small">Registra la primera inhumación de un difunto en una parcela vacía.</p>
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Difunto a inhumar</label>
-                        <div class="input-group">
-                            <input list="difuntos" id="difunto_search_in" class="form-control"
-                                placeholder="Buscar difunto...">
-                            <input type="hidden" name="id_difunto_in" id="id_difunto_in">
-                            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
-                                data-bs-target="#modalDifunto"><i class="bi bi-plus"></i></button>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Parcela de Destino (debe estar vacía)</label>
-                        <div class="input-group">
-                            <input list="parcelasDisponibles" id="parcela_search_in" class="form-control"
-                                placeholder="Buscar parcela...">
-                            <input type="hidden" name="id_parcela_in" id="id_parcela_in">
-                            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
-                                data-bs-target="#modalParcela"><i class="bi bi-plus"></i></button>
-                        </div>
-                    </div>
-                </div>
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label">Fecha de Ingreso</label>
-                        <input type="date" class="form-control" name="fecha_ingreso_in" value="<?= date('Y-m-d'); ?>">
-                    </div>
-                </div>
-                <?php $prefix = 'in';
-                include __DIR__ . '/../partials/_campos_pago.php'; ?>
-            </div>
-
-            <!-- Renovacion de Pago -->
-            <div id="seccion-6" class="seccion-operacion" data-prefix="rp" style="display:none;">
-                <h5 class="mb-3">Renovación de Pago</h5>
-                <p class="text-muted small">Registra la renovación del pago de una parcela ocupada.</p>
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Parcela a Renovar</label>
-                        <div class="input-group">
-                            <input list="parcelasOcupadas" id="parcela_search_rp" class="form-control"
-                                placeholder="Buscar parcela...">
-                            <input type="hidden" name="id_parcela_rp" id="id_parcela_rp">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Fecha de Renovación</label>
-                        <input type="date" class="form-control" name="fecha_renovacion_rp"
-                            value="<?= date('Y-m-d'); ?>">
-                    </div>
-                </div>
-                <?php $prefix = 'rp';
-                include __DIR__ . '/../partials/_campos_pago.php'; ?>
-            </div>
+            <?php 
+                if (!empty($datos['tipo_seleccionado'])) {
+                    $sections = [
+                        1 => '_traslado_interno',
+                        2 => '_traslado_externo',
+                        3 => '_bajos_recursos',
+                        4 => '_libre_deuda',
+                        5 => '_ingreso_difunto',
+                        6 => '_renovacion_pago'
+                    ];
+                    $file = $sections[$datos['tipo_seleccionado']] ?? null;
+                    if ($file && file_exists(__DIR__ . "/sections/{$file}.php")) {
+                        include __DIR__ . "/sections/{$file}.php";
+                    } else {
+                        echo '<div class="alert alert-warning">No se encontró la vista para esta operación.</div>';
+                    }
+                }
+            ?>
         </form>
     </div>
 </div>
@@ -236,6 +102,12 @@ function format_persona($persona) {
     <?php endforeach; ?>
 </datalist>
 
+<datalist id="todasLasParcelas">
+    <?php foreach ($datos['todasLasParcelas'] as $p): ?>
+        <option value="<?= htmlspecialchars(format_parcela($p)) ?>" data-id="<?= $p['id_parcela'] ?>">
+    <?php endforeach; ?>
+</datalist>
+
 <datalist id="deudos">
     <?php foreach ($datos['deudos'] as $d): ?>
         <option value="<?= htmlspecialchars(format_persona($d)) ?>" data-id="<?= $d['id_deudo'] ?>">
@@ -248,11 +120,13 @@ function format_persona($persona) {
     <?php endforeach; ?>
 </datalist>
 
+<?php if (!empty($datos['tipo_seleccionado'])): ?>
 <div class="d-flex justify-content-end gap-2 mt-4">
     <button type="submit" form="operacionForm" class="btn btn-success"><i class="bi bi-save"></i> 
         Guardar Operación
     </button>
 </div>
+<?php endif; ?>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>

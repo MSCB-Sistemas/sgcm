@@ -1,14 +1,13 @@
 <html>
-
 <head>
     <meta charset="UTF-8">
-    <title>Autorización de Traslado Externo</title>
+    <title>Autorización de Operación Pre-pagada</title>
     <style>
         body {
             font-family: "Times New Roman", serif;
             font-size: 12pt;
             line-height: 1.6;
-            margin: 1.5cm;
+            margin: 1.5cm; 
         }
 
         .container {
@@ -36,9 +35,10 @@
         strong {
             font-weight: bold;
         }
-
+        
         .detalles {
             padding-left: 20pt;
+            border-left: 1px solid #ccc;
             margin-top: 20pt;
             margin-bottom: 20pt;
         }
@@ -46,16 +46,8 @@
         .pie-pagina {
             margin-top: 48pt;
         }
-
-        .linea-firma {
-            border-bottom: 1px solid #333;
-            display: inline-block;
-            width: 300px;
-            margin-left: 10px;
-        }
     </style>
 </head>
-
 <body>
     <div class="container">
 
@@ -64,36 +56,27 @@
             <p><strong>A:</strong> ENCARGADO DE CEMENTERIO MUNICIPAL.</p>
         </div>
 
-        <h1 class="titulo">AUTORIZACIÓN DE TRASLADO EXTERNO (EXHUMACIÓN)</h1>
+        <h1 class="titulo">AUTORIZACIÓN DE {tipo_tramite}</h1>
 
         <p>
-            Por la presente se <strong>AUTORIZA</strong> la exhumación y traslado externo de los restos de quien en vida
-            fuera
+            Por la presente se <strong>AUTORIZA</strong> la inhumación / traslado de los restos de quien en vida fuera 
             <strong>{difunto}</strong>, con fecha de defunción el día <strong>{fecha_fallecimiento}</strong>.
         </p>
 
         <div class="detalles">
             <p>
-                <strong>UBICACIÓN DE ORIGEN:</strong><br>
+                <strong>UBICACIÓN DE DESTINO:</strong><br>
                 {tipo_parcela} N° {id_parcela}, Hilera {hilera}, Sección {seccion}.
-            </p>
-            <p>
-                <strong>CEMENTERIO DE DESTINO:</strong><br>
-
-                _____________
             </p>
         </div>
 
         <p>
-            El trámite es gestionado por la empresa/persona: <strong>_____________</strong>.
+            El presente ingreso se autoriza bajo modalidad de <strong>DERECHOS PRE-PAGADOS O ESPACIO FAMILIAR COMPARTIDO</strong>. 
+            La parcela ya se encuentra asignada/abonada previamente por el responsable a cargo, por lo tanto no se genera un nuevo recibo de cobro por concesión.
         </p>
+        
         <p>
-            Derechos de exhumación abonados mediante <strong>RECIBO N° _____________</strong> con fecha _____________.
-        </p>
-
-        <p>
-            Trámite solicitado por: <strong>_____________</strong>, DNI N° <strong>_____________</strong>, en su
-            carácter de ____________.
+            Trámite certificado por: <strong>{responsable_tramite}</strong>.
         </p>
 
         <p class="pie-pagina">
@@ -102,5 +85,4 @@
 
     </div>
 </body>
-
 </html>

@@ -2,6 +2,7 @@
 class HomeController extends Control
 {
     private UsuarioModel $model;
+
     public function __construct()
     {
         $this->requireLogin();
@@ -10,11 +11,18 @@ class HomeController extends Control
 
     public function index()
     {
-        $datos = ['title' => 'Home'];
+        $usuario = $this->model->getUsuarioId($_SESSION['usuario_id']);
+        
+        $datos = [
+            'title' => 'Inicio',
+            'usuario' => $usuario
+        ];
+
         $this->loadView('home/HomeView', $datos);
     }
 
-    public function login() {
+    public function login()
+    {
         $this->loadView('LoginView', [], 'login');
     }
 }
