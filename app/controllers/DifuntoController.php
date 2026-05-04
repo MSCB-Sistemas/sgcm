@@ -137,12 +137,8 @@ class DifuntoController extends Control
             $is_ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
 
             if ($is_ajax) {
-                $texto_completo = '';
-                if (!empty($dni)) {
-                    $texto_completo = "$dni - $nombre $apellido";
-                } else {
-                    $texto_completo = "$nombre $apellido";
-                }
+                $dni_val = !empty($dni) ? $dni : 'S/DNI';
+                $texto_completo = strtoupper("$dni_val - $apellido, $nombre");
 
                 header('Content-Type: application/json');
                 echo json_encode([

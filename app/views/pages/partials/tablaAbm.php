@@ -16,8 +16,8 @@
         <?php endif; ?>
     </div>
 
-    <div class="table-responsive-lg shadow-rounded">
-        <table class="table table-hover align-middle mb-0" id="tablaABM" style="min-width: 800px;">
+    <div class="shadow-rounded bg-white p-2">
+        <table class="table table-hover align-middle mb-0" id="tablaABM" style="width: 100% !important;">
             <thead class="table-light">
                 <tr>
                     <?php foreach ($datos['columnas'] as $col): ?>
@@ -66,6 +66,7 @@
             language: {
                 url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
             },
+            autoWidth: false,
             pageLength: 50,
             lengthMenu: [5, 10, 25, 50, 100],
             order: []
