@@ -141,6 +141,24 @@ class ParcelaModel
     }
 
     /**
+     * Obtiene una parcela con la información de su deudo asociado
+     */
+    public function getParcelaConDeudo($id_parcela)
+    {
+        $sql = "SELECT p.*, 
+                       de.id_deudo, de.dni, de.nombre, de.apellido
+                FROM parcela p
+                INNER JOIN pago pg ON p.id_parcela = pg.id_parcela
+                INNER JOIN deudo de ON pg.id_deudo = de.id_deudo
+                WHERE p.id_parcela = :id_parcela
+                ORDER BY pg.id_pago DESC
+                LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id_parcela' => $id_parcela]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    /**
      * Inserta una nueva parcela
      * @param int $id_tipo ID del tipo de parcela
      * @param int $id_deudo ID del deudor
