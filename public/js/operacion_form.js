@@ -73,6 +73,25 @@ document.addEventListener('DOMContentLoaded', function () {
                         return res.json();
                     })
                     .then(data => {
+                        // --- Auto-completar Deudo si está en modo exento (familiar/reservada) ---
+                        const prefix = input.id.split('_').pop();
+                        const checkExento = document.getElementById(`exento_pago_${prefix}`);
+                        
+                        if (checkExento && checkExento.checked && data.deudo) {
+                            const deudoSearch = document.getElementById(`deudo_search_${prefix}`);
+                            const deudoId = document.getElementById(`id_deudo_${prefix}`);
+                            if (deudoSearch && deudoId) {
+                                deudoSearch.value = data.deudo.text;
+                                deudoId.value = data.deudo.id;
+                                deudoSearch.setCustomValidity("");
+                                deudoSearch.classList.remove('is-invalid');
+                                deudoSearch.readOnly = true;
+                                deudoSearch.style.backgroundColor = '#e9ecef'; // Gris de deshabilitado
+                            }
+                        }
+
+                        if (!accordion) return;
+
                         let pagosHtml = `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePagos">Pagos Asociados (${data.pagos.length})</button></h2><div id="collapsePagos" class="accordion-collapse collapse show"><div class="accordion-body p-0">`;
                         if (data.pagos.length > 0) {
                             pagosHtml += `<table class="table table-sm table-striped mb-0"><thead><tr><th>Fecha Pago</th><th>Vencimiento</th><th>Total</th><th>Deudo</th></tr></thead><tbody>`;
@@ -316,6 +335,10 @@ document.addEventListener('DOMContentLoaded', function () {
             const camposContainer = document.querySelectorAll(`.campos-ocultables-pago_${prefix}`);
             const isExento = this.checked;
 
+            const deudoSearch = document.getElementById(`deudo_search_${prefix}`);
+            const deudoId = document.getElementById(`id_deudo_${prefix}`);
+            const deudoContainer = document.querySelector(`.campo-deudo-pago_${prefix}`);
+
             camposContainer.forEach(el => {
                 const inputs = el.querySelectorAll('input');
                 if (isExento) {
@@ -328,11 +351,37 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
+            if (isExento) {
+                if (deudoSearch) {
+                    deudoSearch.required = false;
+                    deudoSearch.readOnly = true;
+                    deudoSearch.value = '';
+                    deudoSearch.placeholder = "Se auto-completará al elegir parcela...";
+                    deudoSearch.style.backgroundColor = '#e9ecef';
+                }
+                if (deudoId) deudoId.value = '';
+            } else {
+                if (deudoSearch) {
+                    deudoSearch.required = true;
+                    deudoSearch.readOnly = false;
+                    deudoSearch.value = '';
+                    deudoSearch.placeholder = "Buscar deudo por DNI o nombre...";
+                    deudoSearch.style.backgroundColor = '';
+                }
+                if (deudoId) deudoId.value = '';
+            }
+
             const parcelaInput = document.getElementById(`parcela_search_${prefix}`);
+            const parcelaId = document.getElementById(`id_parcela_${prefix}`);
             if (parcelaInput) {
-                parcelaInput.value = '';
-                document.getElementById(`id_parcela_${prefix}`).value = '';
                 parcelaInput.setAttribute('list', isExento ? 'todasLasParcelas' : 'parcelasDisponibles');
+                
+                if (parcelaId && parcelaId.value) {
+                    parcelaInput.dispatchEvent(new Event('change', { bubbles: true }));
+                } else {
+                    parcelaInput.value = '';
+                    if (parcelaId) parcelaId.value = '';
+                }
             }
         });
     });
@@ -351,6 +400,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // La variable URL_INFO_PARCELA se define en la vista usando PHP
     if (typeof URL_INFO_PARCELA !== 'undefined') {
         configurarInfoDinamica('parcela_search_ti', 'id_parcela_ti', URL_INFO_PARCELA, 'accordionParcelaInfo');
+        configurarInfoDinamica('parcela_search_in', 'id_parcela_in', URL_INFO_PARCELA, 'accordionParcelaInfo');
         configurarInfoDinamica('parcela_search_br', 'id_parcela_br', URL_INFO_PARCELA, 'accordionParcelaInfo');
         configurarInfoDinamica('parcela_search_rp', 'id_parcela_rp', URL_INFO_PARCELA, 'accordionParcelaInfo');
     } else {

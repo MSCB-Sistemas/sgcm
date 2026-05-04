@@ -98,7 +98,15 @@ class OperacionController extends Control
         $importe = $data['importe_ti'] ?? '';
         $vencimiento = $data['fecha_vencimiento_ti'] ?? '';
 
-        if (empty($id_difunto) || empty($id_parcela_nueva) || empty($id_deudo)) {
+        if ($is_exento && empty($id_deudo) && !empty($id_parcela_nueva)) {
+            $p = $this->parcelaModel->getParcelaConDeudo($id_parcela_nueva);
+            $id_deudo = $p['id_deudo'] ?? '';
+            if (empty($id_deudo)) {
+                $errores[] = "No se encontró un pago previo registrado para esta parcela. No se puede procesar como familiar/reservada sin un titular previo en el historial de pagos.";
+            }
+        }
+
+        if (empty($id_difunto) || empty($id_parcela_nueva) || (empty($id_deudo) && !$is_exento)) {
             $errores[] = "Para un Traslado Interno, difunto, parcela de destino y responsable son obligatorios.";
         }
         
@@ -321,9 +329,17 @@ class OperacionController extends Control
         $importe = $data['importe_in'] ?? '';
         $vencimiento = $data['fecha_vencimiento_in'] ?? '';
 
-        if (empty($id_difunto) || empty($id_parcela) || empty($id_deudo)) {
+        if ($is_exento && empty($id_deudo) && !empty($id_parcela)) {
+            $p = $this->parcelaModel->getParcelaConDeudo($id_parcela);
+            $id_deudo = $p['id_deudo'] ?? '';
+            if (empty($id_deudo)) {
+                $errores[] = "No se pudo recuperar el titular de la parcela desde el historial de pagos. Verifique que la parcela esté realmente reservada.";
+            }
+        }
+
+        if (empty($id_difunto) || empty($id_parcela) || (empty($id_deudo) && !$is_exento)) {
             $errores[] = "Debe seleccionar difunto, parcela y deudo responsable.";
-        } else if (!is_numeric($id_difunto) || !is_numeric($id_parcela) || !is_numeric($id_deudo)) {
+        } else if (!is_numeric($id_difunto) || !is_numeric($id_parcela) || (!is_numeric($id_deudo) && !$is_exento)) {
             $errores[] = "Uno de los elementos seleccionados no es válido. Por favor, vuelva a buscarlos en la lista.";
         }
 

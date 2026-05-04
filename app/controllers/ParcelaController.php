@@ -296,7 +296,22 @@ class ParcelaController extends Control
         
         $pagosLimitados = array_slice($todosLosPagos, 0, 10);
 
+        $parcela = $model->getParcelaConDeudo($id);
+        
+        $deudoInfo = null;
+        if ($parcela && !empty($parcela['id_deudo'])) {
+            $dni = !empty($parcela['dni']) ? $parcela['dni'] : 'S/DNI';
+            $nom = !empty($parcela['nombre']) ? $parcela['nombre'] : '';
+            $ape = !empty($parcela['apellido']) ? $parcela['apellido'] : '';
+            $deudoInfo = [
+                'id' => $parcela['id_deudo'],
+                'text' => strtoupper("$dni - $ape, $nom")
+            ];
+        }
+
         $data = [
+            'parcela' => $parcela,
+            'deudo' => $deudoInfo,
             'pagos' => $pagosLimitados,
             'difuntos' => $model->obtenerDifuntosPorParcela($id),
         ];

@@ -71,6 +71,10 @@
                 }
             ?>
         </form>
+
+        <div id="accordionParcelaInfo" class="accordion mt-4 shadow-sm">
+            <!-- Se carga dinámicamente vía JS -->
+        </div>
     </div>
 </div>
 
