@@ -136,6 +136,24 @@ foreach ($indexRoutes as $path => $def)
     $href  = $base . '/' . $path;
     $group = array_key_exists($path, $groupFor) ? $groupFor[$path] : 'ABM';
     
+    if ($path === 'operacion') 
+    {
+        $solo []= [
+            'label' => $label, 
+            'href' => '#', 
+            'perms' => $perms,
+            'children' => [
+                ['label' => 'Traslado Interno',          'href' => $href . '?tipo=1', 'bi' => 'arrow-left-right'],
+                ['label' => 'Traslado Externo',          'href' => $href . '?tipo=2', 'bi' => 'box-arrow-up-right'],
+                ['label' => 'Persona Bajos Recursos',    'href' => $href . '?tipo=3', 'bi' => 'person-heart'],
+                ['label' => 'Libre de Deuda',            'href' => $href . '?tipo=4', 'bi' => 'file-earmark-check'],
+                ['label' => 'Ingreso de Difunto',        'href' => $href . '?tipo=5', 'bi' => 'person-down'],
+                ['label' => 'Renovación de Pago',        'href' => $href . '?tipo=6', 'bi' => 'cash-stack'],
+            ]
+        ] + $icon;
+        continue;
+    }
+
     if ($group === null) 
     {
         $solo []= ['label' => $label, 'href' => $href, 'perms' => $perms] + $icon;
@@ -166,10 +184,8 @@ if (!empty($abmChildren))
 require_once APP . '/views/inc/header.php' ?>
 
 <body>
-    <main class="d-flex flex-nowrap" style="min-height: 100vh">
-        <?php require_once APP . '/views/inc/sidebar.php'; ?>
-        <div class="flex-grow-1 p-3">
-            <?php require_once $viewPath; ?>
-        </div>
-    </main>
+    <?php require_once APP . '/views/inc/navbar.php'; ?>
+    <div class="container-fluid py-4 main-content">
+        <?php require_once $viewPath; ?>
+    </div>
     <?php require_once APP . '/views/inc/footer.php' ?>

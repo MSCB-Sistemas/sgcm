@@ -43,7 +43,7 @@ class DifuntoModel
                 LEFT JOIN nacionalidades n ON d.id_nacionalidad = n.id_nacionalidad");
 
         $stmt->execute();
-        
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -88,20 +88,22 @@ class DifuntoModel
         $stmt = $this->db->prepare($sql);
 
         $parametros = [
-            'id_deudo'              => $id_deudo,
-            'nombre'                => $nombre,
-            'apellido'              => $apellido,
-            'dni'                   => $dni,
-            'edad'                  => $edad,
-            'fecha_fallecimiento'   => $fecha_fallecimiento,
-            'id_sexo'               => $id_sexo,
-            'id_nacionalidad'       => $id_nacionalidad,
-            'id_estado_civil'       => $id_estado_civil,
-            'domicilio'             => $domicilio,
-            'localidad'             => $localidad,
-            'codigo_postal'         => $codigo_postal
+            'id_deudo' => $id_deudo,
+            'nombre' => $nombre,
+            'apellido' => $apellido,
+            'dni' => $dni,
+            'edad' => $edad,
+            'fecha_fallecimiento' => $fecha_fallecimiento,
+            'id_sexo' => $id_sexo,
+            'id_nacionalidad' => $id_nacionalidad,
+            'id_estado_civil' => $id_estado_civil,
+            'domicilio' => $domicilio,
+            'localidad' => $localidad,
+            'codigo_postal' => $codigo_postal
         ];
         $stmt->execute($parametros);
+
+        $id = $this->db->lastInsertId();
 
         AuditoriaHelper::log(
             $_SESSION['usuario_id'],
@@ -111,7 +113,7 @@ class DifuntoModel
             "Insert"
         );
 
-        return $this->db->lastInsertId();
+        return $id;
     }
 
     /**
@@ -140,19 +142,19 @@ class DifuntoModel
         $stmt = $this->db->prepare($sql);
 
         $parametros = [
-            "id_difunto"            => $id_difunto,
-            "id_deudo"              => $id_deudo,
-            "nombre"                => $nombre,
-            "apellido"              => $apellido,
-            "dni"                   => $dni,
-            "edad"                  => $edad,
-            "fecha_fallecimiento"   => $fecha_fallecimiento,
-            "id_sexo"               => $id_sexo,
-            "id_nacionalidad"       => $id_nacionalidad,
-            "id_estado_civil"       => $id_estado_civil,
-            "domicilio"             => $domicilio,
-            "localidad"             => $localidad,
-            "codigo_postal"         => $codigo_postal
+            "id_difunto" => $id_difunto,
+            "id_deudo" => $id_deudo,
+            "nombre" => $nombre,
+            "apellido" => $apellido,
+            "dni" => $dni,
+            "edad" => $edad,
+            "fecha_fallecimiento" => $fecha_fallecimiento,
+            "id_sexo" => $id_sexo,
+            "id_nacionalidad" => $id_nacionalidad,
+            "id_estado_civil" => $id_estado_civil,
+            "domicilio" => $domicilio,
+            "localidad" => $localidad,
+            "codigo_postal" => $codigo_postal
         ];
         $stmt->execute($parametros);
 
@@ -174,8 +176,8 @@ class DifuntoModel
      */
     public function deleteDifunto(int $id_difunto): bool
     {
-        $sql        = "DELETE FROM difunto WHERE id_difunto = :id_difunto";
-        $stmt       = $this->db->prepare($sql);
+        $sql = "DELETE FROM difunto WHERE id_difunto = :id_difunto";
+        $stmt = $this->db->prepare($sql);
         $parametros = ['id_difunto' => $id_difunto];
         $stmt->execute($parametros);
 
@@ -186,16 +188,16 @@ class DifuntoModel
             "Difunto Model",
             "Update"
         );
-        
+
         return $stmt->rowCount() > 0;
     }
 
     public function countAll(): int
     {
-        $stmt   = $this->db->prepare("SELECT COUNT(*) as total FROM difunto");
+        $stmt = $this->db->prepare("SELECT COUNT(*) as total FROM difunto");
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return (int)$result['total'];
+        return (int) $result['total'];
     }
 
     public function countFiltered($search): int
@@ -216,12 +218,12 @@ class DifuntoModel
                    OR d.domicilio LIKE :search 
                    OR d.localidad LIKE :search";
 
-        $stmt       = $this->db->prepare($sql);
+        $stmt = $this->db->prepare($sql);
         $searchTerm = "%$search%";
         $stmt->bindParam(':search', $searchTerm);
         $stmt->execute();
-        $result     = $stmt->fetch(PDO::FETCH_ASSOC);
-        return (int)$result['total'];
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return (int) $result['total'];
     }
 
     public function getPage($orderCol, $orderDir, $start, $length): array
@@ -346,6 +348,6 @@ class DifuntoModel
                 WHERE id_difunto = :id_difunto";
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['id_difunto' => $id_difunto]);
-        return (int)$stmt->fetchColumn() > 0;
+        return (int) $stmt->fetchColumn() > 0;
     }
 }

@@ -16,8 +16,8 @@
         <?php endif; ?>
     </div>
 
-    <div class="table-responsive-lg shadow-rounded">
-        <table class="table table-hover align-middle mb-0" id="tablaABM" style="min-width: 800px;">
+    <div class="shadow-rounded bg-white p-2">
+        <table class="table table-hover align-middle mb-0" id="tablaABM" style="width: 100% !important;">
             <thead class="table-light">
                 <tr>
                     <?php foreach ($datos['columnas'] as $col): ?>
@@ -33,10 +33,10 @@
                     <tr>
                         <?php foreach ($datos['columnas_claves'] as $key): ?>
                             <td class="text-truncate" style="max-width: 200px;">
-                                <?php 
+                                <?php
                                 if (empty($fila[$key]) || is_null($fila[$key])) {
-                                    echo '&nbsp;'; 
-                                  }else{
+                                    echo '&nbsp;';
+                                } else {
                                     echo htmlspecialchars($fila[$key]);
                                 }
                                 ?>
@@ -53,22 +53,23 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    $('#tablaABM').DataTable({
-        dom: 'Bfrtip',
-        buttons: [
-            { extend: 'copy', text: 'Copiar', className: 'btn btn-secondary btn-sm', exportOptions: { columns: ':not(:last-child)' } },
-            { extend: 'csv', text: 'CSV', className: 'btn btn-primary btn-sm', bom: true, charset: 'UTF-8', exportOptions: { columns: ':not(:last-child)' } },
-            { extend: 'excel', text: 'Excel', className: 'btn btn-success btn-sm', exportOptions: { columns: ':not(:last-child)' } },
-            { extend: 'pdf', text: 'PDF', className: 'btn btn-danger btn-sm', exportOptions: { columns: ':not(:last-child)' } },
-            { extend: 'print', text: 'Imprimir', className: 'btn btn-info btn-sm', exportOptions: { columns: ':not(:last-child)' } }
-        ],
-        language: {
-            url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
-        },
-        pageLength: 8,
-        lengthMenu: [5, 10, 25, 50, 100],
-        order: []
+    document.addEventListener('DOMContentLoaded', function () {
+        $('#tablaABM').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                { extend: 'copy', text: 'Copiar', className: 'btn btn-secondary btn-sm', exportOptions: { columns: ':not(:last-child)' } },
+                { extend: 'csv', text: 'CSV', className: 'btn btn-primary btn-sm', bom: true, charset: 'UTF-8', exportOptions: { columns: ':not(:last-child)' } },
+                { extend: 'excel', text: 'Excel', className: 'btn btn-success btn-sm', exportOptions: { columns: ':not(:last-child)' } },
+                { extend: 'pdf', text: 'PDF', className: 'btn btn-danger btn-sm', exportOptions: { columns: ':not(:last-child)' } },
+                { extend: 'print', text: 'Imprimir', className: 'btn btn-info btn-sm', exportOptions: { columns: ':not(:last-child)' } }
+            ],
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+            },
+            autoWidth: false,
+            pageLength: 50,
+            lengthMenu: [5, 10, 25, 50, 100],
+            order: []
+        });
     });
-});
 </script>

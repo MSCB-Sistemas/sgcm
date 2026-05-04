@@ -16,7 +16,7 @@ class OperacionModel
                 VALUES (:id_deudo, :id_parcela, :id_tipo_operacion, :fecha_pago, :fecha_vencimiento, :importe, :recargo, :total, :id_usuario)";
 
         $stmt = $this->db->prepare($sql);
-        
+
         $stmt->bindValue(':id_deudo', $id_deudo, PDO::PARAM_INT);
         $stmt->bindValue(':id_parcela', $id_parcela, PDO::PARAM_INT);
         $stmt->bindValue(':id_tipo_operacion', $id_tipo_operacion, PDO::PARAM_INT); // Se añade el nuevo parámetro
@@ -35,9 +35,9 @@ class OperacionModel
         $sql = "SELECT COUNT(*) FROM ubicacion_difunto 
                 WHERE id_parcela = :id_parcela AND (fecha_retiro IS NULL OR fecha_retiro = '0000-00-00')";
         $stmt = $this->db->prepare($sql);
-        
+
         $stmt->execute(['id_parcela' => $id_parcela]);
-        
+
         return $stmt->fetchColumn() > 0;
     }
 
@@ -56,7 +56,7 @@ class OperacionModel
         $sql = "UPDATE ubicacion_difunto SET fecha_retiro = :fecha_retiro WHERE id_ubicacion_difunto = :id_ubicacion";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([
-            'fecha_retiro' => $fecha_retiro, 
+            'fecha_retiro' => $fecha_retiro,
             'id_ubicacion' => $id_ubicacion_difunto
         ]);
     }
@@ -67,8 +67,8 @@ class OperacionModel
                 VALUES (:id_difunto, :id_parcela, :fecha_ingreso)";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([
-            'id_difunto' => $id_difunto, 
-            'id_parcela' => $id_parcela, 
+            'id_difunto' => $id_difunto,
+            'id_parcela' => $id_parcela,
             'fecha_ingreso' => $fecha_ingreso
         ]);
     }
@@ -81,7 +81,7 @@ class OperacionModel
                 AND id_parcela = :id_parcela 
                 AND fecha_vencimiento < :fecha_actual
                 ORDER BY fecha_vencimiento DESC LIMIT 1";
-                
+
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             'id_deudo' => $id_deudo,
@@ -133,9 +133,47 @@ class OperacionModel
                 WHERE p.id_pago = :id_pago
                 ORDER BY uo.fecha_retiro DESC 
                 LIMIT 1";
-        
+
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['id_difunto' => $id_difunto, 'id_pago' => $id_pago]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getDatosParaPdfIngresoSinPago($id_difunto, $id_parcela, $id_deudo)
+    {
+        return $this->getDatosParaPdfSinPago($id_difunto, $id_parcela, $id_deudo);
+    }
+
+    public function getDatosParaPdfTrasladoSinPago($id_difunto, $id_parcela, $id_deudo)
+    {
+        return $this->getDatosParaPdfSinPago($id_difunto, $id_parcela, $id_deudo);
+    }
+
+    private function getDatosParaPdfSinPago($id_difunto, $id_parcela, $id_deudo)
+    {
+        $sql = "SELECT
+                    CONCAT(d.apellido, ', ', d.nombre) as difunto,
+                    d.fecha_fallecimiento,
+                    CONCAT(de.apellido, ', ', de.nombre) as responsable_tramite,
+                    de.dni as dni_responsable,
+                    par.id_parcela,
+                    tp.nombre_parcela as tipo_parcela,
+                    par.seccion,
+                    par.hilera
+                FROM difunto d
+                CROSS JOIN deudo de 
+                CROSS JOIN parcela par
+                JOIN tipo_parcela tp ON par.id_tipo_parcela = tp.id_tipo_parcela
+                WHERE d.id_difunto = :id_difunto 
+                  AND de.id_deudo = :id_deudo 
+                  AND par.id_parcela = :id_parcela";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            'id_difunto' => $id_difunto,
+            'id_deudo' => $id_deudo,
+            'id_parcela' => $id_parcela
+        ]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
@@ -164,7 +202,7 @@ class OperacionModel
                 JOIN tipo_parcela tp ON par.id_tipo_parcela = tp.id_tipo_parcela
 
                 WHERE p.id_pago = :id_pago";
-        
+
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['id_difunto' => $id_difunto, 'id_pago' => $id_pago]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -185,11 +223,11 @@ class OperacionModel
                 tp.nombre_parcela AS tipo_parcela
 
             FROM difunto d
-            JOIN deudo de ON d.id_deudo = de.id_deudo 
+            LEFT JOIN deudo de ON d.id_deudo = de.id_deudo 
             JOIN parcela p ON p.id_parcela = :id_parcela
             JOIN tipo_parcela tp ON p.id_tipo_parcela = tp.id_tipo_parcela
             WHERE d.id_difunto = :id_difunto";
-                
+
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['id_difunto' => $id_difunto, 'id_parcela' => $id_parcela]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -286,7 +324,7 @@ class OperacionModel
         $fecha_actual = date('Y-m-d');
         foreach ($resultados as &$r) {
             if (!$r['fecha_vencimiento']) {
-                $r['tiene_deuda'] = true; 
+                $r['tiene_deuda'] = true;
                 $r['fecha_vencimiento'] = 'Sin pagos previos';
             } else {
                 $r['tiene_deuda'] = ($r['fecha_vencimiento'] < $fecha_actual);
@@ -304,21 +342,24 @@ class OperacionModel
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['id_deudo' => $id_deudo]);
         $header = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if(!$header) return false;
-        
+
+        if (!$header)
+            return false;
+
         $header['parcelas'] = $this->obtenerParcelasYDeudasPorDeudo($id_deudo);
         return $header;
     }
 
-    public function getPagoInfoParaReimpresion($id_pago) {
+    public function getPagoInfoParaReimpresion($id_pago)
+    {
         $sql = "SELECT id_deudo, id_parcela, fecha_pago, fecha_vencimiento, id_tipo_operacion FROM pago WHERE id_pago = :id_pago";
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['id_pago' => $id_pago]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function getDifuntoByPago($id_pago) {
+    public function getDifuntoByPago($id_pago)
+    {
         $sql = "SELECT ud.id_difunto 
                 FROM pago p
                 JOIN ubicacion_difunto ud ON p.id_parcela = ud.id_parcela

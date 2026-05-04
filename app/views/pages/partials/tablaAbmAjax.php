@@ -16,8 +16,8 @@
         <?php endif; ?>
     </div>
 
-    <div class="table-responsive-lg shadow-rounded">
-        <table class="table table-hover align-middle mb-0" id="tablaABM" style="min-width: 800px;">
+    <div class="shadow-rounded bg-white p-2">
+        <table class="table table-hover align-middle mb-0" id="tablaABM" style="width: 100% !important;">
             <thead class="table-light">
                 <tr>
                     <?php foreach ($datos['columnas'] as $col): ?>
@@ -33,102 +33,87 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const table = $('#tablaABM');
-    
-    const config = {
-        dom: 'Bfrtip',
-        buttons: [
-            { 
-                extend: 'copy', 
-                text: 'Copiar', 
-                className: 'btn btn-secondary btn-sm', 
-                exportOptions: { columns: ':not(:last-child)' } 
-            },
-            { 
-                extend: 'csv', 
-                text: 'CSV', 
-                className: 'btn btn-primary btn-sm', 
-                bom: true, 
-                charset: 'UTF-8', 
-                exportOptions: { columns: ':not(:last-child)' } 
-            },
-            { 
-                extend: 'excel', 
-                text: 'Excel', 
-                className: 'btn btn-success btn-sm', 
-                exportOptions: { columns: ':not(:last-child)' } 
-            },
-            { 
-                extend: 'pdf', 
-                text: 'PDF', 
-                className: 'btn btn-danger btn-sm', 
-                exportOptions: { columns: ':not(:last-child)' } 
-            },
-            { 
-                extend: 'print', 
-                text: 'Imprimir', 
-                className: 'btn btn-info btn-sm', 
-                exportOptions: { columns: ':not(:last-child)' } 
-            }
-        ],
-        language: {
-            url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
-        },
-        scrollCollapse: true,
-        pageLength: 8,  
-        lengthMenu: [5, 10, 25, 50, 100],
-        order: [],
-        serverSide: true,
-        processing: true,
-        ajax: {
-            url: '<?= $datos['ajaxUrl'] ?>',
-            type: 'POST',
-        },
-        
-        <?php
-        if (isset($datos['columnsConfig'])) {
-            $columns = $datos['columnsConfig'];
-        } else {
-            $columns = [];
-        }
-        ?>
-        columns: <?= json_encode($columns) 
-        ?>,
+    document.addEventListener('DOMContentLoaded', function () {
+        const table = $('#tablaABM');
 
-        
-        columnDefs: [
-            {
-                targets: -1,
-                orderable: false,
-                searchable: false,
-                render: function(data, type, row, meta) {
-                    return data;
+        const config = {
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'copy',
+                    text: 'Copiar',
+                    className: 'btn btn-secondary btn-sm',
+                    exportOptions: { columns: ':not(:last-child)' }
+                },
+                {
+                    extend: 'csv',
+                    text: 'CSV',
+                    className: 'btn btn-primary btn-sm',
+                    bom: true,
+                    charset: 'UTF-8',
+                    exportOptions: { columns: ':not(:last-child)' }
+                },
+                {
+                    extend: 'excel',
+                    text: 'Excel',
+                    className: 'btn btn-success btn-sm',
+                    exportOptions: { columns: ':not(:last-child)' }
+                },
+                {
+                    extend: 'pdf',
+                    text: 'PDF',
+                    className: 'btn btn-danger btn-sm',
+                    exportOptions: { columns: ':not(:last-child)' }
+                },
+                {
+                    extend: 'print',
+                    text: 'Imprimir',
+                    className: 'btn btn-info btn-sm',
+                    exportOptions: { columns: ':not(:last-child)' }
                 }
+            ],
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+            },
+            autoWidth: false,
+            scrollCollapse: true,
+            pageLength: 50,
+            lengthMenu: [5, 10, 25, 50, 100],
+            order: [],
+            serverSide: true,
+            processing: true,
+            ajax: {
+                url: '<?= $datos['ajaxUrl'] ?>',
+                type: 'POST',
+            },
+
+            <?php
+            if (isset($datos['columnsConfig'])) {
+                $columns = $datos['columnsConfig'];
+            } else {
+                $columns = [];
             }
-        ]
-    };
+            ?>
+        columns: <?= json_encode($columns)
+            ?>,
 
-    $('#tablaABM').DataTable(config);
-});
 
-function editarItem(id) {
-    <?php
-    if (isset($datos['baseUrl'])) {
-        $baseUrl = $datos['baseUrl'];
-    } else {
-        $baseUrl = '';
-    }
-    ?>
-    window.location.href = `<?= $baseUrl ?>edit/${id}`;
+            columnDefs: [
+                {
+                    targets: -1,
+                    orderable: false,
+                    searchable: false,
+                    render: function (data, type, row, meta) {
+                        return data;
+                    }
+                }
+            ]
+        };
 
-}
+        $('#tablaABM').DataTable(config);
+    });
 
-function eliminarItem(id) {
-    if (confirm('¿Está seguro de que desea eliminar este registro?')) {
-        const form = document.createElement('form');
-        form.method = 'POST';
-
+    function editarItem(id) {
         <?php
         if (isset($datos['baseUrl'])) {
             $baseUrl = $datos['baseUrl'];
@@ -136,8 +121,24 @@ function eliminarItem(id) {
             $baseUrl = '';
         }
         ?>
-        form.action = `<?= $baseUrl ?>delete/${id}`;
+        window.location.href = `<?= $baseUrl ?>edit/${id}`;
 
     }
-}
+
+    function eliminarItem(id) {
+        if (confirm('¿Está seguro de que desea eliminar este registro?')) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+
+            <?php
+            if (isset($datos['baseUrl'])) {
+                $baseUrl = $datos['baseUrl'];
+            } else {
+                $baseUrl = '';
+            }
+            ?>
+            form.action = `<?= $baseUrl ?>delete/${id}`;
+
+        }
+    }
 </script>
