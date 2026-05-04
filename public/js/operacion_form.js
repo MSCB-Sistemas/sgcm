@@ -1,14 +1,11 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    // Hacer obligatorios todos los campos de búsqueda y deshabilitar el historial del navegador agresivamente
     document.querySelectorAll('input[list]').forEach(input => {
         input.required = true;
-        // Chromium ignora 'off' si el campo tiene un ID recurrente, pero respeta strings no registrados o 'new-password'
         input.setAttribute('autocomplete', 'new-password');
-        input.setAttribute('name', Math.random().toString(36).substring(7)); // Random name para engañar heurística
+        input.setAttribute('name', Math.random().toString(36).substring(7));
     });
 
-    // --- 1. FUNCIÓN AUTOCOMPLETADO ---
     function configurarAutocompletado(inputId, hiddenId, datalistId) {
         const input = document.getElementById(inputId);
         const hidden = document.getElementById(hiddenId);
@@ -143,11 +140,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(response => response.json().then(data => ({ ok: response.ok, data: data })))
                 .then(({ ok, data }) => {
                     if (ok && data.success) {
-                        // Agregar a todos los datalists especificados
                         ids.forEach(datalistId => {
                             const datalist = document.getElementById(datalistId);
                             if (datalist && data.newItem) {
-                                // Verificar si ya existe
                                 let exists = false;
                                 for (let opt of datalist.options) {
                                     if (opt.dataset.id == data.newItem.id) {
@@ -167,7 +162,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         if (inputActivo && data.newItem) {
                             inputActivo.value = data.newItem.text;
                             
-                            // Buscar el campo hidden de forma más robusta (dentro del mismo grupo)
                             const container = inputActivo.closest('.input-group') || inputActivo.parentElement;
                             const hidden = container.querySelector('input[type="hidden"]');
                             
@@ -178,21 +172,17 @@ document.addEventListener('DOMContentLoaded', function () {
                                 console.error("No se encontró el campo oculto para el input:", inputActivo.id);
                             }
                             
-                            // Forzar refresco del datalist en el navegador
                             const currentList = inputActivo.getAttribute('list');
                             if (currentList) {
                                 inputActivo.setAttribute('list', '');
                                 inputActivo.setAttribute('list', currentList);
                             }
 
-                            // Limpiar validación y disparar eventos
                             inputActivo.setCustomValidity("");
                             inputActivo.classList.remove('is-invalid');
                             
-                            // Disparar input (esto ejecutará configurarAutocompletado)
                             inputActivo.dispatchEvent(new Event('input', { bubbles: true }));
                             
-                            // ASEGURAR que el hidden no se haya borrado si el autocompletado falló por milisegundos o diferencias de texto
                             if (hidden && !hidden.value) {
                                 hidden.value = data.newItem.id;
                             }
@@ -204,7 +194,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         if (modal) modal.hide();
                         form.reset();
                         form.classList.remove('was-validated');
-                        // Opcional: alert(data.mensaje || 'Creado con éxito.');
                     } else {
                         const erroresArr = data.errors || data.errores || ['Ocurrió un error.'];
                         alert('No se pudo guardar:\n' + erroresArr.join('\n'));
@@ -321,7 +310,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Checkbox Exento de pago
     document.querySelectorAll('.check-exento-pago').forEach(checkbox => {
         checkbox.addEventListener('change', function() {
             const prefix = this.dataset.prefix;
@@ -340,10 +328,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
-            // Adjust autocomplete list dynamically
             const parcelaInput = document.getElementById(`parcela_search_${prefix}`);
             if (parcelaInput) {
-                parcelaInput.value = ''; // clear input to enforce re-selection
+                parcelaInput.value = '';
                 document.getElementById(`id_parcela_${prefix}`).value = '';
                 parcelaInput.setAttribute('list', isExento ? 'todasLasParcelas' : 'parcelasDisponibles');
             }
