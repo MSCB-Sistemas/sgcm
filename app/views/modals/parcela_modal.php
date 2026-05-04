@@ -1,7 +1,7 @@
 <div class="modal fade" id="modalParcela" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header rounded-top-4 card-header shadow-sm">
                 <h5 class="modal-title">Crear parcela</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
@@ -11,6 +11,7 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="tipo_parcela" class="form-label fw-bold">Tipo de parcela</label>
+                                <p class="form-text">Seleccione el tipo de parcela</p>
                                 <select class="form-select" id="tipo_parcela" name="tipo_parcela" required>
                                     <option value="">Seleccione...</option>
                                     <?php foreach ($datos['tipos_parcelas'] as $n): ?>
@@ -47,33 +48,39 @@
                             
                             <div class="mb-3">
                                 <label for="numero_ubicacion" class="form-label fw-bold">Número ubicación</label>
-                                <input type="text" class="form-control" id="numero_ubicacion" name="numero_ubicacion">
+                                <p class="form-text">Ingrese el número de ubicación de la parcela</p>
+                                <input type="text" class="form-control" id="numero_ubicacion" name="numero_ubicacion" placeholder="Ej: 123">
                             </div>
                             
                             <div class="mb-3">
                                 <label for="hilera" class="form-label fw-bold">Hilera</label>
-                                <input type="text" class="form-control" id="hilera" name="hilera">
+                                <p class="form-text">Ingrese el número de hilera de la parcela</p>
+                                <input type="text" class="form-control" id="hilera" name="hilera" placeholder="Ej: A">
                             </div>
                         </div>
 
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="seccion" class="form-label fw-bold">Sección</label>
-                                <input type="text" class="form-control" id="seccion" name="seccion">
+                                <p class="form-text">Ingrese el número de sección de la parcela</p>
+                                <input type="text" class="form-control" id="seccion" name="seccion" placeholder="Ej: 1">
                             </div>
                             
                             <div class="mb-3">
                                 <label for="fraccion" class="form-label fw-bold">Fracción</label>
-                                <input type="text" class="form-control" id="fraccion" name="fraccion">
+                                <p class="form-text">Ingrese el número de fracción de la parcela</p>
+                                <input type="text" class="form-control" id="fraccion" name="fraccion" placeholder="Ej: 1">
                             </div>
                             
                             <div class="mb-3">
                                 <label for="nivel" class="form-label fw-bold">Nivel</label>
-                                <input type="text" class="form-control" id="nivel" name="nivel">
+                                <p class="form-text">Ingrese el número de nivel de la parcela</p>
+                                <input type="text" class="form-control" id="nivel" name="nivel" placeholder="Ej: 1">
                             </div>
                             
                             <div class="mb-3">
                                 <label for="orientacion" class="form-label fw-bold">Orientación</label>
+                                <p class="form-text">Seleccione la orientación de la parcela</p>
                                 <select class="form-select" id="orientacion" name="orientacion">
                                     <option value="">Seleccione...</option>
                                     <?php foreach ($datos['orientaciones'] as $n): ?>
