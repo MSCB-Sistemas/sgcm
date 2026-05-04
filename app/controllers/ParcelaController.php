@@ -128,7 +128,11 @@ class ParcelaController extends Control
         if ($nuevo_ingreso) {
             if ($es_ajax) {
                 header('Content-Type: application/json');
-                $texto_parcela = "ID: $nuevo_ingreso | Ubic: $nro_ubicacion | Sec: $seccion | Hil: $hilera";
+                $ubic = !empty($nro_ubicacion) ? $nro_ubicacion : 'S/N';
+                $sec = !empty($seccion) ? $seccion : 'S/S';
+                $hil = !empty($hilera) ? $hilera : 'S/H';
+                $texto_parcela = "ID: $nuevo_ingreso | Ubic: $ubic | Sec: $sec | Hil: $hil";
+                
                 echo json_encode([
                     'success' => true,
                     'newItem' => [

@@ -103,6 +103,8 @@ class DifuntoModel
         ];
         $stmt->execute($parametros);
 
+        $id = $this->db->lastInsertId();
+
         AuditoriaHelper::log(
             $_SESSION['usuario_id'],
             $sql,
@@ -111,7 +113,7 @@ class DifuntoModel
             "Insert"
         );
 
-        return $this->db->lastInsertId();
+        return $id;
     }
 
     /**

@@ -214,8 +214,11 @@ class OperacionController extends Control
         $fecha_operacion = date('Y-m-d');
 
 
-        if (!$id_difunto || !$id_parcela || !$id_deudo)
+        if (!$id_difunto || !$id_parcela || !$id_deudo) {
             $errores[] = "Debe seleccionar difunto, deudo y parcela.";
+        } else if (!is_numeric($id_difunto) || !is_numeric($id_parcela) || !is_numeric($id_deudo)) {
+            $errores[] = "Uno de los elementos seleccionados no es válido.";
+        }
         if (empty($vencimiento))
             $errores[] = "Debe especificar una fecha de vencimiento.";
         if ($this->model->verificarParcelaOcupada($id_parcela))
@@ -320,6 +323,8 @@ class OperacionController extends Control
 
         if (empty($id_difunto) || empty($id_parcela) || empty($id_deudo)) {
             $errores[] = "Debe seleccionar difunto, parcela y deudo responsable.";
+        } else if (!is_numeric($id_difunto) || !is_numeric($id_parcela) || !is_numeric($id_deudo)) {
+            $errores[] = "Uno de los elementos seleccionados no es válido. Por favor, vuelva a buscarlos en la lista.";
         }
 
         if (!$is_exento) {

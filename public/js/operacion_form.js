@@ -1,20 +1,23 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    // Hacer obligatorios todos los campos de búsqueda y deshabilitar el historial del navegador agresivamente
     document.querySelectorAll('input[list]').forEach(input => {
         input.required = true;
-        // Chromium ignora 'off' si el campo tiene un ID recurrente, pero respeta strings no registrados o 'new-password'
         input.setAttribute('autocomplete', 'new-password');
-        input.setAttribute('name', Math.random().toString(36).substring(7)); // Random name para engañar heurística
+        input.setAttribute('name', Math.random().toString(36).substring(7));
     });
 
-    // --- 1. FUNCIÓN AUTOCOMPLETADO ---
     function configurarAutocompletado(inputId, hiddenId, datalistId) {
         const input = document.getElementById(inputId);
         const hidden = document.getElementById(hiddenId);
         if (!input || !hidden) return;
 
-        const normalizeText = (str) => str.toLowerCase().replace(/[\s-]+/g, '');
+        const normalizeText = (str) => {
+            if (!str) return '';
+            return str.toString()
+                .toLowerCase()
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^a-z0-9]/g, '');
+        };
 
         input.addEventListener('input', () => {
             hidden.value = '';
@@ -105,7 +108,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // --- 3. FUNCIÓN MODALES AJAX (GUARDADO) ---
-    function configurarModalAjax(modalId, formId, datalistId) {
+    function configurarModalAjax(modalId, formId, datalistIds) {
+        const ids = Array.isArray(datalistIds) ? datalistIds : [datalistIds];
         const form = document.getElementById(formId);
         const modalEl = document.getElementById(modalId);
         if (!form || !modalEl) return;
@@ -136,32 +140,63 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(response => response.json().then(data => ({ ok: response.ok, data: data })))
                 .then(({ ok, data }) => {
                     if (ok && data.success) {
-                        const datalist = document.getElementById(datalistId);
-                        if (datalist && data.newItem) {
-                            const option = document.createElement('option');
-                            option.value = data.newItem.text;
-                            option.dataset.id = data.newItem.id;
-                            datalist.appendChild(option);
-
-                            if (inputActivo) {
-                                inputActivo.value = data.newItem.text;
-                                const baseId = inputActivo.id.replace('_search', '');
-                                const hidden = document.getElementById('id_' + baseId) || document.getElementById(baseId + '_id') || document.getElementById(inputActivo.id.replace('search', 'id'));
-                                if (hidden) {
-                                    hidden.value = data.newItem.id;
-                                    // Trigger change event just in case
-                                    hidden.dispatchEvent(new Event('change'));
+                        ids.forEach(datalistId => {
+                            const datalist = document.getElementById(datalistId);
+                            if (datalist && data.newItem) {
+                                let exists = false;
+                                for (let opt of datalist.options) {
+                                    if (opt.dataset.id == data.newItem.id) {
+                                        exists = true;
+                                        break;
+                                    }
+                                }
+                                if (!exists) {
+                                    const option = document.createElement('option');
+                                    option.value = data.newItem.text;
+                                    option.setAttribute('data-id', data.newItem.id);
+                                    datalist.appendChild(option);
                                 }
                             }
+                        });
+                        
+                        if (inputActivo && data.newItem) {
+                            inputActivo.value = data.newItem.text;
+                            
+                            const container = inputActivo.closest('.input-group') || inputActivo.parentElement;
+                            const hidden = container.querySelector('input[type="hidden"]');
+                            
+                            if (hidden) {
+                                hidden.value = data.newItem.id;
+                                console.log(`Asignando ID ${data.newItem.id} al campo ${hidden.id}`);
+                            } else {
+                                console.error("No se encontró el campo oculto para el input:", inputActivo.id);
+                            }
+                            
+                            const currentList = inputActivo.getAttribute('list');
+                            if (currentList) {
+                                inputActivo.setAttribute('list', '');
+                                inputActivo.setAttribute('list', currentList);
+                            }
+
+                            inputActivo.setCustomValidity("");
+                            inputActivo.classList.remove('is-invalid');
+                            
+                            inputActivo.dispatchEvent(new Event('input', { bubbles: true }));
+                            
+                            if (hidden && !hidden.value) {
+                                hidden.value = data.newItem.id;
+                            }
+                            
+                            inputActivo.dispatchEvent(new Event('change', { bubbles: true }));
                         }
+
                         const modal = bootstrap.Modal.getInstance(modalEl);
-                        modal.hide();
+                        if (modal) modal.hide();
                         form.reset();
                         form.classList.remove('was-validated');
-                        alert(data.mensaje || 'Creado con éxito.');
                     } else {
-                        const errorMsg = data.errors ? data.errors.join('\n') : 'Ocurrió un error.';
-                        alert('No se pudo guardar:\n' + errorMsg);
+                        const erroresArr = data.errors || data.errores || ['Ocurrió un error.'];
+                        alert('No se pudo guardar:\n' + erroresArr.join('\n'));
                     }
                 })
                 .catch(error => {
@@ -275,7 +310,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Checkbox Exento de pago
     document.querySelectorAll('.check-exento-pago').forEach(checkbox => {
         checkbox.addEventListener('change', function() {
             const prefix = this.dataset.prefix;
@@ -294,10 +328,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
-            // Adjust autocomplete list dynamically
             const parcelaInput = document.getElementById(`parcela_search_${prefix}`);
             if (parcelaInput) {
-                parcelaInput.value = ''; // clear input to enforce re-selection
+                parcelaInput.value = '';
                 document.getElementById(`id_parcela_${prefix}`).value = '';
                 parcelaInput.setAttribute('list', isExento ? 'todasLasParcelas' : 'parcelasDisponibles');
             }
@@ -325,9 +358,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // --- 7. MODALES ---
-    configurarModalAjax('modalDifunto', 'formNuevoDifunto', 'difuntos');
-    configurarModalAjax('modalParcela', 'formNuevaParcela', 'parcelas');
-    configurarModalAjax('modalDeudo', 'formNuevoDeudo', 'deudos');
+    configurarModalAjax('modalDifunto', 'formNuevoDifunto', ['difuntos']);
+    configurarModalAjax('modalParcela', 'formNuevaParcela', ['parcelasDisponibles', 'todasLasParcelas']);
+    configurarModalAjax('modalDeudo', 'formNuevoDeudo', ['deudos']);
 
     // --- 8. CÁLCULOS DE TOTALES ---
     function configurarCalculoTotal(prefix) {

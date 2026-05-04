@@ -73,6 +73,8 @@ class DeudoModel
         ];
         $stmt->execute($parametros);
 
+        $id = $this->db->lastInsertId();
+
         AuditoriaHelper::log(
             $_SESSION['usuario_id'],
             $sql,
@@ -81,7 +83,7 @@ class DeudoModel
             "Insert"
         );
 
-        return (int) $this->db->lastInsertId();
+        return (int) $id;
     }
 
     /**
