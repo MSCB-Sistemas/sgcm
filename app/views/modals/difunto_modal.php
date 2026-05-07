@@ -30,7 +30,7 @@
                             <div class="mb-3">
                                 <label for="dni" class="form-label fw-bold">DNI</label>
                                 <p class="form-text">Número de documento sin puntos ni espacios</p>
-                                <input type="text" class="form-control" id="dni" name="dni" placeholder="Ej: 12345678" required>
+                                <input type="number" class="form-control" id="dni" name="dni" placeholder="Ej: 12345678" required>
                                 <div class="invalid-feedback">
                                     Por favor seleccione un DNI
                                 </div>
@@ -39,7 +39,7 @@
                             <div class="mb-3">
                                 <label for="edad" class="form-label fw-bold">Edad</label>
                                 <p class="form-text">Edad del difunto</p>
-                                <input type="text" class="form-control" id="edad" name="edad" placeholder="Ej: 30" required>
+                                <input type="number" class="form-control" id="edad" name="edad" placeholder="Ej: 30" required>
                                 <div class="invalid-feedback">
                                     Por favor seleccione una edad
                                 </div>

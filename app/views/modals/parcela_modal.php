@@ -49,33 +49,33 @@
                             <div class="mb-3">
                                 <label for="numero_ubicacion" class="form-label fw-bold">Número ubicación</label>
                                 <p class="form-text">Ingrese el número de ubicación de la parcela</p>
-                                <input type="text" class="form-control" id="numero_ubicacion" name="numero_ubicacion" placeholder="Ej: 123">
+                                <input type="number" class="form-control" id="numero_ubicacion" name="numero_ubicacion" placeholder="Ej: 123">
                             </div>
                             
                             <div class="mb-3">
                                 <label for="hilera" class="form-label fw-bold">Hilera</label>
-                                <p class="form-text">Ingrese el número de hilera de la parcela</p>
-                                <input type="text" class="form-control" id="hilera" name="hilera" placeholder="Ej: A">
+                                <p class="form-text">Ingrese el número o letra de hilera de la parcela</p>
+                                <input type="text" class="form-control" id="hilera" name="hilera" placeholder="Ej: 1A">
                             </div>
                         </div>
 
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="seccion" class="form-label fw-bold">Sección</label>
-                                <p class="form-text">Ingrese el número de sección de la parcela</p>
-                                <input type="text" class="form-control" id="seccion" name="seccion" placeholder="Ej: 1">
+                                <p class="form-text">Ingrese el número o letra de sección de la parcela</p>
+                                <input type="text" class="form-control" id="seccion" name="seccion" placeholder="Ej: 1A">
                             </div>
                             
                             <div class="mb-3">
                                 <label for="fraccion" class="form-label fw-bold">Fracción</label>
-                                <p class="form-text">Ingrese el número de fracción de la parcela</p>
-                                <input type="text" class="form-control" id="fraccion" name="fraccion" placeholder="Ej: 1">
+                                <p class="form-text">Ingrese el número o letra de fracción de la parcela</p>
+                                <input type="text" class="form-control" id="fraccion" name="fraccion" placeholder="Ej: 1A">
                             </div>
                             
                             <div class="mb-3">
                                 <label for="nivel" class="form-label fw-bold">Nivel</label>
                                 <p class="form-text">Ingrese el número de nivel de la parcela</p>
-                                <input type="text" class="form-control" id="nivel" name="nivel" placeholder="Ej: 1">
+                                <input type="number" class="form-control" id="nivel" name="nivel" placeholder="Ej: 1">
                             </div>
                             
                             <div class="mb-3">
